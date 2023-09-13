@@ -1,2 +1,2 @@
 # labs
-lads OAiP
+labs OAiP
