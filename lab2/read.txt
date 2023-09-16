@@ -1,3 +1,0 @@
-.cpp   - C++    code;
-.java  - Java   code;
-.dproj - Delphi code;
