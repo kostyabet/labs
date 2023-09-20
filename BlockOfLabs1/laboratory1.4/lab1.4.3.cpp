@@ -57,6 +57,8 @@ int main()
 	for (int i = 1; i < numberInMassive; i = i + 2) {
 		sumNumb = sumNumb + arr[i];
 	}
+	delete[] arr;
+	arr = nullptr;
 	printf("\nSum of all odd numbers - %.3f", sumNumb);
 	return 0;
 }
