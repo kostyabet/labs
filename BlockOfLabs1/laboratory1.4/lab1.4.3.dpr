@@ -53,7 +53,7 @@ Begin
             SumNumb := SumNumb + Arr[I];
         End;
     End;
-
+    SetLength(Arr, 0);
     Writeln('Sum of all odd numbers - ', SumNumb:3:3);
     Readln;
     Readln;
