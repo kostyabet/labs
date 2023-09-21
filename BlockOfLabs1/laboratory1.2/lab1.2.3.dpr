@@ -11,9 +11,10 @@ Const
 
 Var
     I: Integer;
-    Cost: Integer = 0;
+    Cost: Integer;
 
 Begin
+    Cost := 0;
     For I := TABLESTEP To ENDOFTABLE Do
     Begin
         // current price calculation
