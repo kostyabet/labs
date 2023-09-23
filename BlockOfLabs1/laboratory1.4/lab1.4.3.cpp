@@ -5,7 +5,7 @@ int main()
 {
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-	int numberInMassive = 0;
+	int arraySize = 0;
 	double sumNumb = 0.0;
 	bool isCorrect = false;
 
@@ -17,7 +17,7 @@ int main()
 	do
 	{
 		printf("How many numbers will you write?\n");
-		std::cin >> numberInMassive;
+		std::cin >> arraySize;
 		if (std::cin.get() != '\n')
 		{
 			std::cin.clear();
@@ -34,12 +34,12 @@ int main()
 		}
 	} while (!isCorrect);
 
-	double* arrayOfNumbers = new double[numberInMassive];
+	double* arrayOfNumbers = new double[arraySize];
 
 	do
 	{
 		isCorrect = true;
-		for (int i = 0; i < numberInMassive; i++)
+		for (int i = 0; i < arraySize; i++)
 		{
 			printf("Write your %d number.\n", i + 1);
 			std::cin >> arrayOfNumbers[i];
@@ -53,7 +53,7 @@ int main()
 		}
 	} while (!isCorrect);
 
-	for (int i = 1; i < numberInMassive; i = i + 2) {
+	for (int i = 1; i < arraySize; i = i + 2) {
 		sumNumb = sumNumb + arrayOfNumbers[i];
 	}
 	delete[] arrayOfNumbers;
