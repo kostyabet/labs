@@ -49,7 +49,7 @@ Begin
         End;
     Until IsCorrect;
 
-    For I := 1 To High Do
+    For I := 0 To High Do
     Begin
         If I Mod 2 <> 0 Then
             SumNumb := SumNumb + ArrayOfNumbers[I];
