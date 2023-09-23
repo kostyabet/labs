@@ -5,13 +5,13 @@ Uses
 
 Var
     ArrayOfNumbers: Array Of Real;
-    NumberInMassive, I, High: Integer;
+    ArraySize, I, High: Integer;
     SumNumb: Real;
     IsCorrect: Boolean;
 
 Begin
-    NumberInMassive := 0;
-    SumNumb := 0;
+    ArraySize := 0;
+    SumNumb := 0.0;
     IsCorrect := False;
     High := 0;
 
@@ -23,7 +23,7 @@ Begin
     Repeat
         Try
             Writeln('How many numbers will you write?');
-            Readln(NumberInMassive);
+            Readln(ArraySize);
             If NumberInMassive < 1 Then
             Begin
                 Writeln('Number should be > 0. Try again.');
@@ -37,8 +37,8 @@ Begin
         End;
     Until IsCorrect;
 
-    SetLength(ArrayOfNumbers, NumberInMassive);
-    High := NumberInMassive - 1;
+    SetLength(ArrayOfNumbers, ArraySize);
+    High := ArraySize - 1;
     IsCorrect := False;
     Repeat
         Try
