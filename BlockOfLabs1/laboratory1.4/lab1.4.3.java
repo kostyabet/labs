@@ -55,7 +55,7 @@ public class lab_4 {
 
         in.close();
 
-        for (int i = 1; i < arraySize; i = i + 2) {
+        for (int i = 0; i < arraySize; i = i + 2) {
             sumNumb = sumNumb + arrayOfNumbers[i];
         }
 
