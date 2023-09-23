@@ -6,7 +6,7 @@ public class lab_4 {
         DecimalFormat dF = new DecimalFormat( "0.###" );
         Scanner in = new Scanner(System.in);
 
-        int numberInMassive = 0;
+        int arraySize = 0;
         double sumNumb = 0.0;
         boolean isCorrect = true;
 
@@ -22,8 +22,8 @@ public class lab_4 {
         do {
             try {
                 System.out.println("How many numbers will you write?");
-                numberInMassive = Integer.parseInt(in.nextLine());
-                if (numberInMassive < 1)
+                arraySize = Integer.parseInt(in.nextLine());
+                if (arraySize < 1)
                 {
                     System.err.println("Number should be > 0. Try again.");
                 }
@@ -36,14 +36,14 @@ public class lab_4 {
             }
         } while (isCorrect);
 
-        double[] arrayOfNumbers = new double[numberInMassive];
+        double[] arrayOfNumbers = new double[arraySize];
 
         isCorrect = true;
         do
         {
             try
             {
-                for (int i = 0; i < numberInMassive; i++) {
+                for (int i = 0; i < arraySize; i++) {
                     System.out.printf("Write your %d number.\n", i + 1);
                     arrayOfNumbers[i] = Double.parseDouble(in.nextLine());
                 }
@@ -55,7 +55,7 @@ public class lab_4 {
 
         in.close();
 
-        for (int i = 1; i < numberInMassive; i = i + 2) {
+        for (int i = 1; i < arraySize; i = i + 2) {
             sumNumb = sumNumb + arrayOfNumbers[i];
         }
 
