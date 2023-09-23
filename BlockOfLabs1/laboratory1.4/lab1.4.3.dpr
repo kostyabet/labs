@@ -25,13 +25,9 @@ Begin
             Writeln('How many numbers will you write?');
             Readln(ArraySize);
             If NumberInMassive < 1 Then
-            Begin
-                Writeln('Number should be > 0. Try again.');
-            End
+                Writeln('Number should be > 0. Try again.')
             Else
-            Begin
                 IsCorrect := True;
-            End;
         Except
             Writeln('Number entered incorrectly.');
         End;
@@ -56,9 +52,7 @@ Begin
     For I := 1 To High Do
     Begin
         If I Mod 2 <> 0 Then
-        Begin
             SumNumb := SumNumb + ArrayOfNumbers[I];
-        End;
     End;
 
     ArrayOfNumbers := Nil;
