@@ -5,13 +5,12 @@ int main()
 {
     const float MINCOORDINATE = -1000.0, MAXCOORDINATE = 1000.0;
     float area, slopeFactor, slopeFactor1, slopeFactor2, yInterception,
-        yInterception1, yInterception2, productOfVectors1, productOfVectors2,
-        intersectionPoint;
+        yInterception1, yInterception2, intersectionPoint;
     const short MINNUMBEROFSIDE = 3, MAXNUMBEROFSIDE = 20;
     short numberOfSides, limitForAmount;
     int index;
-    bool isInCorrect, isInCorrectCoordinate, isInCorrectAll, isCorrectInput,
-        isInCorrectPolygon;
+    bool isInCorrect, isInCorrectCoordinate, isInCorrectAll, isInCorrectPolygon,
+        isInCorrectPoints;
 
     //inicialization
     area = 0.0;
@@ -21,17 +20,15 @@ int main()
     yInterception1 = 0.0;
     slopeFactor2 = 0.0;
     yInterception2 = 0.0;
-    intersectionPoint = 0.0;//
-    productOfVectors1 = 0.0;//vector1;
-    productOfVectors2 = 0.0;//vector2;
+    intersectionPoint = 0.0;
     limitForAmount = 0;//high in main block
     index = 0;//x(index) and y(index)
     numberOfSides = 0;
     isInCorrect = true;//for input
     isInCorrectCoordinate = true;//for coordinate cheack
     isInCorrectAll = false;//for all block
-    isCorrectInput = false;//vector
     isInCorrectPolygon = false;//for poligon
+    isInCorrectPoints = false;//for points cheack
 
     //information about task
     std::cout << "  This program calculates the area of\ a polygon. The number of sides of the polygon is selected by the user.\n"
@@ -71,8 +68,6 @@ int main()
     do
     {
         isInCorrectAll = false;
-        isCorrectInput = false;
-        isInCorrect = false;
         for (int i = 0; i < numberOfSides; i++)
         {
             index = i + 1;
@@ -134,10 +129,11 @@ int main()
         {
             for (int j = i + 1; j < numberOfSides; j++)
             {
-                if (coordinateMatrix[i][0] == coordinateMatrix[j][0] && coordinateMatrix[i][1] == coordinateMatrix[j][1])
+                if (isInCorrectPoints == false && coordinateMatrix[i][0] == coordinateMatrix[j][0] && coordinateMatrix[i][1] == coordinateMatrix[j][1])
                 {
                     std::cout << "Points must be unique. Try again.\n";
                     isInCorrectAll = true;
+                    isInCorrectPoints = true;
                 }
             }
         }
