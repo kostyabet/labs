@@ -117,6 +117,17 @@ int main()
             } while (isInCorrectCoordinate);
         }
 
+        for (int i = 0; i < numberOfSides; i++)
+        {
+            for (int j = i + 1; j < numberOfSides; j++)
+            {
+                if (coordinateMatrix[i][0] == coordinateMatrix[j][0] && coordinateMatrix[i][1] == coordinateMatrix[j][1])
+                {
+                    std::cout << "Points must be unique. Try again.\n";
+                    isInCorrectAll = true;
+                }
+            }
+        }
         //you need to implement a check for a regular polygon
         /*if (numberOfSides > 3 && isInCorrect == false)
         {
