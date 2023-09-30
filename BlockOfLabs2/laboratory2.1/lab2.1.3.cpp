@@ -1,19 +1,27 @@
 #include <iostream>
-#include <iomanip>
+#include <iomanip> // for setprecision
 
 int main()
 {
     const float MINCOORDINATE = -1000.0, MAXCOORDINATE = 1000.0;
-    float area, slopeFactor, yInterception, productOfVectors1, productOfVectors2;
+    float area, slopeFactor, slopeFactor1, slopeFactor2, yInterception,
+        yInterception1, yInterception2, productOfVectors1, productOfVectors2,
+        intersectionPoint;
     const short MINNUMBEROFSIDE = 3, MAXNUMBEROFSIDE = 20;
     short numberOfSides, limitForAmount;
     int index;
-    bool isInCorrect, isInCorrectCoordinate, isInCorrectAll, isCorrectInput;
+    bool isInCorrect, isInCorrectCoordinate, isInCorrectAll, isCorrectInput,
+        isInCorrectPolygon;
 
     //inicialization
     area = 0.0;
     slopeFactor = 0.0;//y = rx + b => slopefactor = r
     yInterception = 0.0;//y = fx + b => slopefactor = b
+    slopeFactor1 = 0.0;
+    yInterception1 = 0.0;
+    slopeFactor2 = 0.0;
+    yInterception2 = 0.0;
+    intersectionPoint = 0.0;//
     productOfVectors1 = 0.0;//vector1;
     productOfVectors2 = 0.0;//vector2;
     limitForAmount = 0;//high in main block
@@ -23,13 +31,16 @@ int main()
     isInCorrectCoordinate = true;//for coordinate cheack
     isInCorrectAll = false;//for all block
     isCorrectInput = false;//vector
+    isInCorrectPolygon = false;//for poligon
 
     //information about task
-    std::cout << "This program calculates the area of\ a polygon. The number of sides of the polygon is selected by the user.\n"
-        << "You also need to enter the coordinates of the polygon vertices.\n\n"
-        << "Restrictions: \n\t1. The number of sides of a polygon is an integer from " << MINNUMBEROFSIDE << " to " << MAXNUMBEROFSIDE << ";\n"
-        << "\t2. Coordinates - floating point numbers from " << MINCOORDINATE << " to " << MAXCOORDINATE << "; \n"
-        << "\t3. The vertices of the polygon should be listed in traversal order (clockwise / counterclockwise).\n\n";
+    std::cout << "  This program calculates the area of\ a polygon. The number of sides of the polygon is selected by the user.\n"
+        "You also need to enter the coordinates of the polygon vertices.\n\n"
+        "*The Gauss formula is used for calculations*\n\n"
+        "Restrictions: \n\t1. The number of sides of a polygon is an integer from " << MINNUMBEROFSIDE << " to " << MAXNUMBEROFSIDE << ";\n"
+        "\t2. Coordinates - floating point numbers from " << MINCOORDINATE << " to " << MAXCOORDINATE << ";\n"
+        "\t3. All points must be unique (not repeated);\n"
+        "\t4. The vertices of the polygon should be listed in traversal order (clockwise / counterclockwise).\n\n";
 
     //formatted output
     std::cout << std::setprecision(3) << std::fixed;
@@ -100,6 +111,7 @@ int main()
                         isInCorrect = false;
                 } while (isInCorrect);
 
+                // we check the points to see if they are on the same line
                 if (i > 1)
                 {
                     slopeFactor = (coordinateMatrix[i - 1][1] - coordinateMatrix[i - 2][1]) / (coordinateMatrix[i - 1][0] - coordinateMatrix[i - 2][0]);
@@ -117,6 +129,7 @@ int main()
             } while (isInCorrectCoordinate);
         }
 
+        // check that points cannot be repeated
         for (int i = 0; i < numberOfSides; i++)
         {
             for (int j = i + 1; j < numberOfSides; j++)
@@ -128,44 +141,80 @@ int main()
                 }
             }
         }
-        //you need to implement a check for a regular polygon
-        /*if (numberOfSides > 3 && isInCorrect == false)
+
+        // the main block of checking that there are no self-intersections
+        for (int i = 1; i < numberOfSides; i++)
         {
-            for (int i = 1; i < numberOfSides; i++)
+            if (coordinateMatrix[i][0] - coordinateMatrix[i - 1][0] == 0)
             {
-                productOfVectors1 = coordinateMatrix[i][0] * coordinateMatrix[i - 1][1] - coordinateMatrix[i][1] * coordinateMatrix[i - 1][0];
-                for (int j = i + 1; j < numberOfSides; j++)
+                yInterception1 = coordinateMatrix[i][0];
+                for (int j = i + 2; j < numberOfSides; j++)
                 {
-                    productOfVectors2 = coordinateMatrix[j][0] * coordinateMatrix[j - 1][1] - coordinateMatrix[j][1] * coordinateMatrix[j - 1][0];
-                    if ((productOfVectors1 == 0 || productOfVectors2 == 0 || productOfVectors1 == productOfVectors2) && isCorrectInput != true)
-                    {
-                        std::cout << "\nBad input. Try again.\n";
-                        isCorrectInput = true;
-                        isInCorrectAll = true;
-                    }
+                    slopeFactor2 = (coordinateMatrix[j][1] - coordinateMatrix[j - 1][1]) / (coordinateMatrix[j][0] - coordinateMatrix[j - 1][0]);
+                    yInterception2 = coordinateMatrix[j][1] - coordinateMatrix[j][0] * slopeFactor2;
+                    intersectionPoint = (yInterception2 - yInterception1) / (slopeFactor1 - slopeFactor2);
+                    if ((yInterception1 > coordinateMatrix[j][0] && yInterception1 < coordinateMatrix[j - 1][0]) ||
+                        (yInterception1 < coordinateMatrix[j][0] && yInterception1 > coordinateMatrix[j - 1][0]) &&
+                        ((intersectionPoint > coordinateMatrix[j][1] && intersectionPoint < coordinateMatrix[j - 1][1]) ||
+                            (intersectionPoint < coordinateMatrix[j][1] && intersectionPoint > coordinateMatrix[j - 1][1])))
+                        isInCorrectPolygon = true;
                 }
             }
-        }*/
+            else if (coordinateMatrix[i][1] - coordinateMatrix[i - 1][1] == 0)
+            {
+                slopeFactor1 = 0;
+                yInterception1 = coordinateMatrix[i][1];
+                for (int j = i + 2; j < numberOfSides; j++)
+                {
+                    slopeFactor2 = (coordinateMatrix[j][1] - coordinateMatrix[j - 1][1]) / (coordinateMatrix[j][0] - coordinateMatrix[j - 1][0]);
+                    yInterception2 = coordinateMatrix[j][1] - coordinateMatrix[j][0] * slopeFactor2;
+                    intersectionPoint = (yInterception2 - yInterception1) / (slopeFactor1 - slopeFactor2);
+                    if (((yInterception1 > coordinateMatrix[j][1] && yInterception1 < coordinateMatrix[j - 1][1]) ||
+                        (yInterception1 < coordinateMatrix[j][1] && yInterception1 > coordinateMatrix[j - 1][1])) &&
+                        ((intersectionPoint > coordinateMatrix[j][0] && intersectionPoint < coordinateMatrix[j - 1][0]) ||
+                            (intersectionPoint < coordinateMatrix[j][0] && intersectionPoint > coordinateMatrix[j - 1][0])))
+                        isInCorrectPolygon = true;
+                }
+            }
+            else
+            {
+                slopeFactor1 = (coordinateMatrix[i][1] - coordinateMatrix[i - 1][1]) / (coordinateMatrix[i][0] - coordinateMatrix[i - 1][0]);
+                yInterception1 = coordinateMatrix[i][1] - coordinateMatrix[i][0] * slopeFactor1;
+                for (int j = i + 2; j < numberOfSides; j++)
+                {
+                    slopeFactor2 = (coordinateMatrix[j][1] - coordinateMatrix[j - 1][1]) / (coordinateMatrix[j][0] - coordinateMatrix[j - 1][0]);
+                    yInterception2 = coordinateMatrix[j][1] - coordinateMatrix[j][0] * slopeFactor2;
+                    intersectionPoint = (yInterception2 - yInterception1) / (slopeFactor1 - slopeFactor2);
+                    if (((intersectionPoint > coordinateMatrix[j][0] && intersectionPoint < coordinateMatrix[j - 1][0]) ||
+                        (intersectionPoint < coordinateMatrix[j][0] && intersectionPoint > coordinateMatrix[j - 1][0])) &&
+                        (coordinateMatrix[i][0] - coordinateMatrix[i - 1][0] == coordinateMatrix[j][0] - coordinateMatrix[j - 1][0]) &&
+                        (coordinateMatrix[i][1] - coordinateMatrix[i - 1][1] == coordinateMatrix[j][1] - coordinateMatrix[j - 1][1]))
+                        isInCorrectPolygon = true;
+                }
+            }
+        }
 
-        //main block
+        // determine the test result
+        if (isInCorrectPolygon)
+        {
+            isInCorrectAll = true;
+            std::cout << "The rectangle must not be self-intersecting. Try again.\n";
+        }
+        // main block
+        // we consider the result to be the Gauss formula
         if (isInCorrectAll == false)
         {
             limitForAmount = numberOfSides - 1;
             for (int i = 0; i < limitForAmount; i++)
             {
+                // we calculate two amounts at once, taking into account the sign (+/-)
                 area = area + (coordinateMatrix[i][0] * coordinateMatrix[i + 1][1]) - (coordinateMatrix[i + 1][0] * coordinateMatrix[i][1]);
             }
+            // transfer half the modulus of the available amount
             area = abs(area + (coordinateMatrix[numberOfSides - 1][0] * coordinateMatrix[0][1]) - (coordinateMatrix[numberOfSides - 1][1] * coordinateMatrix[0][0]));
             area = area / 2;
-            if (area == 0)
-            {
-                std::cout << "\nBad input. Try again.\n";
-                isInCorrectAll = true;
-            }
-            else
-            {
-                std::cout << "\nYour area is: " << area << ".\n";
-            }
+            // cout resoult
+            std::cout << "\nYour area is: " << area << ".\n";
         }
     } while (isInCorrectAll);
 
