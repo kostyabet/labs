@@ -94,13 +94,17 @@ Begin
                 //we check the points to see if they are on the same line
                 If (I > 1) And (CoordinateMatrix[I - 1][0] - CoordinateMatrix[I - 2][0] <> 0) Then
                 Begin
-                    SlopeFactor := (CoordinateMatrix[I - 1][1] - CoordinateMatrix[I - 2][1]) /
-                        (CoordinateMatrix[I - 1][0] - CoordinateMatrix[I - 2][0]);
-                    YInterception := CoordinateMatrix[I - 1][1] - CoordinateMatrix[I - 1][0] * SlopeFactor;
-                    If (CoordinateMatrix[I][1] = SlopeFactor * CoordinateMatrix[I][0] + YInterception) Then
-                        Write('Three points cannot be on the same line. Try again.', #13#10)
+                    If (CoordinateMatrix[I - 1][0] - CoordinateMatrix[I - 2][0] = 0) Then
                     Else
-                        IsCorrectCoordinate := True;
+                    Begin
+                        SlopeFactor := (CoordinateMatrix[I - 1][1] - CoordinateMatrix[I - 2][1]) /
+                            (CoordinateMatrix[I - 1][0] - CoordinateMatrix[I - 2][0]);
+                        YInterception := CoordinateMatrix[I - 1][1] - CoordinateMatrix[I - 1][0] * SlopeFactor;
+                        If (CoordinateMatrix[I][1] = SlopeFactor * CoordinateMatrix[I][0] + YInterception) Then
+                            Write('Three points cannot be on the same line. Try again.', #13#10)
+                        Else
+                            IsCorrectCoordinate := True;
+                    End;
                 End
                 Else
                     IsCorrectCoordinate := True;

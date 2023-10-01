@@ -108,14 +108,21 @@ int main()
                 // we check the points to see if they are on the same line
                 if (i > 1 && coordinateMatrix[i - 1][0] - coordinateMatrix[i - 2][0] != 0)
                 {
-                    slopeFactor = (coordinateMatrix[i - 1][1] - coordinateMatrix[i - 2][1]) / (coordinateMatrix[i - 1][0] - coordinateMatrix[i - 2][0]);
-                    yInterception = coordinateMatrix[i - 1][1] - coordinateMatrix[i - 1][0] * slopeFactor;
-                    if (coordinateMatrix[i][1] == slopeFactor * coordinateMatrix[i][0] + yInterception)
+                    if (coordinateMatrix[i - 1][0] - coordinateMatrix[i - 2][0] == 0)
                     {
-                        std::cout << "Three points cannot be on the same line. Try again.\n";
+
                     }
                     else
-                        isInCorrectCoordinate = false;
+                    {
+                        slopeFactor = (coordinateMatrix[i - 1][1] - coordinateMatrix[i - 2][1]) / (coordinateMatrix[i - 1][0] - coordinateMatrix[i - 2][0]);
+                        yInterception = coordinateMatrix[i - 1][1] - coordinateMatrix[i - 1][0] * slopeFactor;
+                        if (coordinateMatrix[i][1] == slopeFactor * coordinateMatrix[i][0] + yInterception)
+                        {
+                            std::cout << "Three points cannot be on the same line. Try again.\n";
+                        }
+                        else
+                            isInCorrectCoordinate = false;
+                    }
                 }
                 else
                     isInCorrectCoordinate = false;
