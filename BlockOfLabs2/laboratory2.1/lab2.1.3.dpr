@@ -1,5 +1,6 @@
 Program lab1;
 
+
 Uses
     System.SysUtils;
 

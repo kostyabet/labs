@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip> // for setprecision
 
+
 int main()
 {
     const float MINCOORDINATE = -1000.0, MAXCOORDINATE = 1000.0;
