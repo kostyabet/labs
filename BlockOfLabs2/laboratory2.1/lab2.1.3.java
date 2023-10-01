@@ -38,7 +38,8 @@ public class lab1 {
         isCorrectPoints = true;//for points cheack
 
         System.out.print("""
-                            This program calculates the area of a polygon. The number of sides of the polygon is selected by the user.
+                            This program calculates the area of a polygon. 
+                            The number of sides of the polygon is selected by the user.
                             You also need to enter the coordinates of the polygon vertices.
         
                             *The Gauss formula is used for calculations*
@@ -47,7 +48,8 @@ public class lab1 {
                                     1. The number of sides of a polygon is an integer from 3 to 20;
                                     2. Coordinates - floating point numbers from -1000.0 to 1000.0;
                                     3. All points must be unique (not repeated);
-                                    4. The vertices of the polygon should be listed in traversal order (clockwise / counterclockwise).
+                                    4. The vertices of the polygon should be listed in traversal order. 
+                                                                    (clockwise / counterclockwise)
                                     
                             """);
 
@@ -260,7 +262,6 @@ public class lab1 {
                     }
                 }
             }
-
             // determine the test result
             if (isInCorrectPolygon)
             {
@@ -268,23 +269,20 @@ public class lab1 {
                 isInCorrectPolygon = false;
                 System.out.print("The rectangle must not be self-intersecting. Try again.\n");
             }
-            // main block
-            // we consider the result to be the Gauss formula
-            if (!isInCorrectAll)
-            {
-                limitForAmount = (short) (numberOfSides - 1);
-                for (int i = 0; i < limitForAmount; i++)
-                {
-                    // we calculate two amounts at once, taking into account the sign (+/-)
-                    area = area + (coordinateMatrix[i][0] * coordinateMatrix[i + 1][1]) - (coordinateMatrix[i + 1][0] * coordinateMatrix[i][1]);
-                }
-                // transfer half the modulus of the available amount
-                area = abs(area + (coordinateMatrix[numberOfSides - 1][0] * coordinateMatrix[0][1]) - (coordinateMatrix[numberOfSides - 1][1] * coordinateMatrix[0][0]));
-                area = area / 2;
-                // cout resoult
-                System.out.printf("\nYour area is: %.3f.\n", area);
-                in.close();
-            }
+            in.close();
         } while (isInCorrectAll);
+        // main block
+        // we consider the result to be the Gauss formula
+        limitForAmount = (short) (numberOfSides - 1);
+        for (int i = 0; i < limitForAmount; i++)
+        {
+            // we calculate two amounts at once, taking into account the sign (+/-)
+            area = area + (coordinateMatrix[i][0] * coordinateMatrix[i + 1][1]) - (coordinateMatrix[i + 1][0] * coordinateMatrix[i][1]);
+        }
+        // transfer half the modulus of the available amount
+        area = abs(area + (coordinateMatrix[numberOfSides - 1][0] * coordinateMatrix[0][1]) - (coordinateMatrix[numberOfSides - 1][1] * coordinateMatrix[0][0]));
+        area = area / 2;
+        // cout resoult
+        System.out.printf("\nYour area is: %.3f.\n", area);
     }
 }

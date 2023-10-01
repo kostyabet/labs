@@ -30,13 +30,15 @@ int main()
     isCorrectPoints = true;//for points cheack
 
     //information about task
-    std::cout << "This program calculates the area of\ a polygon. The number of sides of the polygon is selected by the user.\n"
+    std::cout << "This program calculates the area of\ a polygon.\n"
+        "The number of sides of the polygon is selected by the user.\n"
         "You also need to enter the coordinates of the polygon vertices.\n\n"
         "*The Gauss formula is used for calculations*\n\n"
         "Restrictions: \n\t1. The number of sides of a polygon is an integer from 3 to 20;\n"
         "\t2. Coordinates - floating point numbers from -1000.0 to 1000.0;\n"
         "\t3. All points must be unique (not repeated);\n"
-        "\t4. The vertices of the polygon should be listed in traversal order (clockwise / counterclockwise).\n\n";
+        "\t4. The vertices of the polygon should be listed in traversal order.\n"
+        "\t\t\t\t\t(clockwise / counterclockwise)\n\n";
 
     //formatted output
     std::cout << std::setprecision(3) << std::fixed;
@@ -255,23 +257,22 @@ int main()
             isInCorrectPolygon = false;
             std::cout << "The rectangle must not be self-intersecting. Try again.\n";
         }
-        // main block
-        // we consider the result to be the Gauss formula
-        if (isInCorrectAll == false)
-        {
-            limitForAmount = numberOfSides - 1;
-            for (int i = 0; i < limitForAmount; i++)
-            {
-                // we calculate two amounts at once, taking into account the sign (+/-)
-                area = area + (coordinateMatrix[i][0] * coordinateMatrix[i + 1][1]) - (coordinateMatrix[i + 1][0] * coordinateMatrix[i][1]);
-            }
-            // transfer half the modulus of the available amount
-            area = abs(area + (coordinateMatrix[numberOfSides - 1][0] * coordinateMatrix[0][1]) - (coordinateMatrix[numberOfSides - 1][1] * coordinateMatrix[0][0]));
-            area = area / 2;
-            // cout resoult
-            std::cout << "\nYour area is: " << area << ".\n";
-        }
+
     } while (isInCorrectAll);
+
+    // main block
+    // we consider the result to be the Gauss formula
+    limitForAmount = numberOfSides - 1;
+    for (int i = 0; i < limitForAmount; i++)
+    {
+        // we calculate two amounts at once, taking into account the sign (+/-)
+        area = area + (coordinateMatrix[i][0] * coordinateMatrix[i + 1][1]) - (coordinateMatrix[i + 1][0] * coordinateMatrix[i][1]);
+    }
+    // transfer half the modulus of the available amount
+    area = abs(area + (coordinateMatrix[numberOfSides - 1][0] * coordinateMatrix[0][1]) - (coordinateMatrix[numberOfSides - 1][1] * coordinateMatrix[0][0]));
+    area = area / 2;
+    // cout resoult
+    std::cout << "\nYour area is: " << area << ".\n";
 
     //cleaning the memory  
     for (int i = 0; i < numberOfSides; i++) {

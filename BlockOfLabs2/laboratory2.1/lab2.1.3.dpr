@@ -36,11 +36,16 @@ Begin
     IsCorrectPolygon := True; //for poligon
     IsCorrectPoints := True; //for points cheack
 
-    Write('This program calculates the area of a polygon.', 'The number of sides of the polygon is selected by the user.', #13#10,
-        'You also need to enter the coordinates of the polygon vertices.', #13#10, #13#10, '*The Gauss formula is used for calculations*',
-        #13#10, #13#10, 'Restrictions:', #13#10#9, '1. The number of sides of a polygon', ' is an integer from 3 to 20;', #13#10#9,
-        '2. Coordinates - floating point', ' numbers from -1000.0 to 1000.0;', #13#10#9, '3. All points must be unique (not ', 'repeated);',
-        #13#10#9, '4. The vertices of the polygon should be listed', ' in traversal order (clockwise / counterclockwise).', #13#10, #13#10);
+    Write('This program calculates the area of a polygon.',#13#10, 
+          'The number of sides of the polygon is selected by the user.', #13#10,
+          'You also need to enter the coordinates of the polygon vertices.', #13#10, 
+          #13#10, '*The Gauss formula is used for calculations*',
+          #13#10, #13#10, 'Restrictions:', #13#10#9, '1. The number of sides of a polygon', 
+          ' is an integer from 3 to 20;', #13#10#9,
+          '2. Coordinates - floating point', ' numbers from -1000.0 to 1000.0;', #13#10#9, 
+          '3. All points must be unique (not ', 'repeated);',
+          #13#10#9, '4. The vertices of the polygon should be listed', ' in traversal order.',
+           #13#10#9#9#9#9#9,'(clockwise / counterclockwise)', #13#10, #13#10);
 
     //input number of sides
     Repeat
@@ -242,25 +247,23 @@ Begin
             IsCorrectPolygon := True;
             Write('The rectangle must not be self-intersecting. Try again.', #13#10);
         End;
-        //main block
-        //we consider the result to be the Gauss formula
-        If (IsCorrectAll) Then
-        Begin
-            LimitForAmount := NumberOfSides - 2;
-            For I := 0 To LimitForAmount Do
-            Begin
-                //we calculate two amounts at once, taking into account the sign (+/-)
-                Area := Area + (CoordinateMatrix[I][0] * CoordinateMatrix[I + 1][1]) -
-                    (CoordinateMatrix[I + 1][0] * CoordinateMatrix[I][1]);
-            End;
-            //transfer half the modulus of the available amount
-            Area := Abs(Area + (CoordinateMatrix[NumberOfSides - 1][0] * CoordinateMatrix[0][1]) -
-                (CoordinateMatrix[NumberOfSides - 1][1] * CoordinateMatrix[0][0]));
-            Area := Area / 2;
-            //cout resoult
-            Write(#13#10, 'Your area is: ', Area:7:3, '.', #13#10);
-        End;
-    Until IsCorrectAll;
+
+    Until IsCorrectAll;        
+    //main block
+    //we consider the result to be the Gauss formula
+    LimitForAmount := NumberOfSides - 2;
+    For I := 0 To LimitForAmount Do
+    Begin
+        //we calculate two amounts at once, taking into account the sign (+/-)
+        Area := Area + (CoordinateMatrix[I][0] * CoordinateMatrix[I + 1][1]) -
+            (CoordinateMatrix[I + 1][0] * CoordinateMatrix[I][1]);
+    End;
+    //transfer half the modulus of the available amount
+    Area := Abs(Area + (CoordinateMatrix[NumberOfSides - 1][0] * CoordinateMatrix[0][1]) -
+        (CoordinateMatrix[NumberOfSides - 1][1] * CoordinateMatrix[0][0]));
+    Area := Area / 2;
+    //cout resoult
+    Write(#13#10, 'Your area is: ', Area:7:3, '.', #13#10);
     Writeln('Press any key to continue.');
     Readln;
 
