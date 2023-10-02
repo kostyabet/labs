@@ -1,6 +1,5 @@
 package lab2;
 
-
 import java.util.Scanner;
 
 import static java.lang.Math.abs;
@@ -9,34 +8,27 @@ public class lab1 {
     public static void main(String[] args)
     {
         Scanner in = new Scanner(System.in);
-
-        final float MINCOORDINATE = (float) -1000.0,
-                MAXCOORDINATE = (float) 1000.0;
-        float area, slopeFactor, slopeFactor1, slopeFactor2, yInterception,
-                yInterception1, yInterception2, intersectionPoint;
-        final int MINNUMBEROFSIDES = 3, MAXNUMBEROFSIDES = 20;
-        int numberOfSides, limitForAmount, index, jOnI;
-        boolean isInCorrect, isInCorrectCoordinate, isInCorrectAll, isInCorrectPolygon,
-                isCorrectPoints;
+        final int MINSIDES = 3,
+                MAXSIDES = 20;
+        float area, slpFact, slpFact1, slpFact2, yInter,
+                yInter1, yInter2, intPoint;
+        int sidesNumb, limForAmt, ind, jOnI;
+        boolean isInCorrect;
 
         //inicialization
         area = 0.0F;
-        slopeFactor = 0.0F;//y = rx + b => slopefactor = r
-        yInterception = 0.0F;//y = fx + b => slopefactor = b
-        slopeFactor1 = 0.0F;
-        yInterception1 = 0.0F;
-        slopeFactor2 = 0.0F;
-        yInterception2 = 0.0F;
-        intersectionPoint = 0.0F;
-        limitForAmount = 0;//high in main block
-        index = 0;//x(index) and y(index)
-        numberOfSides = 0;
+        slpFact = 0.0F;//y = rx + b => slopefactor = r
+        yInter = 0.0F;//y = fx + b => slopefactor = b
+        slpFact1 = 0.0F;
+        yInter1 = 0.0F;
+        slpFact2 = 0.0F;
+        yInter2 = 0.0F;
+        intPoint = 0.0F;
+        limForAmt = 0;//high in main block
+        ind = 0;//x(index) and y(index)
+        sidesNumb = 0;
         jOnI = 0;
         isInCorrect = true;//for input
-        isInCorrectCoordinate = true;//for coordinate cheack
-        isInCorrectAll = false;//for all block
-        isInCorrectPolygon = false;//for poligon
-        isCorrectPoints = true;//for points cheack
 
         System.out.print("""
                             This program calculates the area of a polygon. 
@@ -61,40 +53,38 @@ public class lab1 {
             //cheack "Numeric input"
             try
             {
-                numberOfSides = Short.parseShort(in.nextLine());
+                sidesNumb = Short.parseShort(in.nextLine());
             }
             catch (NumberFormatException error)
             {
                 System.err.print("Error.\n");
             }
             //cheack restrictions
-            if (numberOfSides < MINNUMBEROFSIDES || numberOfSides > MAXNUMBEROFSIDES)
+            if (sidesNumb < MINSIDES || sidesNumb > MAXSIDES)
             {
-                System.err.printf("The number of sides of a polygon is an integer from %d to %d. Try again.\n", MINNUMBEROFSIDES, MAXNUMBEROFSIDES);
+                System.err.printf("The number of sides of a polygon is an integer from %d to %d. Try again.\n", MINSIDES, MAXSIDES);
             }
             else
                 isInCorrect = false;
         } while (isInCorrect);
 
         //cin x and y
-        float[][] coordinateMatrix = new float[numberOfSides][2];
+        float[][] coordMat = new float[sidesNumb][2];
         do
         {
-            isInCorrectAll = false;
-            for (int i = 0; i < numberOfSides; i++)
+            for (int i = 0; i < sidesNumb; i++)
             {
-                index = i + 1;
-                isInCorrectCoordinate = true;
+                ind = i + 1;
                 do
                 {
                     isInCorrect = true;
                     //cin x
                     do
                     {
-                        System.out.printf("Write x%d:\n", index);
+                        System.out.printf("Write x%d:\n", ind);
                         try
                         {
-                            coordinateMatrix[i][0] = Float.parseFloat(in.nextLine());
+                            coordMat[i][0] = Float.parseFloat(in.nextLine());
                             isInCorrect = false;
                         } catch (NumberFormatException error)
                         {
@@ -105,10 +95,10 @@ public class lab1 {
                     isInCorrect = true;
                     do
                     {
-                        System.out.printf("Write y%d:\n", index);
+                        System.out.printf("Write y%d:\n", ind);
                         try
                         {
-                            coordinateMatrix[i][1] = Float.parseFloat(in.nextLine());
+                            coordMat[i][1] = Float.parseFloat(in.nextLine());
                             isInCorrect = false;
                         }
                         catch (NumberFormatException error)
@@ -117,171 +107,168 @@ public class lab1 {
                         }
                     } while (isInCorrect);
 
+                    isInCorrect = true;
                     // we check the points to see if they are on the same line
                     if (i > 1)
                     {
-                        if (coordinateMatrix[i - 1][0] - coordinateMatrix[i - 2][0] == 0)
+                        if (coordMat[i - 1][0] - coordMat[i - 2][0] == 0)
                         {
 
                         }
                         else
                         {
-                            slopeFactor = (coordinateMatrix[i - 1][1] - coordinateMatrix[i - 2][1]) / (coordinateMatrix[i - 1][0] - coordinateMatrix[i - 2][0]);
-                            yInterception = coordinateMatrix[i - 1][1] - coordinateMatrix[i - 1][0] * slopeFactor;
-                            if (coordinateMatrix[i][1] == slopeFactor * coordinateMatrix[i][0] + yInterception)
+                            slpFact = (coordMat[i - 1][1] - coordMat[i - 2][1]) / (coordMat[i - 1][0] - coordMat[i - 2][0]);
+                            yInter = coordMat[i - 1][1] - coordMat[i - 1][0] * slpFact;
+                            if (coordMat[i][1] == slpFact * coordMat[i][0] + yInter)
                             {
                                 System.out.print("Three points cannot be on the same line. Try again.\n");
                             }
                             else
                             {
-                                isInCorrectCoordinate = false;
-
+                                isInCorrect = false;
                             }
                         }
                     }
                     else
                     {
-                        isInCorrectCoordinate = false;
+                        isInCorrect = false;
                     }
-                } while (isInCorrectCoordinate);
+                } while (isInCorrect);
             }
             // check that points cannot be repeated
-            for (int i = 0; i < numberOfSides; i++)
+            for (int i = 0; i < sidesNumb; i++)
             {
                 jOnI = i + 1;
-                for (int j = jOnI; j < numberOfSides; j++)
+                for (int j = jOnI; j < sidesNumb; j++)
                 {
-                    if (isCorrectPoints && coordinateMatrix[i][0] == coordinateMatrix[j][0] && coordinateMatrix[i][1] == coordinateMatrix[j][1])
+                    if (isInCorrect = false && coordMat[i][0] == coordMat[j][0] && coordMat[i][1] == coordMat[j][1])
                     {
                         System.out.print("Points must be unique. Try again.\n");
-                        isInCorrectAll = true;
-                        isCorrectPoints = false;
+                        isInCorrect = true;
                     }
                 }
             }
 
             // the main block of checking that there are no self-intersections
-            for (int i = 1; i < numberOfSides; i++)
+            for (int i = 1; i < sidesNumb; i++)
             {
-                if (coordinateMatrix[i][0] - coordinateMatrix[i - 1][0] == 0)
+                if (coordMat[i][0] - coordMat[i - 1][0] == 0)
                 {
-                    yInterception1 = coordinateMatrix[i][0];
-                    for (int j = i + 2; j < numberOfSides; j++)
+                    yInter1 = coordMat[i][0];
+                    for (int j = i + 2; j < sidesNumb; j++)
                     {
-                        if (coordinateMatrix[j][0] - coordinateMatrix[j - 1][0] == 0)
+                        if (coordMat[j][0] - coordMat[j - 1][0] == 0)
                         {
-                            yInterception2 = coordinateMatrix[j][0];
-                            if (yInterception1 == yInterception2)
+                            yInter2 = coordMat[j][0];
+                            if (yInter1 == yInter2)
                             {
-                                if (((coordinateMatrix[j][1] > coordinateMatrix[i][1] && coordinateMatrix[j][1] > coordinateMatrix[i - 1][1]) &&
-                                        (coordinateMatrix[j - 1][1] > coordinateMatrix[i][1] && coordinateMatrix[j - 1][1] > coordinateMatrix[i - 1][1])) ||
-                                        ((coordinateMatrix[j][1] < coordinateMatrix[i][1] && coordinateMatrix[j][1] < coordinateMatrix[i - 1][1]) &&
-                                                (coordinateMatrix[j - 1][1] < coordinateMatrix[i][1] && coordinateMatrix[j - 1][1] < coordinateMatrix[i - 1][1])))
+                                if (((coordMat[j][1] > coordMat[i][1] && coordMat[j][1] > coordMat[i - 1][1]) &&
+                                        (coordMat[j - 1][1] > coordMat[i][1] && coordMat[j - 1][1] > coordMat[i - 1][1])) ||
+                                        ((coordMat[j][1] < coordMat[i][1] && coordMat[j][1] < coordMat[i - 1][1]) &&
+                                                (coordMat[j - 1][1] < coordMat[i][1] && coordMat[j - 1][1] < coordMat[i - 1][1])))
                                 {
 
                                 }
                                 else
-                                    isInCorrectPolygon = true;
+                                    isInCorrect = true;
                             }
                         }
                         else
                         {
-                            slopeFactor2 = (coordinateMatrix[j][1] - coordinateMatrix[j - 1][1]) / (coordinateMatrix[j][0] - coordinateMatrix[j - 1][0]);
-                            yInterception2 = coordinateMatrix[j][1] - coordinateMatrix[j][0] * slopeFactor2;
-                            intersectionPoint = (yInterception2 - yInterception1) / (slopeFactor1 - slopeFactor2);
-                            if ((yInterception1 > coordinateMatrix[j][0] && yInterception1 < coordinateMatrix[j - 1][0]) ||
-                                    (yInterception1 < coordinateMatrix[j][0] && yInterception1 > coordinateMatrix[j - 1][0]) &&
-                                            ((intersectionPoint > coordinateMatrix[j][1] && intersectionPoint < coordinateMatrix[j - 1][1]) ||
-                                                    (intersectionPoint < coordinateMatrix[j][1] && intersectionPoint > coordinateMatrix[j - 1][1])))
-                                isInCorrectPolygon = true;
+                            slpFact2 = (coordMat[j][1] - coordMat[j - 1][1]) / (coordMat[j][0] - coordMat[j - 1][0]);
+                            yInter2 = coordMat[j][1] - coordMat[j][0] * slpFact2;
+                            intPoint = (yInter2 - yInter1) / (slpFact1 - slpFact2);
+                            if ((yInter1 > coordMat[j][0] && yInter1 < coordMat[j - 1][0]) ||
+                                    (yInter1 < coordMat[j][0] && yInter1 > coordMat[j - 1][0]) &&
+                                            ((intPoint > coordMat[j][1] && intPoint < coordMat[j - 1][1]) ||
+                                                    (intPoint < coordMat[j][1] && intPoint > coordMat[j - 1][1])))
+                                isInCorrect = true;
                         }
                     }
                 }
-                else if (coordinateMatrix[i][1] - coordinateMatrix[i - 1][1] == 0)
+                else if (coordMat[i][1] - coordMat[i - 1][1] == 0)
                 {
-                    yInterception1 = coordinateMatrix[i][1];
-                    for (int j = i + 2; j < numberOfSides; j++)
+                    yInter1 = coordMat[i][1];
+                    for (int j = i + 2; j < sidesNumb; j++)
                     {
-                        if (coordinateMatrix[j][0] - coordinateMatrix[j - 1][0] == 0)
+                        if (coordMat[j][0] - coordMat[j - 1][0] == 0)
                         {
-                            yInterception2 = coordinateMatrix[i][1];
-                            if (yInterception1 == yInterception2)
+                            yInter2 = coordMat[i][1];
+                            if (yInter1 == yInter2)
                             {
-                                if (((coordinateMatrix[i][0] < coordinateMatrix[j][0] && coordinateMatrix[i][0] < coordinateMatrix[j-1][0]) &&
-                                        (coordinateMatrix[i-1][0] < coordinateMatrix[j][0] && coordinateMatrix[i - 1][0] < coordinateMatrix[j-1][0])) ||
-                                        ((coordinateMatrix[i][0] > coordinateMatrix[j][0] && coordinateMatrix[i][0] > coordinateMatrix[j-1][0]) &&
-                                                (coordinateMatrix[i-1][0] > coordinateMatrix[j][0] && coordinateMatrix[i - 1][0] > coordinateMatrix[j-1][0])))
+                                if (((coordMat[i][0] < coordMat[j][0] && coordMat[i][0] < coordMat[j-1][0]) &&
+                                        (coordMat[i-1][0] < coordMat[j][0] && coordMat[i - 1][0] < coordMat[j-1][0])) ||
+                                        ((coordMat[i][0] > coordMat[j][0] && coordMat[i][0] > coordMat[j-1][0]) &&
+                                                (coordMat[i-1][0] > coordMat[j][0] && coordMat[i - 1][0] > coordMat[j-1][0])))
                                 {
 
                                 }
                                 else
-                                    isInCorrectPolygon = true;
+                                    isInCorrect = true;
                             }
                         }
                         else
                         {
-                            slopeFactor2 = (coordinateMatrix[j][1] - coordinateMatrix[j - 1][1]) / (coordinateMatrix[j][0] - coordinateMatrix[j - 1][0]);
-                            yInterception2 = coordinateMatrix[j][1] - coordinateMatrix[j][0] * slopeFactor2;
-                            intersectionPoint = (yInterception2 - yInterception1) / (slopeFactor1 - slopeFactor2);
-                            if (((yInterception1 > coordinateMatrix[j][1] && yInterception1 < coordinateMatrix[j - 1][1]) ||
-                                    (yInterception1 < coordinateMatrix[j][1] && yInterception1 > coordinateMatrix[j - 1][1])) &&
-                                    ((intersectionPoint > coordinateMatrix[j][0] && intersectionPoint < coordinateMatrix[j - 1][0]) ||
-                                            (intersectionPoint < coordinateMatrix[j][0] && intersectionPoint > coordinateMatrix[j - 1][0])))
-                                isInCorrectPolygon = true;
+                            slpFact2 = (coordMat[j][1] - coordMat[j - 1][1]) / (coordMat[j][0] - coordMat[j - 1][0]);
+                            yInter2 = coordMat[j][1] - coordMat[j][0] * slpFact2;
+                            intPoint = (yInter2 - yInter1) / (slpFact1 - slpFact2);
+                            if (((yInter1 > coordMat[j][1] && yInter1 < coordMat[j - 1][1]) ||
+                                    (yInter1 < coordMat[j][1] && yInter1 > coordMat[j - 1][1])) &&
+                                    ((intPoint > coordMat[j][0] && intPoint < coordMat[j - 1][0]) ||
+                                            (intPoint < coordMat[j][0] && intPoint > coordMat[j - 1][0])))
+                                isInCorrect = true;
                         }
                     }
                 }
                 else
                 {
-                    slopeFactor1 = (coordinateMatrix[i][1] - coordinateMatrix[i - 1][1]) / (coordinateMatrix[i][0] - coordinateMatrix[i - 1][0]);
-                    yInterception1 = coordinateMatrix[i][1] - coordinateMatrix[i][0] * slopeFactor1;
-                    for (int j = i + 2; j < numberOfSides; j++)
+                    slpFact1 = (coordMat[i][1] - coordMat[i - 1][1]) / (coordMat[i][0] - coordMat[i - 1][0]);
+                    yInter1 = coordMat[i][1] - coordMat[i][0] * slpFact1;
+                    for (int j = i + 2; j < sidesNumb; j++)
                     {
-                        if (coordinateMatrix[j][0] - coordinateMatrix[j - 1][0] == 0)
+                        if (coordMat[j][0] - coordMat[j - 1][0] == 0)
                         {
-                            yInterception2 = coordinateMatrix[j][0];
-                            intersectionPoint = slopeFactor1 * yInterception2 + yInterception1;
-                            if ((intersectionPoint > coordinateMatrix[j][1] && intersectionPoint > coordinateMatrix[j - 1][1]) ||
-                                    (intersectionPoint < coordinateMatrix[j][1] && intersectionPoint < coordinateMatrix[j - 1][1]))
+                            yInter2 = coordMat[j][0];
+                            intPoint = slpFact1 * yInter2 + yInter1;
+                            if ((intPoint > coordMat[j][1] && intPoint > coordMat[j - 1][1]) ||
+                                    (intPoint < coordMat[j][1] && intPoint < coordMat[j - 1][1]))
                             {
 
                             }
                             else
-                                isInCorrectPolygon = true;
+                                isInCorrect = true;
                         }
                         else
                         {
-                            slopeFactor2 = (coordinateMatrix[j][1] - coordinateMatrix[j - 1][1]) / (coordinateMatrix[j][0] - coordinateMatrix[j - 1][0]);
-                            yInterception2 = coordinateMatrix[j][1] - coordinateMatrix[j][0] * slopeFactor2;
-                            intersectionPoint = (yInterception2 - yInterception1) / (slopeFactor1 - slopeFactor2);
-                            if (((intersectionPoint > coordinateMatrix[j][0] && intersectionPoint < coordinateMatrix[j - 1][0]) ||
-                                    (intersectionPoint < coordinateMatrix[j][0] && intersectionPoint > coordinateMatrix[j - 1][0])) &&
-                                    (coordinateMatrix[i][0] - coordinateMatrix[i - 1][0] == coordinateMatrix[j][0] - coordinateMatrix[j - 1][0]) &&
-                                    (coordinateMatrix[i][1] - coordinateMatrix[i - 1][1] == coordinateMatrix[j][1] - coordinateMatrix[j - 1][1]))
-                                isInCorrectPolygon = true;
+                            slpFact2 = (coordMat[j][1] - coordMat[j - 1][1]) / (coordMat[j][0] - coordMat[j - 1][0]);
+                            yInter2 = coordMat[j][1] - coordMat[j][0] * slpFact2;
+                            intPoint = (yInter2 - yInter1) / (slpFact1 - slpFact2);
+                            if (((intPoint > coordMat[j][0] && intPoint < coordMat[j - 1][0]) ||
+                                    (intPoint < coordMat[j][0] && intPoint > coordMat[j - 1][0])) &&
+                                    (coordMat[i][0] - coordMat[i - 1][0] == coordMat[j][0] - coordMat[j - 1][0]) &&
+                                    (coordMat[i][1] - coordMat[i - 1][1] == coordMat[j][1] - coordMat[j - 1][1]))
+                                isInCorrect = true;
                         }
                     }
                 }
             }
             // determine the test result
-            if (isInCorrectPolygon)
+            if (isInCorrect)
             {
-                isInCorrectAll = true;
-                isInCorrectPolygon = false;
                 System.out.print("The rectangle must not be self-intersecting. Try again.\n");
             }
             in.close();
-        } while (isInCorrectAll);
+        } while (isInCorrect);
         // main block
         // we consider the result to be the Gauss formula
-        limitForAmount = (short) (numberOfSides - 1);
-        for (int i = 0; i < limitForAmount; i++)
+        limForAmt = (short) (sidesNumb - 1);
+        for (int i = 0; i < limForAmt; i++)
         {
             // we calculate two amounts at once, taking into account the sign (+/-)
-            area = area + (coordinateMatrix[i][0] * coordinateMatrix[i + 1][1]) - (coordinateMatrix[i + 1][0] * coordinateMatrix[i][1]);
+            area = area + (coordMat[i][0] * coordMat[i + 1][1]) - (coordMat[i + 1][0] * coordMat[i][1]);
         }
         // transfer half the modulus of the available amount
-        area = abs(area + (coordinateMatrix[numberOfSides - 1][0] * coordinateMatrix[0][1]) - (coordinateMatrix[numberOfSides - 1][1] * coordinateMatrix[0][0]));
+        area = abs(area + (coordMat[sidesNumb - 1][0] * coordMat[0][1]) - (coordMat[sidesNumb - 1][1] * coordMat[0][0]));
         area = area / 2;
         // cout resoult
         System.out.printf("\nYour area is: %.3f.\n", area);
