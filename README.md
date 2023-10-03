@@ -1,7 +1,6 @@
 # Life for Die?
-  
-Я как будто в зомбоапакалипсисе, где люди, выглядят, как люди...
 
+Пока никому не нужный бесполезный программист, которые пытается хоть что-то из себя создать и вкладывается в это на 100%.
+>> Я как будто в зомбоапакалипсисе, где люди, выглядят, как люди...
+Только так пока что можно оценить моё внутреннее состояние и что я вижу вокруг...
 [![codewars](https://www.codewars.com/users/kostya%20bet/badges/micro)](https://codewars.com/users/kostya%20bet)
-
-[![leetcode](https://leetcode.com/kostyabet/badges/micro)](https://leetcode.com/kostyabet/)
