@@ -15,4 +15,5 @@
    - [ ] Лабораторная работа 2
    - [ ] Лабораторная работа 3
    - [ ] Лабораторная работа 4
+  
 [![codewars](https://www.codewars.com/users/kostya%20bet/badges/micro)](https://codewars.com/users/kostya%20bet)
