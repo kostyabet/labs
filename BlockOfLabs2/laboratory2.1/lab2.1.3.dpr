@@ -10,7 +10,7 @@ Const
 Var
     CoordMat: Array Of Array Of Real;
     Area, SlpFact, SlpFact1, SlpFact2, YInter, YInter1, YInter2, IntPoint: Real;
-    SidesNumb, LimForAmt, Ind, I, J, HighXY, JOnI: Integer;
+    SidesNumb, LimForAmt, I, J, HighXY: Integer;
     IsCorrect: Boolean;
 
 Begin
@@ -24,9 +24,7 @@ Begin
     YInter2 := 0.0;
     IntPoint := 0.0;
     HighXY := 0;
-    JOnI := 0;
     LimForAmt := 0; //high in main block
-    Ind := 0; //x(index) and y(index)
     SidesNumb := 0;
     IsCorrect := False; //for input
 
@@ -59,13 +57,12 @@ Begin
         HighXY := SidesNumb - 1;
         For I := 0 To HighXY Do
         Begin
-            Ind := I + 1;
             IsCorrect := False;
             Repeat
                 //cin x
                 IsCorrect := False;
                 Repeat
-                    Write('Write x', Ind, ':', #13#10);
+                    Write('Write x', I + 1, ':', #13#10);
                     Try
                         Readln(CoordMat[I][0]);
                         IsCorrect := True;
@@ -76,7 +73,7 @@ Begin
                 //cin y
                 IsCorrect := False;
                 Repeat
-                    Write('Write y', Ind, ':', #13#10);
+                    Write('Write y', I + 1, ':', #13#10);
                     Try
                         Readln(CoordMat[I][1]);
                         IsCorrect := True;
@@ -89,135 +86,138 @@ Begin
                 //we check the points to see if they are on the same line
                 If (I > 1) And (CoordMat[I - 1][0] - CoordMat[I - 2][0] <> 0) Then
                 Begin
-                    If (CoordMat[I - 1][0] - CoordMat[I - 2][0] = 0) Then
+                    SlpFact := (CoordMat[I - 1][1] - CoordMat[I - 2][1]) / (CoordMat[I - 1][0] - CoordMat[I - 2][0]);
+                    YInter := CoordMat[I - 1][1] - CoordMat[I - 1][0] * SlpFact;
+                    If (CoordMat[I][1] = SlpFact * CoordMat[I][0] + YInter) Then
+                        Write('Three points cannot be on the same line. Try again.', #13#10)
                     Else
-                    Begin
-                        SlpFact := (CoordMat[I - 1][1] - CoordMat[I - 2][1]) / (CoordMat[I - 1][0] - CoordMat[I - 2][0]);
-                        YInter := CoordMat[I - 1][1] - CoordMat[I - 1][0] * SlpFact;
-                        If (CoordMat[I][1] = SlpFact * CoordMat[I][0] + YInter) Then
-                            Write('Three points cannot be on the same line. Try again.', #13#10)
-                        Else
-                            IsCorrect := True;
-                    End;
+                        IsCorrect := True;
                 End
                 Else
-                    IsCorrect := True;
+                    If (I > 1) And (CoordMat[I][0] = CoordMat[I - 1][0]) And (CoordMat[I][0] = CoordMat[I - 2][0]) Then
+                        Write('Three points cannot be on the same line. Try again.', #13#10)
+                    Else
+                        IsCorrect := True;
             Until IsCorrect;
         End;
 
         //cheack that points cannot be repeated
         For I := 0 To HighXY Do
         Begin
-            JOnI := I + 1;
-            For J := JOnI To HighXY Do
+            For J := I + 1 To HighXY Do
             Begin
-                If IsCorrect = False And (CoordMat[I][0] = CoordMat[J][0]) And (CoordMat[I][1] = CoordMat[J][1]) Then
+                If (CoordMat[I][0] = CoordMat[J][0]) And (CoordMat[I][1] = CoordMat[J][1]) Then
                 Begin
-                    Write('Points must be unique. Try again.', #13#10);
-                    IsCorrect := True;
+                    IsCorrect := False;
                 End;
             End;
         End;
 
-        //the main block of checking that there are no self-intersections
-        For I := 1 To HighXY Do
+        If (IsCorrect = False) Then
+            Write('Points must be unique. Try again.', #13#10)
+        Else
         Begin
-            JOnI := I + 2;
-            If CoordMat[I][0] - CoordMat[I - 1][0] = 0 Then
+            //the main block of checking that there are no self-intersections
+            For I := 1 To HighXY Do
             Begin
-                YInter1 := CoordMat[I][0];
-                For J := JOnI To HighXY Do
+                If CoordMat[I][0] - CoordMat[I - 1][0] = 0 Then
                 Begin
-                    If CoordMat[J][0] - CoordMat[J - 1][0] = 0 Then
-                    Begin
-                        YInter2 := CoordMat[J][0];
-                        If (YInter1 = YInter2) Then
-                        Begin
-                            If ((((CoordMat[J][1] > CoordMat[I][1]) And (CoordMat[J][1] > CoordMat[I - 1][1])) And
-                                ((CoordMat[J - 1][1] > CoordMat[I][1]) And (CoordMat[J - 1][1] > CoordMat[I - 1][1]))) Or
-                                (((CoordMat[J][1] < CoordMat[I][1]) And (CoordMat[J][1] < CoordMat[I - 1][1])) And
-                                ((CoordMat[J - 1][1] < CoordMat[I][1]) And (CoordMat[J - 1][1] < CoordMat[I - 1][1])))) Then
-                            Else
-                                IsCorrect := False;
-                        End
-
-                    End
-                    Else
-                    Begin
-                        SlpFact2 := (CoordMat[J][1] - CoordMat[J - 1][1]) / (CoordMat[J][0] - CoordMat[J - 1][0]);
-                        YInter2 := CoordMat[J][1] - CoordMat[J][0] * SlpFact2;
-                        IntPoint := (YInter2 - YInter1) / (SlpFact1 - SlpFact2);
-                        If (((YInter1 > CoordMat[J][0]) And (YInter1 < CoordMat[J - 1][0])) Or
-                            ((YInter1 < CoordMat[J][0]) And (YInter1 > CoordMat[J - 1][0])) And
-                            (((IntPoint > CoordMat[J][1]) And (IntPoint < CoordMat[J - 1][1])) Or ((IntPoint < CoordMat[J][1]) And
-                            (IntPoint > CoordMat[J - 1][1])))) Then
-                            IsCorrect := False;
-                    End;
-                End;
-            End
-            Else
-                If CoordMat[I][1] - CoordMat[I - 1][1] = 0 Then
-                Begin
-                    YInter1 := CoordMat[I][1];
-                    For J := JOnI To HighXY Do
+                    YInter1 := CoordMat[I][0];
+                    For J := I + 2 To HighXY Do
                     Begin
                         If CoordMat[J][0] - CoordMat[J - 1][0] = 0 Then
                         Begin
-                            YInter2 := CoordMat[I][1];
+                            YInter2 := CoordMat[J][0];
                             If (YInter1 = YInter2) Then
                             Begin
-                                If ((((CoordMat[I][0] < CoordMat[J][0]) And (CoordMat[I][0] < CoordMat[J - 1][0])) And
-                                    ((CoordMat[I - 1][0] < CoordMat[J][0]) And (CoordMat[I - 1][0] < CoordMat[J - 1][0]))) Or
-                                    (((CoordMat[I][0] > CoordMat[J][0]) And (CoordMat[I][0] > CoordMat[J - 1][0])) And
-                                    ((CoordMat[I - 1][0] > CoordMat[J][0]) And (CoordMat[I - 1][0] > CoordMat[J - 1][0])))) Then
+                                If ((((CoordMat[J][1] > CoordMat[I][1]) And (CoordMat[J][1] > CoordMat[I - 1][1])) And
+                                    ((CoordMat[J - 1][1] > CoordMat[I][1]) And (CoordMat[J - 1][1] > CoordMat[I - 1][1]))) Or
+                                    (((CoordMat[J][1] < CoordMat[I][1]) And (CoordMat[J][1] < CoordMat[I - 1][1])) And
+                                    ((CoordMat[J - 1][1] < CoordMat[I][1]) And (CoordMat[J - 1][1] < CoordMat[I - 1][1])))) Then
                                 Else
                                     IsCorrect := False;
-                            End;
+                            End
+
                         End
                         Else
                         Begin
                             SlpFact2 := (CoordMat[J][1] - CoordMat[J - 1][1]) / (CoordMat[J][0] - CoordMat[J - 1][0]);
                             YInter2 := CoordMat[J][1] - CoordMat[J][0] * SlpFact2;
                             IntPoint := (YInter2 - YInter1) / (SlpFact1 - SlpFact2);
-                            If ((((YInter1 > CoordMat[J][1]) And (YInter1 < CoordMat[J - 1][1])) Or ((YInter1 < CoordMat[J][1]) And
-                                (YInter1 > CoordMat[J - 1][1]))) And (((IntPoint > CoordMat[J][0]) And (IntPoint < CoordMat[J - 1][0])) Or
-                                ((IntPoint < CoordMat[J][0]) And (IntPoint > CoordMat[J - 1][0])))) Then
+                            If (((YInter1 > CoordMat[J][0]) And (YInter1 < CoordMat[J - 1][0])) Or
+                                ((YInter1 < CoordMat[J][0]) And (YInter1 > CoordMat[J - 1][0])) And
+                                (((IntPoint > CoordMat[J][1]) And (IntPoint < CoordMat[J - 1][1])) Or ((IntPoint < CoordMat[J][1]) And
+                                (IntPoint > CoordMat[J - 1][1])))) Then
                                 IsCorrect := False;
                         End;
                     End;
                 End
                 Else
-                Begin
-                    SlpFact1 := (CoordMat[I][1] - CoordMat[I - 1][1]) / (CoordMat[I][0] - CoordMat[I - 1][0]);
-                    YInter1 := CoordMat[I][1] - CoordMat[I][0] * SlpFact1;
-                    For J := JOnI To HighXY Do
+                    If CoordMat[I][1] - CoordMat[I - 1][1] = 0 Then
                     Begin
-                        If (CoordMat[J][0] - CoordMat[J - 1][0] = 0) Then
+                        YInter1 := CoordMat[I][1];
+                        For J := I + 2 To HighXY Do
                         Begin
-                            YInter2 := CoordMat[J][0];
-                            IntPoint := SlpFact1 * YInter2 + YInter1;
-                            If (((IntPoint > CoordMat[J][1]) And (IntPoint > CoordMat[J - 1][1])) Or
-                                ((IntPoint < CoordMat[J][1]) And (IntPoint < CoordMat[J - 1][1]))) Then
+                            If CoordMat[J][0] - CoordMat[J - 1][0] = 0 Then
+                            Begin
+                                YInter2 := CoordMat[I][1];
+                                If (YInter1 = YInter2) Then
+                                Begin
+                                    If ((((CoordMat[I][0] < CoordMat[J][0]) And (CoordMat[I][0] < CoordMat[J - 1][0])) And
+                                        ((CoordMat[I - 1][0] < CoordMat[J][0]) And (CoordMat[I - 1][0] < CoordMat[J - 1][0]))) Or
+                                        (((CoordMat[I][0] > CoordMat[J][0]) And (CoordMat[I][0] > CoordMat[J - 1][0])) And
+                                        ((CoordMat[I - 1][0] > CoordMat[J][0]) And (CoordMat[I - 1][0] > CoordMat[J - 1][0])))) Then
+                                    Else
+                                        IsCorrect := False;
+                                End;
+                            End
                             Else
-                                IsCorrect := False;
-                        End
-                        Else
+                            Begin
+                                SlpFact2 := (CoordMat[J][1] - CoordMat[J - 1][1]) / (CoordMat[J][0] - CoordMat[J - 1][0]);
+                                YInter2 := CoordMat[J][1] - CoordMat[J][0] * SlpFact2;
+                                IntPoint := (YInter2 - YInter1) / (SlpFact1 - SlpFact2);
+                                If ((((YInter1 > CoordMat[J][1]) And (YInter1 < CoordMat[J - 1][1])) Or
+                                    ((YInter1 < CoordMat[J][1]) And (YInter1 > CoordMat[J - 1][1]))) And
+                                    (((IntPoint > CoordMat[J][0]) And (IntPoint < CoordMat[J - 1][0])) Or
+                                    ((IntPoint < CoordMat[J][0]) And (IntPoint > CoordMat[J - 1][0])))) Then
+                                    IsCorrect := False;
+                            End;
+                        End;
+                    End
+                    Else
+                    Begin
+                        SlpFact1 := (CoordMat[I][1] - CoordMat[I - 1][1]) / (CoordMat[I][0] - CoordMat[I - 1][0]);
+                        YInter1 := CoordMat[I][1] - CoordMat[I][0] * SlpFact1;
+                        For J := I + 2 To HighXY Do
                         Begin
-                            SlpFact2 := (CoordMat[J][1] - CoordMat[J - 1][1]) / (CoordMat[J][0] - CoordMat[J - 1][0]);
-                            YInter2 := CoordMat[J][1] - CoordMat[J][0] * SlpFact2;
-                            IntPoint := (YInter2 - YInter1) / (SlpFact1 - SlpFact2);
-                            If ((((IntPoint > CoordMat[J][0]) And (IntPoint < CoordMat[J - 1][0])) Or ((IntPoint < CoordMat[J][0]) And
-                                (IntPoint > CoordMat[J - 1][0]))) And (CoordMat[I][0] - CoordMat[I - 1][0] = CoordMat[J][0] -
-                                CoordMat[J - 1][0]) And (CoordMat[I][1] - CoordMat[I - 1][1] = CoordMat[J][1] - CoordMat[J - 1][1])) Then
-                                IsCorrect := False;
+                            If (CoordMat[J][0] - CoordMat[J - 1][0] = 0) Then
+                            Begin
+                                YInter2 := CoordMat[J][0];
+                                IntPoint := SlpFact1 * YInter2 + YInter1;
+                                If (((IntPoint > CoordMat[J][1]) And (IntPoint > CoordMat[J - 1][1])) Or
+                                    ((IntPoint < CoordMat[J][1]) And (IntPoint < CoordMat[J - 1][1]))) Then
+                                Else
+                                    IsCorrect := False;
+                            End
+                            Else
+                            Begin
+                                SlpFact2 := (CoordMat[J][1] - CoordMat[J - 1][1]) / (CoordMat[J][0] - CoordMat[J - 1][0]);
+                                YInter2 := CoordMat[J][1] - CoordMat[J][0] * SlpFact2;
+                                IntPoint := (YInter2 - YInter1) / (SlpFact1 - SlpFact2);
+                                If ((((IntPoint > CoordMat[J][0]) And (IntPoint < CoordMat[J - 1][0])) Or
+                                    ((IntPoint < CoordMat[J][0]) And (IntPoint > CoordMat[J - 1][0]))) And
+                                    (CoordMat[I][0] - CoordMat[I - 1][0] = CoordMat[J][0] - CoordMat[J - 1][0]) And
+                                    (CoordMat[I][1] - CoordMat[I - 1][1] = CoordMat[J][1] - CoordMat[J - 1][1])) Then
+                                    IsCorrect := False;
+                            End;
                         End;
                     End;
-                End;
-        End;
-        //determine the test result
-        If (IsCorrect <> True) Then
-        Begin
-            Write('The rectangle must not be self-intersecting. Try again.', #13#10);
+            End;
+            //determine the test result
+            If (IsCorrect <> True) Then
+            Begin
+                Write('The rectangle must not be self-intersecting. Try again.', #13#10);
+            End;
         End;
 
     Until IsCorrect;

@@ -4,10 +4,10 @@
 int main()
 {
     const int MINSIDES = 3, MAXSIDES = 20;
-    float area, slpFact, slpFact1, slpFact2, yInter,
+    double area, slpFact, slpFact1, slpFact2, yInter,
         yInter1, yInter2, intPoint;
-    int sidesNumb, limForAmt, ind, jOnI;
-    bool isInCorrect;
+    int sidesNumb, limForAmt;
+    bool isIncorrect;
 
     //inicialization
     area = 0.0;
@@ -19,10 +19,8 @@ int main()
     yInter2 = 0.0;
     intPoint = 0.0;
     limForAmt = 0;//high in main block
-    ind = 0;//x(index) and y(index)
     sidesNumb = 0;
-    jOnI = 0;
-    isInCorrect = true;//for input
+    isIncorrect = true;//for input
 
     //information about task
     std::cout << "This program calculates the area of\ a polygon.\n"
@@ -52,12 +50,10 @@ int main()
         }
         //cheack restrictions
         else if (sidesNumb < MINSIDES || sidesNumb > MAXSIDES)
-        {
             std::cout << "Error. The number of sides of a polygon is an integer from " << MINSIDES << " to " << MAXSIDES << ". Try again.\n";
-        }
         else
-            isInCorrect = false;
-    } while (isInCorrect);
+            isIncorrect = false;
+    } while (isIncorrect);
 
     //cin x and y
     float** coordMat = new float* [sidesNumb];
@@ -65,15 +61,14 @@ int main()
     {
         for (int i = 0; i < sidesNumb; i++)
         {
-            ind = i + 1;
             coordMat[i] = new float[2];
             do
             {
-                isInCorrect = true;
+                isIncorrect = true;
                 //cin x
                 do
                 {
-                    std::cout << "Write x" << ind << ":\n";
+                    std::cout << "Write x" << i + 1 << ":\n";
                     std::cin >> coordMat[i][0];
                     if (std::cin.get() != '\n')
                     {
@@ -82,13 +77,13 @@ int main()
                         std::cout << "Error. Try again.\n";
                     }
                     else
-                        isInCorrect = false;
-                } while (isInCorrect);
+                        isIncorrect = false;
+                } while (isIncorrect);
                 //cin y
-                isInCorrect = true;
+                isIncorrect = true;
                 do
                 {
-                    std::cout << "Write y" << ind << ":\n";
+                    std::cout << "Write y" << i + 1 << ":\n";
                     std::cin >> coordMat[i][1];
                     if (std::cin.get() != '\n')
                     {
@@ -97,160 +92,152 @@ int main()
                         std::cout << "Error. Try again.\n";
                     }
                     else
-                        isInCorrect = false;
-                } while (isInCorrect);
+                        isIncorrect = false;
+                } while (isIncorrect);
 
-                isInCorrect = true;
+                isIncorrect = true;
                 // we check the points to see if they are on the same line
                 if (i > 1 && coordMat[i - 1][0] - coordMat[i - 2][0] != 0)
                 {
-                    if (coordMat[i - 1][0] - coordMat[i - 2][0] == 0)
-                    {
-
-                    }
+                    slpFact = (coordMat[i - 1][1] - coordMat[i - 2][1]) / (coordMat[i - 1][0] - coordMat[i - 2][0]);
+                    yInter = coordMat[i - 1][1] - coordMat[i - 1][0] * slpFact;
+                    if (coordMat[i][1] == slpFact * coordMat[i][0] + yInter)
+                        std::cout << "Three points cannot be on the same line. Try again.\n";
                     else
-                    {
-                        slpFact = (coordMat[i - 1][1] - coordMat[i - 2][1]) / (coordMat[i - 1][0] - coordMat[i - 2][0]);
-                        yInter = coordMat[i - 1][1] - coordMat[i - 1][0] * slpFact;
-                        if (coordMat[i][1] == slpFact * coordMat[i][0] + yInter)
-                        {
-                            std::cout << "Three points cannot be on the same line. Try again.\n";
-                        }
-                        else
-                            isInCorrect = false;
-                    }
+                        isIncorrect = false;
                 }
+                else if (i > 1 && coordMat[i][0] == coordMat[i - 1][0] && coordMat[i][0] == coordMat[i - 2][0])
+                    std::cout << "Three points cannot be on the same line. Try again.\n";
                 else
-                    isInCorrect = false;
-
-            } while (isInCorrect);
+                    isIncorrect = false;
+            } while (isIncorrect);
         }
+
 
         // check that points cannot be repeated
         for (int i = 0; i < sidesNumb; i++)
         {
-            jOnI = i + 1;
-            for (int j = jOnI; j < sidesNumb; j++)
+            for (int j = i + 1; j < sidesNumb; j++)
             {
-                if (isInCorrect = false && coordMat[i][0] == coordMat[j][0] && coordMat[i][1] == coordMat[j][1])
-                {
-                    std::cout << "Points must be unique. Try again.\n";
-                    isInCorrect = true;
-                }
+                if (coordMat[i][0] == coordMat[j][0] && coordMat[i][1] == coordMat[j][1])
+                    isIncorrect = true;
             }
         }
 
-        // the main block of checking that there are no self-intersections
-        for (int i = 1; i < sidesNumb; i++)
+        if (isIncorrect)
+            std::cout << "Points must be unique. Try again.\n";
+        else
         {
-            if (coordMat[i][0] - coordMat[i - 1][0] == 0)
+            // the main block of checking that there are no self-intersections
+            for (int i = 1; i < sidesNumb; i++)
             {
-                yInter1 = coordMat[i][0];
-                for (int j = i + 2; j < sidesNumb; j++)
+                if (coordMat[i][0] - coordMat[i - 1][0] == 0)
                 {
-                    if (coordMat[j][0] - coordMat[j - 1][0] == 0)
+                    yInter1 = coordMat[i][0];
+                    for (int j = i + 2; j < sidesNumb; j++)
                     {
-                        yInter2 = coordMat[j][0];
-                        if (yInter1 == yInter2)
+                        if (coordMat[j][0] - coordMat[j - 1][0] == 0)
                         {
-                            if (((coordMat[j][1] > coordMat[i][1] && coordMat[j][1] > coordMat[i - 1][1]) &&
-                                (coordMat[j - 1][1] > coordMat[i][1] && coordMat[j - 1][1] > coordMat[i - 1][1])) ||
-                                ((coordMat[j][1] < coordMat[i][1] && coordMat[j][1] < coordMat[i - 1][1]) &&
-                                    (coordMat[j - 1][1] < coordMat[i][1] && coordMat[j - 1][1] < coordMat[i - 1][1])))
+                            yInter2 = coordMat[j][0];
+                            if (yInter1 == yInter2)
                             {
+                                if (((coordMat[j][1] > coordMat[i][1] && coordMat[j][1] > coordMat[i - 1][1]) &&
+                                    (coordMat[j - 1][1] > coordMat[i][1] && coordMat[j - 1][1] > coordMat[i - 1][1])) ||
+                                    ((coordMat[j][1] < coordMat[i][1] && coordMat[j][1] < coordMat[i - 1][1]) &&
+                                        (coordMat[j - 1][1] < coordMat[i][1] && coordMat[j - 1][1] < coordMat[i - 1][1])))
+                                {
 
+                                }
+                                else
+                                    isIncorrect = true;
                             }
-                            else
-                                isInCorrect = true;
-                        }
-                    }
-                    else
-                    {
-                        slpFact2 = (coordMat[j][1] - coordMat[j - 1][1]) / (coordMat[j][0] - coordMat[j - 1][0]);
-                        yInter2 = coordMat[j][1] - coordMat[j][0] * slpFact2;
-                        intPoint = (yInter2 - yInter1) / (slpFact1 - slpFact2);
-                        if ((yInter1 > coordMat[j][0] && yInter1 < coordMat[j - 1][0]) ||
-                            (yInter1 < coordMat[j][0] && yInter1 > coordMat[j - 1][0]) &&
-                            ((intPoint > coordMat[j][1] && intPoint < coordMat[j - 1][1]) ||
-                                (intPoint < coordMat[j][1] && intPoint > coordMat[j - 1][1])))
-                            isInCorrect = true;
-                    }
-                }
-            }
-            else if (coordMat[i][1] - coordMat[i - 1][1] == 0)
-            {
-                yInter1 = coordMat[i][1];
-                for (int j = i + 2; j < sidesNumb; j++)
-                {
-                    if (coordMat[j][0] - coordMat[j - 1][0] == 0)
-                    {
-                        yInter2 = coordMat[i][1];
-                        if (yInter1 == yInter2)
-                        {
-                            if (((coordMat[i][0] < coordMat[j][0] && coordMat[i][0] < coordMat[j - 1][0]) &&
-                                (coordMat[i - 1][0] < coordMat[j][0] && coordMat[i - 1][0] < coordMat[j - 1][0])) ||
-                                ((coordMat[i][0] > coordMat[j][0] && coordMat[i][0] > coordMat[j - 1][0]) &&
-                                    (coordMat[i - 1][0] > coordMat[j][0] && coordMat[i - 1][0] > coordMat[j - 1][0])))
-                            {
-
-                            }
-                            else
-                                isInCorrect = true;
-                        }
-                    }
-                    else
-                    {
-                        slpFact2 = (coordMat[j][1] - coordMat[j - 1][1]) / (coordMat[j][0] - coordMat[j - 1][0]);
-                        yInter2 = coordMat[j][1] - coordMat[j][0] * slpFact2;
-                        intPoint = (yInter2 - yInter1) / (slpFact1 - slpFact2);
-                        if (((yInter1 > coordMat[j][1] && yInter1 < coordMat[j - 1][1]) ||
-                            (yInter1 < coordMat[j][1] && yInter1 > coordMat[j - 1][1])) &&
-                            ((intPoint > coordMat[j][0] && intPoint < coordMat[j - 1][0]) ||
-                                (intPoint < coordMat[j][0] && intPoint > coordMat[j - 1][0])))
-                            isInCorrect = true;
-                    }
-                }
-            }
-            else
-            {
-                slpFact1 = (coordMat[i][1] - coordMat[i - 1][1]) / (coordMat[i][0] - coordMat[i - 1][0]);
-                yInter1 = coordMat[i][1] - coordMat[i][0] * slpFact1;
-                for (int j = i + 2; j < sidesNumb; j++)
-                {
-                    if (coordMat[j][0] - coordMat[j - 1][0] == 0)
-                    {
-                        yInter2 = coordMat[j][0];
-                        intPoint = slpFact1 * yInter2 + yInter1;
-                        if ((intPoint > coordMat[j][1] && intPoint > coordMat[j - 1][1]) ||
-                            (intPoint < coordMat[j][1] && intPoint < coordMat[j - 1][1]))
-                        {
-
                         }
                         else
-                            isInCorrect = true;
+                        {
+                            slpFact2 = (coordMat[j][1] - coordMat[j - 1][1]) / (coordMat[j][0] - coordMat[j - 1][0]);
+                            yInter2 = coordMat[j][1] - coordMat[j][0] * slpFact2;
+                            intPoint = (yInter2 - yInter1) / (slpFact1 - slpFact2);
+                            if ((yInter1 > coordMat[j][0] && yInter1 < coordMat[j - 1][0]) ||
+                                (yInter1 < coordMat[j][0] && yInter1 > coordMat[j - 1][0]) &&
+                                ((intPoint > coordMat[j][1] && intPoint < coordMat[j - 1][1]) ||
+                                    (intPoint < coordMat[j][1] && intPoint > coordMat[j - 1][1])))
+                                isIncorrect = true;
+                        }
                     }
-                    else
+                }
+                else if (coordMat[i][1] - coordMat[i - 1][1] == 0)
+                {
+                    yInter1 = coordMat[i][1];
+                    for (int j = i + 2; j < sidesNumb; j++)
                     {
-                        slpFact2 = (coordMat[j][1] - coordMat[j - 1][1]) / (coordMat[j][0] - coordMat[j - 1][0]);
-                        yInter2 = coordMat[j][1] - coordMat[j][0] * slpFact2;
-                        intPoint = (yInter2 - yInter1) / (slpFact1 - slpFact2);
-                        if (((intPoint > coordMat[j][0] && intPoint < coordMat[j - 1][0]) ||
-                            (intPoint < coordMat[j][0] && intPoint > coordMat[j - 1][0])) &&
-                            (coordMat[i][0] - coordMat[i - 1][0] == coordMat[j][0] - coordMat[j - 1][0]) &&
-                            (coordMat[i][1] - coordMat[i - 1][1] == coordMat[j][1] - coordMat[j - 1][1]))
-                            isInCorrect = true;
+                        if (coordMat[j][0] - coordMat[j - 1][0] == 0)
+                        {
+                            yInter2 = coordMat[i][1];
+                            if (yInter1 == yInter2)
+                            {
+                                if (((coordMat[i][0] < coordMat[j][0] && coordMat[i][0] < coordMat[j - 1][0]) &&
+                                    (coordMat[i - 1][0] < coordMat[j][0] && coordMat[i - 1][0] < coordMat[j - 1][0])) ||
+                                    ((coordMat[i][0] > coordMat[j][0] && coordMat[i][0] > coordMat[j - 1][0]) &&
+                                        (coordMat[i - 1][0] > coordMat[j][0] && coordMat[i - 1][0] > coordMat[j - 1][0])))
+                                {
+
+                                }
+                                else
+                                    isIncorrect = true;
+                            }
+                        }
+                        else
+                        {
+                            slpFact2 = (coordMat[j][1] - coordMat[j - 1][1]) / (coordMat[j][0] - coordMat[j - 1][0]);
+                            yInter2 = coordMat[j][1] - coordMat[j][0] * slpFact2;
+                            intPoint = (yInter2 - yInter1) / (slpFact1 - slpFact2);
+                            if (((yInter1 > coordMat[j][1] && yInter1 < coordMat[j - 1][1]) ||
+                                (yInter1 < coordMat[j][1] && yInter1 > coordMat[j - 1][1])) &&
+                                ((intPoint > coordMat[j][0] && intPoint < coordMat[j - 1][0]) ||
+                                    (intPoint < coordMat[j][0] && intPoint > coordMat[j - 1][0])))
+                                isIncorrect = true;
+                        }
+                    }
+                }
+                else
+                {
+                    slpFact1 = (coordMat[i][1] - coordMat[i - 1][1]) / (coordMat[i][0] - coordMat[i - 1][0]);
+                    yInter1 = coordMat[i][1] - coordMat[i][0] * slpFact1;
+                    for (int j = i + 2; j < sidesNumb; j++)
+                    {
+                        if (coordMat[j][0] - coordMat[j - 1][0] == 0)
+                        {
+                            yInter2 = coordMat[j][0];
+                            intPoint = slpFact1 * yInter2 + yInter1;
+                            if ((intPoint > coordMat[j][1] && intPoint > coordMat[j - 1][1]) ||
+                                (intPoint < coordMat[j][1] && intPoint < coordMat[j - 1][1]))
+                            {
+
+                            }
+                            else
+                                isIncorrect = true;
+                        }
+                        else
+                        {
+                            slpFact2 = (coordMat[j][1] - coordMat[j - 1][1]) / (coordMat[j][0] - coordMat[j - 1][0]);
+                            yInter2 = coordMat[j][1] - coordMat[j][0] * slpFact2;
+                            intPoint = (yInter2 - yInter1) / (slpFact1 - slpFact2);
+                            if (((intPoint > coordMat[j][0] && intPoint < coordMat[j - 1][0]) ||
+                                (intPoint < coordMat[j][0] && intPoint > coordMat[j - 1][0])) &&
+                                (coordMat[i][0] - coordMat[i - 1][0] == coordMat[j][0] - coordMat[j - 1][0]) &&
+                                (coordMat[i][1] - coordMat[i - 1][1] == coordMat[j][1] - coordMat[j - 1][1]))
+                                isIncorrect = true;
+                        }
                     }
                 }
             }
+            // determine the test result
+            if (isIncorrect)
+            {
+                std::cout << "The rectangle must not be self-intersecting. Try again.\n";
+            }
         }
-
-        // determine the test result
-        if (isInCorrect)
-        {
-            std::cout << "The rectangle must not be self-intersecting. Try again.\n";
-        }
-
-    } while (isInCorrect);
+    } while (isIncorrect);
 
     // main block
     // we consider the result to be the Gauss formula
@@ -269,10 +256,8 @@ int main()
     //cleaning the memory
     for (int i = 0; i < sidesNumb; i++) {
         delete[] coordMat[i];
-        coordMat[i] = nullptr;
     }
     delete[] coordMat;
-    coordMat = nullptr;
 
     return 0;
 }
