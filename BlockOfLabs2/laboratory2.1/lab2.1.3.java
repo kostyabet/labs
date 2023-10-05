@@ -8,20 +8,22 @@ public class lab1 {
     public static void main(String[] args)
     {
         Scanner in = new Scanner(System.in);
-        final int MINSIDES = 3, MAXSIDES = 20;
-        double area, slpFact, slpFact1, slpFact2, yInter, yInter1, yInter2, intPoint;
+        final int MINSIDES = 3,
+                MAXSIDES = 20;
+        double area, slpFact, slpFact1, slpFact2, yInter,
+                yInter1, yInter2, intPoint;
         int sidesNumb, limForAmt;
         boolean isIncorrect;
 
         //inicialization
-        area = 0.0F;
-        slpFact = 0.0F;//y = rx + b => slopefactor = r
-        yInter = 0.0F;//y = fx + b => slopefactor = b
-        slpFact1 = 0.0F;
-        yInter1 = 0.0F;
-        slpFact2 = 0.0F;
-        yInter2 = 0.0F;
-        intPoint = 0.0F;
+        area = 0.0;
+        slpFact = 0.0;//y = rx + b => slopefactor = r
+        yInter = 0.0;//y = fx + b => slopefactor = b
+        slpFact1 = 0.0;
+        yInter1 = 0.0;
+        slpFact2 = 0.0;
+        yInter2 = 0.0;
+        intPoint = 0.0;
         limForAmt = 0;//high in main block
         sidesNumb = 0;
         isIncorrect = true;//for input
