@@ -237,7 +237,7 @@ public class lab1 {
                                 intPoint = (yInter2 - yInter1) / (slpFact1 - slpFact2);
                                 if (((intPoint > coordMat[j][0] && intPoint < coordMat[j - 1][0]) ||
                                         (intPoint < coordMat[j][0] && intPoint > coordMat[j - 1][0])) &&
-                                        (coordMat[i][0] - coordMat[i - 1][0] == coordMat[j][0] - coordMat[j - 1][0]) &&
+                                        (coordMat[i][0] - coordMat[i - 1][0] == coordMat[j][0] - coordMat[j - 1][0]) ||
                                         (coordMat[i][1] - coordMat[i - 1][1] == coordMat[j][1] - coordMat[j - 1][1]))
                                     isIncorrect = true;
                             }

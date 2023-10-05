@@ -206,7 +206,7 @@ Begin
                                 IntPoint := (YInter2 - YInter1) / (SlpFact1 - SlpFact2);
                                 If ((((IntPoint > CoordMat[J][0]) And (IntPoint < CoordMat[J - 1][0])) Or
                                     ((IntPoint < CoordMat[J][0]) And (IntPoint > CoordMat[J - 1][0]))) And
-                                    (CoordMat[I][0] - CoordMat[I - 1][0] = CoordMat[J][0] - CoordMat[J - 1][0]) And
+                                    (CoordMat[I][0] - CoordMat[I - 1][0] = CoordMat[J][0] - CoordMat[J - 1][0]) Or
                                     (CoordMat[I][1] - CoordMat[I - 1][1] = CoordMat[J][1] - CoordMat[J - 1][1])) Then
                                     IsCorrect := False;
                             End;
