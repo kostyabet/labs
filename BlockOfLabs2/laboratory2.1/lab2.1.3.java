@@ -8,8 +8,8 @@ public class lab1 {
     public static void main(String[] args)
     {
         Scanner in = new Scanner(System.in);
-        final int MINSIDES = 3,
-                MAXSIDES = 20;
+        final int MINSIDES = 3;
+        final int MAXSIDES = 20;
         double area, slpFact, slpFact1, slpFact2, yInter,
                 yInter1, yInter2, intPoint;
         int sidesNumb, limForAmt;

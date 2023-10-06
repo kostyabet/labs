@@ -1,9 +1,12 @@
 #include <iostream>
 #include <iomanip> // for setprecision
 
+using namespace std;
+
 int main()
 {
-    const int MINSIDES = 3, MAXSIDES = 20;
+    const int MINSIDES = 3;
+    const int MAXSIDES = 20;
     double area, slpFact, slpFact1, slpFact2, yInter,
         yInter1, yInter2, intPoint;
     int sidesNumb, limForAmt;
@@ -23,7 +26,7 @@ int main()
     isIncorrect = true;//for input
 
     //information about task
-    std::cout << "This program calculates the area of\ a polygon.\n"
+    cout << "This program calculates the area of\ a polygon.\n"
         "The number of sides of the polygon is selected by the user.\n"
         "You also need to enter the coordinates of the polygon vertices.\n\n"
         "*The Gauss formula is used for calculations*\n\n"
@@ -34,23 +37,23 @@ int main()
         "\t\t\t\t\t(clockwise / counterclockwise)\n\n";
 
     //formatted output
-    std::cout << std::setprecision(3) << std::fixed;
+    cout << setprecision(3) << fixed;
 
     //input number of sides
     do
     {
-        std::cout << "Write number of sides of a polygon:\n";
-        std::cin >> sidesNumb;
+        cout << "Write number of sides of a polygon:\n";
+        cin >> sidesNumb;
         //cheack "Numeric input"
-        if (std::cin.get() != '\n')
+        if (cin.fail() || cin.get() != '\n')
         {
-            std::cin.clear();
-            std::cin.ignore(30000, '\n');
-            std::cout << "Error. Try again.\n";
+            cin.clear();
+            cin.ignore(30000, '\n');
+            cout << "Error. Try again.\n";
         }
         //cheack restrictions
         else if (sidesNumb < MINSIDES || sidesNumb > MAXSIDES)
-            std::cout << "Error. The number of sides of a polygon is an integer from " << MINSIDES << " to " << MAXSIDES << ". Try again.\n";
+            cout << "Error. The number of sides of a polygon is an integer from " << MINSIDES << " to " << MAXSIDES << ". Try again.\n";
         else
             isIncorrect = false;
     } while (isIncorrect);
@@ -68,13 +71,13 @@ int main()
                 //cin x
                 do
                 {
-                    std::cout << "Write x" << i + 1 << ":\n";
-                    std::cin >> coordMat[i][0];
-                    if (std::cin.get() != '\n')
+                    cout << "Write x" << i + 1 << ":\n";
+                    cin >> coordMat[i][0];
+                    if (cin.fail() || cin.get() != '\n')
                     {
-                        std::cin.clear();
-                        std::cin.ignore(30000, '\n');
-                        std::cout << "Error. Try again.\n";
+                        cin.clear();
+                        cin.ignore(30000, '\n');
+                        cout << "Error. Try again.\n";
                     }
                     else
                         isIncorrect = false;
@@ -83,13 +86,13 @@ int main()
                 isIncorrect = true;
                 do
                 {
-                    std::cout << "Write y" << i + 1 << ":\n";
-                    std::cin >> coordMat[i][1];
-                    if (std::cin.get() != '\n')
+                    cout << "Write y" << i + 1 << ":\n";
+                    cin >> coordMat[i][1];
+                    if (cin.fail() || cin.get() != '\n')
                     {
-                        std::cin.clear();
-                        std::cin.ignore(30000, '\n');
-                        std::cout << "Error. Try again.\n";
+                        cin.clear();
+                        cin.ignore(30000, '\n');
+                        cout << "Error. Try again.\n";
                     }
                     else
                         isIncorrect = false;
@@ -102,12 +105,12 @@ int main()
                     slpFact = (coordMat[i - 1][1] - coordMat[i - 2][1]) / (coordMat[i - 1][0] - coordMat[i - 2][0]);
                     yInter = coordMat[i - 1][1] - coordMat[i - 1][0] * slpFact;
                     if (coordMat[i][1] == slpFact * coordMat[i][0] + yInter)
-                        std::cout << "Three points cannot be on the same line. Try again.\n";
+                        cout << "Three points cannot be on the same line. Try again.\n";
                     else
                         isIncorrect = false;
                 }
                 else if (i > 1 && coordMat[i][0] == coordMat[i - 1][0] && coordMat[i][0] == coordMat[i - 2][0])
-                    std::cout << "Three points cannot be on the same line. Try again.\n";
+                    cout << "Three points cannot be on the same line. Try again.\n";
                 else
                     isIncorrect = false;
             } while (isIncorrect);
@@ -125,7 +128,7 @@ int main()
         }
 
         if (isIncorrect)
-            std::cout << "Points must be unique. Try again.\n";
+            cout << "Points must be unique. Try again.\n";
         else
         {
             // the main block of checking that there are no self-intersections
@@ -234,7 +237,7 @@ int main()
             // determine the test result
             if (isIncorrect)
             {
-                std::cout << "The rectangle must not be self-intersecting. Try again.\n";
+                cout << "The rectangle must not be self-intersecting. Try again.\n";
             }
         }
     } while (isIncorrect);
@@ -251,7 +254,7 @@ int main()
     area = abs(area + (coordMat[sidesNumb - 1][0] * coordMat[0][1]) - (coordMat[sidesNumb - 1][1] * coordMat[0][0]));
     area = area / 2;
     // cout resoult
-    std::cout << "\nYour area is: " << area << ".\n";
+    cout << "\nYour area is: " << area << ".\n";
 
     //cleaning the memory
     for (int i = 0; i < sidesNumb; i++) {
