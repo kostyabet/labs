@@ -1,84 +1,65 @@
-﻿// Найти все натуральные числа, которые в k раз больше суммы своих цифр.
-#include <iostream>
+﻿#include <iostream>
+using namespace std;
 
-const int MAXN = 100000, MAXK = 10000, MINK = 3;
 
-void condition()
-{
-	std::cout << "The program finds all natural numbers that are k times the sum of their digits.\n"
-		<< "*Natural numbers are taken only in the range from 1 to 100000*\n\n"
-		<< "Restrictions:\n\t- K is a number from 3 to 10000;\n\n";
+int input(const int max, const int min) {
+	int k;
+	bool isIncorrect = true;
+	do
+	{
+		cin >> k;
+		if (cin.fail() || cin.get() != '\n') {
+			cout << "Invalid numeric input.\n";
+			cin.clear();
+			cin.ignore();
+		}
+		else if (k < min || k > max)
+			cout << "Number should be from " << min << " to " << max << ".\n";
+		else
+			isIncorrect = false;
+	} while (isIncorrect);
+
+	return k;
 }
 
-void Cheackingloop(int& k, bool& isCorrect)
-{
-	if (std::cin.get() != '\n')
-	{
-		std::cin.clear();
-		std::cin.ignore(30000, '\n');
-		std::cout << "Error. Try again.\n";
-		isCorrect = true;
+
+int sumOfDigits(int num) {
+	int sum = 0;
+	while (num) {
+		sum += num % 10;
+		num /= 10;
 	}
-	else if (k < MINK || k > MAXK)
-	{
-		std::cout << "Number should be N. Try again.\n";
-		isCorrect = true;
-	}
-	else
-		isCorrect = false;
+	return sum;
 }
 
-void SumOfNumbers(int buffer, int& Sum)
-{
-	while (buffer > 1)
-	{
-		Sum += buffer % 10;
-		buffer = buffer / 10;
+
+bool cheackSum(int Sum, int k, int nutNumb) {
+	return k * Sum == nutNumb;
+}
+
+
+void searchNum(const int max, int k) {
+	int nutNumb = 1;
+	while (nutNumb <= max) {
+		int Sum = sumOfDigits(nutNumb);
+		if (cheackSum(Sum, k, nutNumb))
+			cout << nutNumb << " ";
+		nutNumb++;
 	}
 }
 
-void MainConst(int k, int number, int& Sum)
-{
-
-	if (k * Sum == number)
-	{
-		std::cout << number << " ";
-	}
-	else
-		Sum = 0;
-}
-
-void numbers(bool isCorrect, int k, int Sum, int number, int buffer)
-{
-	while (number < MAXN)
-	{
-		buffer = number;
-		SumOfNumbers(buffer, Sum);
-		MainConst(k, number, Sum);
-		number += 1;
-	}
-}
 
 int main()
 {
-	int k, sum, natNumb, buffer;
-	bool isIncorrect;
-	k = 0;
-	buffer = 0;
-	sum = 0;
-	natNumb = 1;
-	isIncorrect = true;
+	const int MAXN = 100000;
+	const int MAXK = 10000;
+	const int MINK = 3;
 
-	condition();
+	cout << "The program finds all natural numbers that are k times the sum of their digits.\n";
 
-	do
-	{
-		std::cout << "Enter K:\n";
-		std::cin >> k;
-		Cheackingloop(k, isIncorrect);
-	} while (isIncorrect);
+	cout << "Write K number from " << MINK << " to " << MAXK << ":\n";
+	int k = input(MAXK, MINK);
 
-	numbers(isIncorrect, k, sum, natNumb, buffer);
-
+	searchNum(MAXN, k);
 	return 0;
 }
