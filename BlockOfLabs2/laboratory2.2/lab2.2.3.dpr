@@ -59,10 +59,8 @@ End;
 Procedure SearchNum(Max: Integer; K: Integer);
 Var
     Sum, NutNumb: Integer;
-    IsCorrect: Boolean;
 Begin
     NutNumb := K;
-    IsCorrect := True;
     While (NutNumb <= Max) Do
     Begin
         Sum := SumOfDigits(NutNumb);
