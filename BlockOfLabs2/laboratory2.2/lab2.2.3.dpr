@@ -4,8 +4,8 @@ Uses
     System.SysUtils;
 
 Const
-    MAXN = 100000;
-    MAXK = 10000;
+    MAXN = 1000000;
+    MAXK = 100000;
     MINK = 3;
 
 Var
@@ -48,25 +48,39 @@ Begin
     SumOfDigits := Sum;
 End;
 
-Function CheackSum(Sum: Integer; K: Integer; NutNumb: Integer): Boolean;
+Function CheckSum(Sum: Integer; K: Integer; NutNumb: Integer): Boolean;
 Begin
     If K * Sum = NutNumb Then
-        CheackSum := True
+        CheckSum := True
     Else
-        CheackSum := False;
+        CheckSum := False;
 End;
 
-Procedure SearchNum(Max: Integer; K: Integer);
+Procedure StepControl(IsCorrect: Boolean; Step: Integer; NutNumb: Integer);
+Begin
+    If IsCorrect Then
+    Begin
+        IsCorrect := False;
+        Step := NutNumb;
+    End;
+End;
+
+Procedure SearchNum(Max: Integer; K: Integer; Step: Integer);
 Var
     Sum, NutNumb: Integer;
+    IsCorrect: Boolean;
 Begin
-    NutNumb := 1;
+    NutNumb := Step;
+    IsCorrect := True;
     While (NutNumb <= Max) Do
     Begin
         Sum := SumOfDigits(NutNumb);
-        If (CheackSum(Sum, K, NutNumb)) Then
+        If (CheckSum(Sum, K, NutNumb)) Then
+        Begin
             Write(NutNumb, ' ');
-        NutNumb := NutNumb + 1;
+
+        End;
+        NutNumb := NutNumb + Step;
     End;
 End;
 
@@ -76,7 +90,7 @@ Begin
     Writeln('Write K number from ', MINK, ' to ', MAXK, ':');
     K := Input(MAXK, MINK);
 
-    SearchNum(MAXN, K);
+    SearchNum(MAXN, K, K);
     Readln;
 
 End.

@@ -3,13 +3,13 @@ package lab2;
 import java.util.Scanner;
 
 public class lab2 {
-    static int input(final int max,final int min, Scanner in){
+    static int input(final int max,final int min, Scanner in) {
         int k = 0;
         boolean isIncorrect = true;
-        do{
-            try{
+        do {
+            try {
                 k = Integer.parseInt(in.nextLine());
-            } catch (NumberFormatException error){
+            } catch (NumberFormatException error) {
                 System.err.print("Invalid numeric input.\n");
             }
             if (k < min || k > max)
@@ -21,9 +21,9 @@ public class lab2 {
     }
 
 
-    static int sumOfDigits(int num){
+    static int sumOfDigits(int num) {
         int sum = 0;
-        while (num >= 1){
+        while (num >= 1) {
             sum += num % 10;
             num /= 10;
         }
@@ -31,26 +31,36 @@ public class lab2 {
     }
 
 
-    static boolean cheackSum(int Sum, int k, int nutNumb)
-    {
+    static boolean checkSum(int Sum, int k, int nutNumb) {
         return k * Sum == nutNumb;
     }
 
 
-    static void searchNum(final int max, int k){
-        int nutNumb = 1;
-        while (nutNumb <= max){
-            int Sum = sumOfDigits(nutNumb);
-            if(cheackSum(Sum, k, nutNumb))
-                System.out.printf("%d ", nutNumb);
-            nutNumb++;
+    static void stepControl(boolean isCorrect, int step, int nutNumb) {
+        if (isCorrect) {
+            isCorrect = false;
+            step = nutNumb;
         }
     }
 
 
-    public static void main(String[] args){
-        final int MAXN = 100000;
-        final int MAXK = 10000;
+    static void searchNum(final int max, int k, int step) {
+        int nutNumb = step;
+        boolean isCorrect = true;
+        while (nutNumb <= max){
+            int Sum = sumOfDigits(nutNumb);
+            if(checkSum(Sum, k, nutNumb)) {
+                System.out.printf("%d ", nutNumb);
+                stepControl(isCorrect, step, nutNumb);
+            }
+            nutNumb += step;
+        }
+    }
+
+
+    public static void main(String[] args) {
+        final int MAXN = 1000000;
+        final int MAXK = 100000;
         final int MINK = 3;
 
         Scanner in = new Scanner(System.in);
@@ -62,6 +72,6 @@ public class lab2 {
 
         in.close();
 
-        searchNum(MAXN, k);
+        searchNum(MAXN, k, k);
     }
 }

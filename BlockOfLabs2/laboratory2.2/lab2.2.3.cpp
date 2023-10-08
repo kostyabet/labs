@@ -38,6 +38,14 @@ bool checkSum(int Sum, int k, int nutNumb) {
 }
 
 
+void stepControl(bool& isCorrect, int& step, int nutNumb) {
+	if (isCorrect) {
+		step = nutNumb;
+		isCorrect = false;
+	}
+}
+
+
 void searchNum(const int max, int k, int step) {
 	int nutNumb = k;
 	bool isCorrect = true;
@@ -46,10 +54,7 @@ void searchNum(const int max, int k, int step) {
 		if (checkSum(Sum, k, nutNumb))
 		{
 			cout << nutNumb << " ";
-			if (isCorrect) {
-				step = nutNumb;
-				isCorrect = false;
-			}
+			stepControl(isCorrect, step, nutNumb);
 		}
 		nutNumb += step;
 	}
@@ -58,8 +63,8 @@ void searchNum(const int max, int k, int step) {
 
 int main()
 {
-	const int MAXN = 100000000000;
-	const int MAXK = 1000000000;
+	const int MAXN = 1000000;
+	const int MAXK = 100000;
 	const int MINK = 3;
 
 	cout << "The program finds all natural numbers that are k times the sum of their digits.\n";
