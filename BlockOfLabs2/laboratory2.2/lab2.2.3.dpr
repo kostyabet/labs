@@ -1,42 +1,39 @@
 Program labt2;
 
-
 Uses
     System.SysUtils;
 
-    
 Const
     MAXN = 100000;
     MAXK = 10000;
     MINK = 3;
 
-    
 Var
     K, Sum: Integer;
 
-    
 Function Input(Max: Integer; Min: Integer): Integer;
 Var
     K: Integer;
     IsCorrect: Boolean;
 Begin
-    IsCorrect := False;
     Repeat
+        IsCorrect := True;
         Try
             Readln(K);
         Except
             Writeln('Invalid numeric input.');
+            IsCorrect := False;
         End;
         If (K < Min) Or (K > Max) Then
-            Writeln('Number should be from ', Min, ' to ', Max, '.')
-        Else
-            IsCorrect := True;
+        Begin
+            Writeln('Number should be from ', Min, ' to ', Max, '.');
+            IsCorrect := False;
+        End;
 
     Until IsCorrect;
 
     Input := K;
 End;
-
 
 Function SumOfDigits(Num: Integer): Integer;
 Var
@@ -51,7 +48,6 @@ Begin
     SumOfDigits := Sum;
 End;
 
-
 Function CheackSum(Sum: Integer; K: Integer; NutNumb: Integer): Boolean;
 Begin
     If K * Sum = NutNumb Then
@@ -59,7 +55,6 @@ Begin
     Else
         CheackSum := False;
 End;
-
 
 Procedure SearchNum(Max: Integer; K: Integer);
 Var
@@ -83,4 +78,5 @@ Begin
 
     SearchNum(MAXN, K);
     Readln;
+
 End.

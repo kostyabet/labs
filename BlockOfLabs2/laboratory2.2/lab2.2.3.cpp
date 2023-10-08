@@ -11,7 +11,7 @@ int input(const int max, const int min) {
 		if (cin.fail() || cin.get() != '\n') {
 			cout << "Invalid numeric input.\n";
 			cin.clear();
-			cin.ignore();
+			cin.ignore(30000, '\n');
 		}
 		else if (k < min || k > max)
 			cout << "Number should be from " << min << " to " << max << ".\n";
