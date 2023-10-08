@@ -56,31 +56,19 @@ Begin
         CheckSum := False;
 End;
 
-Procedure StepControl(IsCorrect: Boolean; Step: Integer; NutNumb: Integer);
-Begin
-    If IsCorrect Then
-    Begin
-        IsCorrect := False;
-        Step := NutNumb;
-    End;
-End;
-
-Procedure SearchNum(Max: Integer; K: Integer; Step: Integer);
+Procedure SearchNum(Max: Integer; K: Integer);
 Var
     Sum, NutNumb: Integer;
     IsCorrect: Boolean;
 Begin
-    NutNumb := Step;
+    NutNumb := K;
     IsCorrect := True;
     While (NutNumb <= Max) Do
     Begin
         Sum := SumOfDigits(NutNumb);
         If (CheckSum(Sum, K, NutNumb)) Then
-        Begin
             Write(NutNumb, ' ');
-
-        End;
-        NutNumb := NutNumb + Step;
+        NutNumb := NutNumb + K;
     End;
 End;
 
@@ -90,7 +78,7 @@ Begin
     Writeln('Write K number from ', MINK, ' to ', MAXK, ':');
     K := Input(MAXK, MINK);
 
-    SearchNum(MAXN, K, K);
+    SearchNum(MAXN, K);
     Readln;
 
 End.

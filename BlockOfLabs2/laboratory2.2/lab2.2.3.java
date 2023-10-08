@@ -36,24 +36,14 @@ public class lab2 {
     }
 
 
-    static void stepControl(boolean isCorrect, int step, int nutNumb) {
-        if (isCorrect) {
-            isCorrect = false;
-            step = nutNumb;
-        }
-    }
-
-
-    static void searchNum(final int max, int k, int step) {
-        int nutNumb = step;
-        boolean isCorrect = true;
+    static void searchNum(final int max, int k) {
+        int nutNumb = k;
         while (nutNumb <= max){
             int Sum = sumOfDigits(nutNumb);
             if(checkSum(Sum, k, nutNumb)) {
                 System.out.printf("%d ", nutNumb);
-                stepControl(isCorrect, step, nutNumb);
             }
-            nutNumb += step;
+            nutNumb += k;
         }
     }
 
@@ -72,6 +62,6 @@ public class lab2 {
 
         in.close();
 
-        searchNum(MAXN, k, k);
+        searchNum(MAXN, k);
     }
 }

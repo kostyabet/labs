@@ -38,25 +38,13 @@ bool checkSum(int Sum, int k, int nutNumb) {
 }
 
 
-void stepControl(bool& isCorrect, int& step, int nutNumb) {
-	if (isCorrect) {
-		step = nutNumb;
-		isCorrect = false;
-	}
-}
-
-
-void searchNum(const int max, int k, int step) {
+void searchNum(const int max, int k) {
 	int nutNumb = k;
-	bool isCorrect = true;
 	while (nutNumb <= max) {
-		int Sum = sumOfDigits(nutNumb);
-		if (checkSum(Sum, k, nutNumb))
-		{
+		int sum = sumOfDigits(nutNumb);
+		if (checkSum(sum, k, nutNumb))
 			cout << nutNumb << " ";
-			stepControl(isCorrect, step, nutNumb);
-		}
-		nutNumb += step;
+		nutNumb += k;
 	}
 }
 
@@ -72,6 +60,6 @@ int main()
 	cout << "Write K number from " << MINK << " to " << MAXK << ":\n";
 	int k = input(MAXK, MINK);
 
-	searchNum(MAXN, k, k);
+	searchNum(MAXN, k);
 	return 0;
 }
