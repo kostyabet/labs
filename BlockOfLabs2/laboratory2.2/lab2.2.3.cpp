@@ -33,26 +33,33 @@ int sumOfDigits(int num) {
 }
 
 
-bool cheackSum(int Sum, int k, int nutNumb) {
+bool checkSum(int Sum, int k, int nutNumb) {
 	return k * Sum == nutNumb;
 }
 
 
-void searchNum(const int max, int k) {
-	int nutNumb = 1;
+void searchNum(const int max, int k, int step) {
+	int nutNumb = k;
+	bool isCorrect = true;
 	while (nutNumb <= max) {
 		int Sum = sumOfDigits(nutNumb);
-		if (cheackSum(Sum, k, nutNumb))
+		if (checkSum(Sum, k, nutNumb))
+		{
 			cout << nutNumb << " ";
-		nutNumb++;
+			if (isCorrect) {
+				step = nutNumb;
+				isCorrect = false;
+			}
+		}
+		nutNumb += step;
 	}
 }
 
 
 int main()
 {
-	const int MAXN = 100000;
-	const int MAXK = 10000;
+	const int MAXN = 100000000000;
+	const int MAXK = 1000000000;
 	const int MINK = 3;
 
 	cout << "The program finds all natural numbers that are k times the sum of their digits.\n";
@@ -60,6 +67,6 @@ int main()
 	cout << "Write K number from " << MINK << " to " << MAXK << ":\n";
 	int k = input(MAXK, MINK);
 
-	searchNum(MAXN, k);
+	searchNum(MAXN, k, k);
 	return 0;
 }
