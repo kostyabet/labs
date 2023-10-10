@@ -5,10 +5,10 @@ using namespace std;
 
 
 string CinPalindrome() {
-	string str;
+	string palindrom;
 	bool isCorrect = true;
 	do {
-		cin >> str;
+		cin >> palindrom;
 		if (cin.fail() || cin.get() != '\n') {
 			cout << "Invalid numeric input.\nTry again.\n";
 			cin.clear();
@@ -18,27 +18,19 @@ string CinPalindrome() {
 			isCorrect = false;
 	} while (isCorrect);
 
-	return str;
+	return palindrom;
 }
 
 
-string CinPalindromeTxt() {
-	string str = "";
-	getline(cin, str);
-	cout << endl << str << endl;
-	return str;
-}
-
-
-string CinTxt() {
-	string str;
+string inputWay() {
+	string palindrom;
 	bool isInCorrect = true;
 	do {
-		cin >> str;
-		if (str.size() > 4) {
-			string bufstr = str.substr(str.size() - 4, str.size() - 1);
+		cin >> palindrom;
+		if (palindrom.size() > 4) {
+			string bufstr = palindrom.substr(palindrom.size() - 4, palindrom.size() - 1);
 			if (bufstr == ".txt")
-				return str;
+				return palindrom;
 			else
 				cout << "Write .txt file";
 		}
@@ -46,12 +38,12 @@ string CinTxt() {
 			cout << "short string";
 	} while (isInCorrect);
 
-	return str;
+	return palindrom;
 }
 
 
-int CinN() {
-	cout << "Your varient is: ";
+int choosingAPath(const int Console, const int File) {
+	cout << "Your choice: ";
 	int num;
 	bool isCorrect = true;
 	do {
@@ -61,8 +53,8 @@ int CinN() {
 			cin.clear();
 			cin.ignore(30000, '\n');
 		}
-		else if (num != 0 && num != 1)
-			cout << "choose only 1 or 2.\n";
+		else if (num != Console && num != File)
+			cout << "Choose only 1 or 2.\n";
 		else
 			isCorrect = false;
 	} while (isCorrect);
@@ -76,20 +68,21 @@ bool isPalindrom(string palindrom) {
 		if (palindrom[i] != palindrom[palindrom.size() - (i + 1)])
 			return false;
 	}
+
 	return true;
 }
 
 
-string WorkWithTxt(string str) {
-	if (isPalindrom(str))
-		return "palindrom";
+string workWithPalin(string palindrom) {
+	if (isPalindrom(palindrom))
+		return "palindrom(" + palindrom + ").";
 	else
-		return "not a palindrom";
+		return "not a palindrom(" + palindrom + ").";
 }
 
 
-string ConsoleWork() {
-	cout << "\nWrite your string: ";
+string viaConsole() {
+	cout << "Write your string: ";
 	string palindrom = CinPalindrome();
 	if (isPalindrom(palindrom))
 		return "palindrom";
@@ -98,38 +91,36 @@ string ConsoleWork() {
 }
 
 
-string FileWork() {
-	string fileway;
-	bool isCorrect = true;
+string viaFile() {
+	string fileWay;
+	bool isIncorrect = true;
 	do {
 		cout << "Write way to your file: ";
-		fileway = CinTxt();
+		fileWay = inputWay();
 		ifstream file;
-		file.open(fileway);
+		file.open(fileWay);
 		if (file.is_open()) {
-			string str;
-			getline(file, str);
-			return WorkWithTxt(str);
+			string palindrome;
+			getline(file, palindrome);
+			return workWithPalin(palindrome);
 		}
 		else
 			cout << "Bad File. Try again.\n";
 		file.close();
-	} while (isCorrect);
+	} while (isIncorrect);
 }
 
+
 int main() {
-	const int File = 1;
-	const int Console = 0;
-	std::cout << "What will you choose: \n\tConsole: " << Console << "\tFile: " << File << "\n\n";
-	int n = CinN();
+	const int FILENUM = 1;
+	const int CONSNUM = 0;
 
-	string resoult;
-	if (n)
-		resoult = FileWork();
-	else
-		resoult = ConsoleWork();
+	std::cout << "The program determines whether\n\t the entered string is a palindrome.\n\n";
+	std::cout << "Where will we work through: \n\tConsole: " << CONSNUM << "\tFile: " << FILENUM << "\n\n";
+	int option = choosingAPath(CONSNUM, FILENUM);
 
-	cout << "It is " << resoult;
+	string resoult = (option ? viaFile() : viaConsole());
+	cout << "It is " << resoult << "\n";
 
 	return 0;
 }
