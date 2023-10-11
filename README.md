@@ -20,3 +20,6 @@
  <a href="https://leetcode.com/kostyabet/">
      <img src="https://cp-logo.vercel.app/leetcode/kostyabet"/>
  </a>
+ <a href="https://codeforces.com/profile/kostyabet">
+     <img src="https://raw.githubusercontent.com/kostyabet/cf-stats/main/output/rating.svg"/>
+ </a>
