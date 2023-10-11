@@ -85,9 +85,12 @@ string viaFile() {
 		ifstream file;
 		file.open(fileWay);
 		if (file.is_open()) {
-			string palindrome;
+			string palindrome, nextStr;
 			getline(file, palindrome);
-			return workWithPalin(palindrome);
+			if (getline(file, nextStr))
+				cout << "File should be only with one string.\n";
+			else
+				return workWithPalin(palindrome);
 		}
 		else
 			cout << "Bad File. Try again.\n";

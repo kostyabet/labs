@@ -84,11 +84,14 @@ public class lab3 {
             try {
                 FileReader fileReader = new FileReader(file);
                 BufferedReader bufferedReader = new BufferedReader(fileReader);
-                String palindrome;
+                String palindrome, nextStr;
                 palindrome = bufferedReader.readLine();
-                System.out.print(palindrome);
+                nextStr = bufferedReader.readLine();
                 bufferedReader.close();
-                return workWithPalin(palindrome);
+                if (nextStr != null)
+                    System.out.println("File should be only with one string.");
+                else
+                    return workWithPalin(palindrome);
             } catch (IOException error) {
                 System.err.println("Bad File. Try again.\n");
             }
