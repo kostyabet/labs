@@ -2,6 +2,8 @@
 #include <string> // for write palindrom and way to the file
 #include <fstream> // for work with files
 using namespace std;
+const int CONS_NUM = 1;
+const int FILE_NUM = 2;
 
 
 string inputWay() {
@@ -10,7 +12,7 @@ string inputWay() {
 	do {
 		cin >> way;
 		if (way.size() > 4) {
-			string bufstr = way.substr(way.size() - 4, way.size() - 1);
+			string bufstr = way.substr(way.size() - 4);
 			if (bufstr == ".txt")
 				return way;
 			else
@@ -24,7 +26,7 @@ string inputWay() {
 }
 
 
-int choosingAPath(const int CONSOLE, const int FILE) {
+int choosingAPath() {
 	cout << "Your choice: ";
 	int num;
 	bool isIncorrect = true;
@@ -35,8 +37,8 @@ int choosingAPath(const int CONSOLE, const int FILE) {
 			cin.clear();
 			cin.ignore(30000, '\n');
 		}
-		else if (num != CONSOLE && num != FILE)
-			cout << "Choose only " << CONSOLE << " or " << FILE << ". Try again.\n";
+		else if (num != CONS_NUM && num != FILE_NUM)
+			cout << "Choose only " << CONS_NUM << " or " << FILE_NUM << ". Try again.\n";
 		else
 			isIncorrect = false;
 	} while (isIncorrect);
@@ -68,9 +70,9 @@ string viaConsole() {
 	string palindrome;
 	std::cin >> palindrome;
 	if (isPalindrome(palindrome))
-		return "palindrome";
+		return "palindrome.";
 	else
-		return "not a palindrome";
+		return "not a palindrome.";
 }
 
 
@@ -95,14 +97,11 @@ string viaFile() {
 
 
 int main() {
-	const int CONSNUM = 1;
-	const int FILENUM = 2;
-
 	std::cout << "The program determines whether\n\t the entered string is a palindrome.\n\n";
-	std::cout << "Where will we work through: \n\tConsole: " << CONSNUM << "\tFile: " << FILENUM << "\n\n";
-	int option = choosingAPath(CONSNUM, FILENUM);
+	std::cout << "Where will we work through: \n\tConsole: " << CONS_NUM << "\tFile: " << FILE_NUM << "\n\n";
+	int option = choosingAPath();
 
-	string result = (option == FILENUM ? viaFile() : viaConsole());
+	string result = (option == FILE_NUM ? viaFile() : viaConsole());
 	cout << "It is " << result << "\n";
 
 	return 0;

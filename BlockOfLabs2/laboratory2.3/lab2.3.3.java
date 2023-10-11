@@ -4,18 +4,19 @@ import java.io.*;
 import java.util.Scanner;
 
 public class lab3 {
-    static int choosingAPath(Scanner in, final int CONSOLE, final int FILE){
+    static final int CONS_NUM = 1;
+    static final int FILE_NUM = 2;
+    static int choosingAPath(Scanner in) {
         System.out.print("Your choice: ");
         int num = 0;
         boolean isIncorrect = true;
-        do{
-            try{
+        do {
+            try {
                 num = Integer.parseInt(in.nextLine());
-            } catch (NumberFormatException error){
-                System.err.print("Invalid numeric input.\nTry again.\n");
-            }
-            if (num != CONSOLE && num != FILE)
-                System.out.printf("Choose only %d or %d.\n", CONSOLE, FILE);
+            } catch (NumberFormatException error) {
+                System.err.print("Invalid numeric input. Try again.\n");
+            } if (num != CONS_NUM && num != FILE_NUM)
+                System.err.printf("Choose only %d or %d.\n", CONS_NUM, FILE_NUM);
             else
                 isIncorrect = false;
         } while (isIncorrect);
@@ -24,27 +25,27 @@ public class lab3 {
     }
 
 
-    static String inputWay(Scanner in){
+    static String inputWay(Scanner in) {
         String way = null;
         boolean isIncorrect = true;
-        do{
+        do {
             way = in.nextLine();
             if (way.length() > 4) {
-                String bufstr = way.substring(way.length() - 4, way.length() - 1);
+                String bufstr = way.substring(way.length() - 4);
                 if (bufstr.equals(".txt"))
                     return way;
                 else
-                    System.out.print("Write .txt file");
+                    System.err.print("Write .txt file.\n");
             }
             else
-                System.out.print("short string");
+                System.err.print("The path is too short.\n");
         } while (isIncorrect);
 
-        return way;
+        return null;
     }
 
 
-    static boolean isPalindrome(String palindrome){
+    static boolean isPalindrome(String palindrome) {
         for (int i = 0; i < palindrome.length() / 2; i++) {
             if (palindrome.charAt(i) != palindrome.charAt(palindrome.length() - (i + 1)))
                 return false;
@@ -54,7 +55,7 @@ public class lab3 {
     }
 
 
-    static String viaConsole(Scanner in){
+    static String viaConsole(Scanner in) {
         System.out.print("Write your string: ");
         String palindrome;
         palindrome = in.nextLine();
@@ -72,19 +73,20 @@ public class lab3 {
             return "not a palindrome(" + palindrome + ").";
     }
 
-    static String viaFile(Scanner in){
+    static String viaFile(Scanner in) {
         String fileWay;
         boolean isIncorrect = true;
-        do{
+        do {
             System.out.print("Write way to your file: ");
             fileWay = inputWay(in);
-            File file = new File("example.txt");
-
+            assert fileWay != null;
+            File file = new File(fileWay);
             try {
-                FileReader fileReader = new FileReader(file); // Создание объекта FileReader
-                BufferedReader bufferedReader = new BufferedReader(fileReader); // Создание объекта BufferedReader
+                FileReader fileReader = new FileReader(file);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
                 String palindrome;
                 palindrome = bufferedReader.readLine();
+                System.out.print(palindrome);
                 bufferedReader.close();
                 return workWithPalin(palindrome);
             } catch (IOException error) {
@@ -95,18 +97,15 @@ public class lab3 {
     }
 
 
-    public static void main(String[] args){
-        final int CONSNUM = 1;
-        final int FILENUM = 2;
-
+    public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
 
         System.out.print("The program determines whether\n\t the entered string is a palindrome.\n\n");
-        System.out.printf("Where will we work through: \n\tConsole: %d \tFile: %d \n\n", CONSNUM, FILENUM);
-        int option = choosingAPath(in, CONSNUM, FILENUM);
+        System.out.printf("Where will we work through: \n\tConsole: %d \tFile: %d \n\n", CONS_NUM, FILE_NUM);
+        int option = choosingAPath(in);
 
-        String result = (option == FILENUM ? viaFile(in) : viaConsole(in));
-        System.out.printf("It is %d", result);
+        String result = (option == FILE_NUM ? viaFile(in) : viaConsole(in));
+        System.out.printf("It is %s", result);
         in.close();
     }
 }
