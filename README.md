@@ -17,6 +17,11 @@
    - [ ] Лабораторная работа 4
 ## Очивочки
 [![codewars](https://www.codewars.com/users/kostya%20bet/badges/micro)](https://codewars.com/users/kostya%20bet)
-<a href="https://codeforces.com/profile/KostikBet">
-<img src="https://raw.githubusercontent.com/kostyabet/cf-stats/main/output/max_rating.svg" />
-</a>
+<p align="left">
+  <a href="https://leetcode.com/kostyabet/">
+    <img src="https://cp-logo.vercel.app/leetcode/kostyabet" alt="Leet code rating" />
+  </a>
+  <a href="https://codeforces.com/profile/kostyabet">
+    <img src="https://raw.githubusercontent.com/kostyabet/cf-stats/main/output/rating.svg" alt="Leet code rating" />
+  </a>
+</p>
