@@ -3,7 +3,13 @@ package lab2;
 import java.util.Scanner;
 
 public class lab2 {
-    static int input(final int max,final int min, Scanner in) {
+    static final int MAX_N = 1000000;
+    static final int MAX_K = 100000;
+    static final int MIN_K = 1;
+
+
+    static int input() {
+        Scanner in = new Scanner(System.in);
         int k = 0;
         boolean isIncorrect = true;
         do {
@@ -12,11 +18,13 @@ public class lab2 {
             } catch (NumberFormatException error) {
                 System.err.print("Invalid numeric input.\n");
             }
-            if (k < min || k > max)
-                System.out.printf("Number should be from %d to %d.\n", min, max);
+            if (k < MIN_K || k > MAX_K)
+                System.err.printf("Number should be from %d to %d.\n", MIN_K, MAX_K);
             else
                 isIncorrect = false;
         } while (isIncorrect);
+        in.close();
+
         return k;
     }
 
@@ -36,9 +44,9 @@ public class lab2 {
     }
 
 
-    static void searchNum(final int max, int k) {
+    static void searchNum(int k) {
         int nutNumb = k;
-        while (nutNumb <= max){
+        while (nutNumb <= MAX_N){
             int Sum = sumOfDigits(nutNumb);
             if(checkSum(Sum, k, nutNumb)) {
                 System.out.printf("%d ", nutNumb);
@@ -49,19 +57,11 @@ public class lab2 {
 
 
     public static void main(String[] args) {
-        final int MAXN = 1000000;
-        final int MAXK = 100000;
-        final int MINK = 3;
-
-        Scanner in = new Scanner(System.in);
-
         System.out.print("The program finds all natural numbers that are k times the sum of their digits.\n");
 
-        System.out.printf("Write K number from %d to %d:\n", MINK, MAXK);
-        int k = input(MAXK, MINK, in);
+        System.out.printf("Write K number from %d to %d:\n", MIN_K, MAX_K);
+        int k = input();
 
-        in.close();
-
-        searchNum(MAXN, k);
+        searchNum(k);
     }
 }

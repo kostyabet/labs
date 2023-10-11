@@ -4,14 +4,14 @@ Uses
     System.SysUtils;
 
 Const
-    MAXN = 1000000;
-    MAXK = 100000;
-    MINK = 3;
+    MAX_N = 1000000;
+    MAX_K = 100000;
+    MIN_K = 1;
 
 Var
     K, Sum: Integer;
 
-Function Input(Max: Integer; Min: Integer): Integer;
+Function Input(): Integer;
 Var
     K: Integer;
     IsCorrect: Boolean;
@@ -24,9 +24,9 @@ Begin
             Writeln('Invalid numeric input.');
             IsCorrect := False;
         End;
-        If (K < Min) Or (K > Max) Then
+        If (K < MIN_K) Or (K > MAX_K) Then
         Begin
-            Writeln('Number should be from ', Min, ' to ', Max, '.');
+            Writeln('Number should be from ', MIN_K, ' to ', MAX_K, '.');
             IsCorrect := False;
         End;
 
@@ -56,27 +56,27 @@ Begin
         CheckSum := False;
 End;
 
-Procedure SearchNum(Max: Integer; K: Integer);
+Procedure SearchNum(K: Integer);
 Var
     Sum, NutNumb: Integer;
 Begin
-    NutNumb := K;
-    While (NutNumb <= Max) Do
+    NutNumb := k;
+    While (NutNumb <= MAX_N) Do
     Begin
         Sum := SumOfDigits(NutNumb);
         If (CheckSum(Sum, K, NutNumb)) Then
             Write(NutNumb, ' ');
-        NutNumb := NutNumb + K;
+        NutNumb := NutNumb + k;
     End;
 End;
 
 Begin
     Writeln('The program finds all natural numbers that are k times the sum of their digits.');
 
-    Writeln('Write K number from ', MINK, ' to ', MAXK, ':');
-    K := Input(MAXK, MINK);
+    Writeln('Write K number from ', MIN_K, ' to ', MAX_K, ':');
+    K := Input();
 
-    SearchNum(MAXN, K);
+    SearchNum(K);
     Readln;
 
 End.

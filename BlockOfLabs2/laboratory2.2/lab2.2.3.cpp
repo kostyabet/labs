@@ -2,7 +2,12 @@
 using namespace std;
 
 
-int input(const int max, const int min) {
+const int MAX_N = 1000000;
+const int MAX_K = 100000;
+const int MIN_K = 1;
+
+
+int input() {
 	int k;
 	bool isIncorrect = true;
 	do
@@ -11,10 +16,10 @@ int input(const int max, const int min) {
 		if (cin.fail() || cin.get() != '\n') {
 			cout << "Invalid numeric input.\n";
 			cin.clear();
-			cin.ignore(30000, '\n');
+			while (cin.get() != '\n');
 		}
-		else if (k < min || k > max)
-			cout << "Number should be from " << min << " to " << max << ".\n";
+		else if (k < MIN_K || k > MAX_K)
+			cout << "Number should be from " << MIN_K << " to " << MAX_K << ".\n";
 		else
 			isIncorrect = false;
 	} while (isIncorrect);
@@ -38,9 +43,9 @@ bool checkSum(int Sum, int k, int nutNumb) {
 }
 
 
-void searchNum(const int max, int k) {
+void searchNum(int k) {
 	int nutNumb = k;
-	while (nutNumb <= max) {
+	while (nutNumb <= MAX_N) {
 		int sum = sumOfDigits(nutNumb);
 		if (checkSum(sum, k, nutNumb))
 			cout << nutNumb << " ";
@@ -51,15 +56,11 @@ void searchNum(const int max, int k) {
 
 int main()
 {
-	const int MAXN = 1000000;
-	const int MAXK = 100000;
-	const int MINK = 3;
-
 	cout << "The program finds all natural numbers that are k times the sum of their digits.\n";
 
-	cout << "Write K number from " << MINK << " to " << MAXK << ":\n";
-	int k = input(MAXK, MINK);
+	cout << "Write K number from " << MIN_K << " to " << MAX_K << ":\n";
+	int k = input();
 
-	searchNum(MAXN, k);
+	searchNum(k);
 	return 0;
 }
