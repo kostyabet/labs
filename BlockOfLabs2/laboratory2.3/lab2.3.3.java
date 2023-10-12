@@ -60,17 +60,17 @@ public class lab3 {
         String palindrome;
         palindrome = in.nextLine();
         if (isPalindrome(palindrome))
-            return "palindrome";
+            return "palindrome.\n";
         else
-            return "not a palindrome";
+            return "not a palindrome.\n";
     }
 
 
     static String workWithPalin(String palindrome) {
         if (isPalindrome(palindrome))
-            return "palindrome(" + palindrome + ").";
+            return "palindrome(" + palindrome + ").\n";
         else
-            return "not a palindrome(" + palindrome + ").";
+            return "not a palindrome(" + palindrome + ").\n";
     }
 
     static String viaFile(Scanner in) {
@@ -78,6 +78,7 @@ public class lab3 {
         boolean isIncorrect = true;
         do {
             System.out.print("Write way to your file: ");
+            fileWay = null;
             fileWay = inputWay(in);
             assert fileWay != null;
             File file = new File(fileWay);

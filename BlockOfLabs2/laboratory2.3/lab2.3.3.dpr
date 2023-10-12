@@ -58,11 +58,13 @@ End;
 Function IsPalindrome(Palindrome: String): Boolean;
 Var
     I, HighI: Integer;
+    IsCorrect: Boolean;
 Begin
     HighI := Palindrome.Length Div 2;
-    For I := 0 To HighI Do
+    IsCorrect := True;
+    For I := 1 To HighI Do
     Begin
-        If Palindrome[I] <> Palindrome[Palindrome.Length - (I + 1)] Then
+        If Palindrome[I] <> Palindrome[Palindrome.Length - I] Then
             IsPalindrome := False;
     End;
     IsPalindrome := True;
@@ -75,9 +77,9 @@ Begin
     Write('Write your string: ');
     Readln(Palindrome);
     If (IsPalindrome(Palindrome)) Then
-        ViaConsole := 'palindrome'
+        ViaConsole := 'palindrome.'
     Else
-        ViaConsole := 'not a palindrome';
+        ViaConsole := 'not a palindrome.';
 End;
 
 Function WorkWithPalin(Palindrome: String): String;
@@ -90,7 +92,7 @@ End;
 
 Function ViaFile(): String;
 Var
-    FileWay, Palindrome: String;
+    FileWay, Palindrome, Str: String;
     MyFile: TextFile;
     IsCorrect: Boolean;
 Begin
@@ -98,15 +100,16 @@ Begin
     Repeat
         Write('Write way to your file: ');
         Readln(FileWay);
-        AssignFile(MyFile, FileWay);
-        Reset(MyFile);
-        Try
-            Readln(MyFile, Palindrome);
+        Try  
+            AssignFile(MyFile, FileWay);
+            Reset(MyFile);
+            Readln(MyFile, Palindrome); 
+            ViaFile := WorkWithPalin(Palindrome);
+            CloseFile(MyFile);
+            IsCorrect := true;
         Except
             Writeln('Bad File. Try again.');
         End;
-        ViaFile := WorkWithPalin(Palindrome);
-        CloseFile(MyFile);
     Until IsCorrect;
 End;
 
@@ -119,7 +122,6 @@ Begin
     Writeln('Where will we work through: ', #13#10#9, 'Console: ', CONS_NUM, #9, 'File: ', FILE_NUM, #13#10);
     Option := ChoosingAPath();
 
-
     If Option = FILE_NUM Then
         Resoult := ViaFile()
     Else
@@ -128,5 +130,5 @@ Begin
 
     Writeln('Press any buttom to close the console.');
     Readln;
-    readln;
+
 End.
