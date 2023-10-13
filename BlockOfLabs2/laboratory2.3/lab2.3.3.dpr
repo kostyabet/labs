@@ -6,11 +6,8 @@
 Uses
     System.SysUtils;
 
-Const
-    CONS_NUM = 1;
-
-Const
-    FILE_NUM = 2;
+Const CONS_NUM = 1;
+Const FILE_NUM = 2;
 
 Function ChoosingAPath(): Integer;
 Var
@@ -64,10 +61,21 @@ Begin
     IsCorrect := True;
     For I := 1 To HighI Do
     Begin
-        If Palindrome[I] <> Palindrome[Palindrome.Length - I] Then
-            IsPalindrome := False;
+        If Palindrome[I] <> Palindrome[Palindrome.Length + 1 - I] Then
+            IsCorrect := False;
     End;
-    IsPalindrome := True;
+    If IsCorrect = True Then
+        IsPalindrome := True
+    Else
+        IsPalindrome := False;
+End;
+
+Function WorkWithPalin(Palindrome: String): String;
+Begin
+    If IsPalindrome(Palindrome) = True Then
+        WorkWithPalin := 'It is palindrome.'
+    Else
+        WorkWithPalin := 'It is not a palindrome.';
 End;
 
 Function ViaConsole(): String;
@@ -76,23 +84,12 @@ Var
 Begin
     Write('Write your string: ');
     Readln(Palindrome);
-    If (IsPalindrome(Palindrome)) Then
-        ViaConsole := 'palindrome.'
-    Else
-        ViaConsole := 'not a palindrome.';
-End;
-
-Function WorkWithPalin(Palindrome: String): String;
-Begin
-    If IsPalindrome(Palindrome) Then
-        WorkWithPalin := 'palindrome(' + Palindrome + ').'
-    Else
-        WorkWithPalin := 'not a palindrome(' + Palindrome + ').';
+    ViaConsole := WorkWithPalin(Palindrome);
 End;
 
 Function ViaFile(): String;
 Var
-    FileWay, Palindrome, Str: String;
+    FileWay, Palindrome: String;
     MyFile: TextFile;
     IsCorrect: Boolean;
 Begin
@@ -100,13 +97,15 @@ Begin
     Repeat
         Write('Write way to your file: ');
         Readln(FileWay);
-        Try  
+        Try
             AssignFile(MyFile, FileWay);
             Reset(MyFile);
-            Readln(MyFile, Palindrome); 
-            ViaFile := WorkWithPalin(Palindrome);
+            Readln(MyFile, Palindrome);
+            Append(MyFile);
+            Write(MyFile, ' - ' + WorkWithPalin(Palindrome));
             CloseFile(MyFile);
-            IsCorrect := true;
+            ViaFile := 'Cheack your file.';
+            IsCorrect := True;
         Except
             Writeln('Bad File. Try again.');
         End;
@@ -126,9 +125,7 @@ Begin
         Resoult := ViaFile()
     Else
         Resoult := ViaConsole();
-    Writeln('It is ', Resoult);
-
-    Writeln('Press any buttom to close the console.');
+    Writeln(Resoult);
     Readln;
 
 End.

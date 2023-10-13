@@ -1,6 +1,6 @@
 ﻿#include <iostream>
-#include <string> // for write palindrom and way to the file
-#include <fstream> // for work with files
+#include <string>
+#include <fstream>
 using namespace std;
 const int CONS_NUM = 1;
 const int FILE_NUM = 2;
@@ -38,7 +38,8 @@ int choosingAPath() {
 			cin.ignore(30000, '\n');
 		}
 		else if (num != CONS_NUM && num != FILE_NUM)
-			cout << "Choose only " << CONS_NUM << " or " << FILE_NUM << ". Try again.\n";
+			cout << "Choose only " << CONS_NUM << " or " << FILE_NUM <<
+			". Try again.\n";
 		else
 			isIncorrect = false;
 	} while (isIncorrect);
@@ -59,9 +60,9 @@ bool isPalindrome(string palindrome) {
 
 string workWithPalin(string palindrome) {
 	if (isPalindrome(palindrome))
-		return "palindrome(" + palindrome + ").";
+		return "It is palindrome.";
 	else
-		return "not a palindrome(" + palindrome + ").";
+		return "It is not a palindrome.";
 }
 
 
@@ -69,10 +70,7 @@ string viaConsole() {
 	cout << "Write your string: ";
 	string palindrome;
 	std::cin >> palindrome;
-	if (isPalindrome(palindrome))
-		return "palindrome.";
-	else
-		return "not a palindrome.";
+	return workWithPalin(palindrome);
 }
 
 
@@ -82,15 +80,14 @@ string viaFile() {
 	do {
 		cout << "Write way to your file: ";
 		fileWay = inputWay();
-		ifstream file;
+		fstream file;
 		file.open(fileWay);
 		if (file.is_open()) {
 			string palindrome, nextStr;
-			getline(file, palindrome);
-			if (getline(file, nextStr))
-				cout << "File should be only with one string.\n";
-			else
-				return workWithPalin(palindrome);
+			getline(cin, palindrome);
+			file << workWithPalin(palindrome) + " - ";
+			file.close();
+			return "Cheack your file.";
 		}
 		else
 			cout << "Bad File. Try again.\n";
@@ -100,12 +97,14 @@ string viaFile() {
 
 
 int main() {
-	std::cout << "The program determines whether\n\t the entered string is a palindrome.\n\n";
-	std::cout << "Where will we work through: \n\tConsole: " << CONS_NUM << "\tFile: " << FILE_NUM << "\n\n";
+	std::cout << "The program determines whether\n\t"
+		"the entered string is a palindrome.\n\n";
+	std::cout << "Where will we work through: \n\tConsole: " << CONS_NUM <<
+		"\tFile: " << FILE_NUM << "\n\n";
 	int option = choosingAPath();
 
-	string result = (option == FILE_NUM ? viaFile() : viaConsole());
-	cout << "It is " << result << "\n";
+	string result = option == FILE_NUM ? viaFile() : viaConsole();
+	cout << result;
 
 	return 0;
 }

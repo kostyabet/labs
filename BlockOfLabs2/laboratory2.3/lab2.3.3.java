@@ -55,22 +55,19 @@ public class lab3 {
     }
 
 
+    static String workWithPalin(String palindrome) {
+        if (isPalindrome(palindrome))
+            return "It is palindrome.";
+        else
+            return "It is not a palindrome.";
+    }
+
+
     static String viaConsole(Scanner in) {
         System.out.print("Write your string: ");
         String palindrome;
         palindrome = in.nextLine();
-        if (isPalindrome(palindrome))
-            return "palindrome.\n";
-        else
-            return "not a palindrome.\n";
-    }
-
-
-    static String workWithPalin(String palindrome) {
-        if (isPalindrome(palindrome))
-            return "palindrome(" + palindrome + ").\n";
-        else
-            return "not a palindrome(" + palindrome + ").\n";
+        return workWithPalin(palindrome);
     }
 
     static String viaFile(Scanner in) {
@@ -85,14 +82,13 @@ public class lab3 {
             try {
                 FileReader fileReader = new FileReader(file);
                 BufferedReader bufferedReader = new BufferedReader(fileReader);
-                String palindrome, nextStr;
+                String palindrome;
                 palindrome = bufferedReader.readLine();
-                nextStr = bufferedReader.readLine();
                 bufferedReader.close();
-                if (nextStr != null)
-                    System.out.println("File should be only with one string.");
-                else
-                    return workWithPalin(palindrome);
+                FileWriter writer = new FileWriter(fileWay);
+                writer.write(workWithPalin(palindrome) + " - " + palindrome);
+                writer.close();
+                return "Cheack your file.";
             } catch (IOException error) {
                 System.err.println("Bad File. Try again.\n");
             }
@@ -104,12 +100,14 @@ public class lab3 {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
 
-        System.out.print("The program determines whether\n\t the entered string is a palindrome.\n\n");
-        System.out.printf("Where will we work through: \n\tConsole: %d \tFile: %d \n\n", CONS_NUM, FILE_NUM);
+        System.out.print("The program determines whether\n\t " +
+                "the entered string is a palindrome.\n\n");
+        System.out.printf("Where will we work through: \n\t" +
+                "Console: %d \tFile: %d \n\n", CONS_NUM, FILE_NUM);
         int option = choosingAPath(in);
 
         String result = (option == FILE_NUM ? viaFile(in) : viaConsole(in));
-        System.out.printf("It is %s", result);
+        System.out.print(result);
         in.close();
     }
 }
