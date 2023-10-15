@@ -101,11 +101,23 @@ Begin
             AssignFile(MyFile, FileWay);
             Reset(MyFile);
             Readln(MyFile, Palindrome);
-            Append(MyFile);
-            Write(MyFile, ' - ' + WorkWithPalin(Palindrome));
-            CloseFile(MyFile);
-            ViaFile := 'Cheack your file.';
-            IsCorrect := True;
+            if (palindrome.length = 0) then
+            begin
+                Append(MyFile);
+                Write(MyFile, 'Nothing hear.');
+                CloseFile(MyFile);
+                ViaFile := 'Cheack your file.';
+                IsCorrect := True;
+            end
+            else
+            begin
+                Append(MyFile);
+                Write(MyFile, ' - ' + WorkWithPalin(Palindrome));
+                CloseFile(MyFile);
+                ViaFile := 'Cheack your file.';
+                IsCorrect := True;
+            end;
+            
         Except
             Writeln('Bad File. Try again.');
         End;
