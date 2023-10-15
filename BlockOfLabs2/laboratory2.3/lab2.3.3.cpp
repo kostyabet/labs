@@ -39,8 +39,8 @@ void pathCondition(int& num, bool& isIncorrect) {
 		while (cin.get() != '\n');
 	}
 	else if (num != CONS_NUM && num != FILE_NUM)
-		cout << "Choose only " << CONS_NUM << " or " << FILE_NUM <<
-		". Try again.\n";
+		cout << "Choose only " << CONS_NUM << " or "
+		<< FILE_NUM << ". Try again.\n";
 	else
 		isIncorrect = false;
 }
@@ -104,7 +104,7 @@ int inputPalinFile(fstream& file) {
 	int palindrome = 0, n = 1, k = 1;
 	char sim;
 	bool isCorrect = false;
-	while (file.get(sim) && palindrome != -1) {
+	while (file.get(sim) && palindrome != PALIN_OUTPUT_CONTROL) {
 		conditionCheack(sim, isCorrect, palindrome, n, k);
 		isCorrect = true;
 	}
@@ -128,7 +128,7 @@ int lengthOfPalin(int palindrome) {
 
 void putInMassive(char*& arrPalin, int palindrome) {
 	int i = 0;
-	while (palindrome > 0) {
+	while (palindrome) {
 		arrPalin[i] = palindrome % 10;
 		i++;
 		palindrome = palindrome / 10;
@@ -160,7 +160,7 @@ bool palinCheack(int palindrome) {
 
 void viaConsole() {
 	int palindrome = inputPalin();
-	if (palinCheack(palindrome) && palindrome > -1)
+	if (palinCheack(palindrome) && palindrome > PALIN_OUTPUT_CONTROL)
 		cout << "It is palindrome.";
 	else
 		cout << "It is not a palindrome.";
@@ -202,10 +202,10 @@ void viaFile() {
 
 
 int main() {
-	std::cout << "The program determines whether\n\t"
-		"the entered number is a palindrome.\n\n";
-	std::cout << "Where will we work through: \n\tConsole: " << CONS_NUM <<
-		"\tFile: " << FILE_NUM << "\n\n";
+	cout << "The program determines whether\n\t"
+		<< "the entered number is a palindrome.\n\n";
+	cout << "Where will we work through: \n\tConsole: "
+		<< CONS_NUM << "\tFile: " << FILE_NUM << "\n\n";
 	int option = choosingAPath();
 
 	option == FILE_NUM ? viaFile() : viaConsole();

@@ -125,7 +125,7 @@ public class lab3 {
 
     static void viaConsole(Scanner in) {
         int palindrome = inputPalin(in);
-        if (palinCheack(palindrome) && palindrome > -1)
+        if (palinCheack(palindrome) && palindrome > PALIN_OUTPUT_CONTROL)
             System.out.print("It is palindrome.");
         else
             System.out.print("It is not a palindrome.");
@@ -156,7 +156,7 @@ public class lab3 {
         int cs;
         char sim;
         boolean isCorrect = false;
-        while ((cs = fileReader.read()) != -1 && palindrome.get() != -1) {
+        while ((cs = fileReader.read()) != -1 && palindrome.get() != PALIN_OUTPUT_CONTROL) {
             sim = (char) cs;
             conditionCheack(sim, isCorrect, palindrome, n, k);
             isCorrect = true;
