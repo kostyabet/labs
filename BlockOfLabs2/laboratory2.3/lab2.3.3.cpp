@@ -65,6 +65,8 @@ void palinCondition(bool& isIncorrect, int& palindrome) {
 		cin.clear();
 		while (cin.get() != '\n');
 	}
+	else if (palindrome < 1)
+		cout << "Number should be natural.\n";
 	else
 		isIncorrect = false;
 }
@@ -82,9 +84,9 @@ int inputPalin() {
 }
 
 
-void conditionCheack(char sim, bool isCorrect, int& palindrome, int& n, int& k) {
-	if (sim == '-' && !isCorrect)
-		k = PALIN_OUTPUT_CONTROL;
+void conditionCheack(char sim, bool isCorrect, int& palindrome, int& n) {
+	if ((sim == '-' || sim == '0') && !isCorrect)
+		palindrome = PALIN_OUTPUT_CONTROL;
 	else if (sim < '0' || sim > '9')
 		palindrome = PALIN_OUTPUT_CONTROL;
 	else {
@@ -101,14 +103,13 @@ void cheackForOneString(bool isCorrect, int& palindrome) {
 
 
 int inputPalinFile(fstream& file) {
-	int palindrome = 0, n = 1, k = 1;
+	int palindrome = 0, n = 1;
 	char sim;
 	bool isCorrect = false;
 	while (file.get(sim) && palindrome != PALIN_OUTPUT_CONTROL) {
-		conditionCheack(sim, isCorrect, palindrome, n, k);
+		conditionCheack(sim, isCorrect, palindrome, n);
 		isCorrect = true;
 	}
-	palindrome *= k;
 	cheackForOneString(isCorrect, palindrome);
 
 	return palindrome;
@@ -126,7 +127,7 @@ int lengthOfPalin(int palindrome) {
 }
 
 
-void putInMassive(char*& arrPalin, int palindrome) {
+void putInMassive(int*& arrPalin, int palindrome) {
 	int i = 0;
 	while (palindrome) {
 		arrPalin[i] = palindrome % 10;
@@ -136,7 +137,7 @@ void putInMassive(char*& arrPalin, int palindrome) {
 }
 
 
-bool palinIsPalin(char*& arrPalin, int palinLen, int palindrome) {
+bool palinIsPalin(int*& arrPalin, int palinLen, int palindrome) {
 	bool isCorrect = true;
 	for (int i = 0; i < palinLen / 2; i++) {
 		if (arrPalin[i] != arrPalin[palinLen - i - 1])
@@ -150,9 +151,9 @@ bool palinIsPalin(char*& arrPalin, int palinLen, int palindrome) {
 
 
 bool palinCheack(int palindrome) {
-	int palinLen = lengthOfPalin(abs(palindrome));
-	char* arrPalin = new char[palinLen];
-	putInMassive(arrPalin, abs(palindrome));
+	int palinLen = lengthOfPalin(palindrome);
+	int* arrPalin = new int[palinLen];
+	putInMassive(arrPalin, palindrome);
 
 	return palinIsPalin(arrPalin, palinLen, palindrome);
 }
@@ -203,7 +204,7 @@ void viaFile() {
 
 int main() {
 	cout << "The program determines whether\n\t"
-		<< "the entered number is a palindrome.\n\n";
+		<< "the entered natural number is a palindrome.\n\n";
 	cout << "Where will we work through: \n\tConsole: "
 		<< CONS_NUM << "\tFile: " << FILE_NUM << "\n\n";
 	int option = choosingAPath();

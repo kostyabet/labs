@@ -42,10 +42,14 @@ Procedure PalinCondition(Var IsCorrect: Boolean; Var Palindrome: Integer);
 Begin
     Try
         Readln(Palindrome);
-        IsCorrect := True;
+
     Except
-        Writeln('Invalid numeric input.Try again.');
+        Writeln('Invalid numeric input. Try again.');
     End;
+    If Palindrome < 1 Then
+        Writeln('Number should be natural.')
+    Else
+        IsCorrect := True;
 End;
 
 Function InputPalin(): Integer;
@@ -127,16 +131,16 @@ Begin
         Write('It is not a palindrome.');
 End;
 
-Procedure ConditionCheack(Sim: Char; IsCorrect: Boolean; Var Palindrome, N, K: Integer);
+Procedure ConditionCheack(Sim: Char; IsCorrect: Boolean; Var Palindrome, N: Integer);
 Begin
-    If (Sim = '-') And (IsCorrect = False) And (Sim <> #0) Then
-        K := PALIN_OUTPUT_CONTROL
+    If ((Sim = '-') Or (Sim = '0')) And (IsCorrect = False) Then
+        Palindrome := PALIN_OUTPUT_CONTROL
     Else
-        If ((Sim < '0') Or (Sim > '9')) And (Sim <> #0) Then
+        If ((Sim < '0') Or (Sim > '9')) Then
             Palindrome := PALIN_OUTPUT_CONTROL
         Else
         Begin
-            Palindrome := Palindrome + Ord(Sim) * N;
+            Palindrome := Palindrome + (Ord(Sim) - 48) * N;
             N := N * 10;
         End;
 End;
@@ -149,21 +153,24 @@ End;
 
 Function InputPalinFile(Var MyFile: TextFile): Integer;
 Var
-    Palindrome, N, K: Integer;
+    Palindrome, N: Integer;
     Sim: Char;
     IsCorrect: Boolean;
 Begin
     Palindrome := 0;
     N := 1;
-    K := 1;
-    Sim := '0';
-    While (Sim <> #0) Do
-    Begin
-        Read(MyFile, Sim);
-        ConditionCheack(Sim, IsCorrect, Palindrome, N, K); 
-        IsCorrect := True;
+    IsCorrect := False;
+    Reset(MyFile);
+    Try
+        While Not EOF(MyFile) And (Palindrome <> PALIN_OUTPUT_CONTROL) Do
+        Begin
+            Read(MyFile, Sim);
+            ConditionCheack(Sim, IsCorrect, Palindrome, N);
+            IsCorrect := True;
+        End;
+    Finally
+        CloseFile(MyFile);
     End;
-    Palindrome := Palindrome * K;
     CheackForOneString(IsCorrect, Palindrome);
 
     InputPalinFile := Palindrome;
@@ -231,9 +238,8 @@ Begin
     FileWay := InputWay();
     Try
         AssignFile(MyFile, FileWay);
-        //Reset(MyFile);
+        Reset(MyFile);
         WorkWithFile(MyFile);
-        //CloseFile(MyFile);
     Except
         Write('Bad File.');
     End;
@@ -245,7 +251,7 @@ Var
     Resoult: String;
 
 Begin
-    Writeln('The program determines whether', #13#10#9, 'the entered number is a palindrome.', #13#10);
+    Writeln('The program determines whether', #13#10#9, 'the entered natural number is a palindrome.', #13#10);
     Writeln('Where will we work through: ', #13#10#9, 'Console: ', CONS_NUM, #9, 'File: ', FILE_NUM, #13#10);
     Option := ChoosingAPath();
 

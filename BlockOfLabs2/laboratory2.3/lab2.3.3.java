@@ -5,8 +5,6 @@ import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.lang.Math.abs;
-
 public class lab3 {
     static final int CONS_NUM = 1;
     static final int FILE_NUM = 2;
@@ -61,10 +59,13 @@ public class lab3 {
     static void palinCondition(AtomicBoolean isIncorrect, AtomicInteger palindrome, Scanner in) {
         try{
             palindrome.set(Integer.parseInt(in.nextLine()));
-            isIncorrect.set(false);
         } catch (NumberFormatException error) {
             System.out.print("Invalid numeric input.Try again.\n");
         }
+        if (palindrome.get() < 1)
+            System.out.print("Number should be natural.\n");
+        else
+            isIncorrect.set(false);
     }
 
 
@@ -91,17 +92,17 @@ public class lab3 {
     }
 
 
-    static void putInMassive(char[] arrPalin, int palindrome) {
+    static void putInMassive(int[] arrPalin, int palindrome) {
         int i = 0;
         while (palindrome > 0) {
-            arrPalin[i] = (char) (palindrome % 10);
+            arrPalin[i] = palindrome % 10;
             i++;
             palindrome = palindrome / 10;
         }
     }
 
 
-    static boolean palinIsPalin(char[] arrPalin, int palinLen, int palindrome) {
+    static boolean palinIsPalin(int[] arrPalin, int palinLen, int palindrome) {
         boolean isCorrect = true;
         for (int i = 0; i < palinLen / 2; i++) {
             if (arrPalin[i] != arrPalin[palinLen - i - 1])
@@ -115,9 +116,9 @@ public class lab3 {
 
 
     static boolean palinCheack(int palindrome) {
-        int palinLen = lengthOfPalin(abs(palindrome));
-        char[] arrPalin = new char[palinLen];
-        putInMassive(arrPalin, abs(palindrome));
+        int palinLen = lengthOfPalin(palindrome);
+        int[] arrPalin = new int[palinLen];
+        putInMassive(arrPalin, palindrome);
 
         return palinIsPalin(arrPalin, palinLen, palindrome);
     }
@@ -132,9 +133,9 @@ public class lab3 {
     }
 
 
-    static void conditionCheack(char sim, boolean isCorrect, AtomicInteger palindrome, AtomicInteger n, AtomicInteger k) {
-        if (sim == '-' && !isCorrect)
-            k.set(PALIN_OUTPUT_CONTROL);
+    static void conditionCheack(char sim, boolean isCorrect, AtomicInteger palindrome, AtomicInteger n) {
+        if ((sim == '-' || sim == '0') && !isCorrect)
+            palindrome.set(PALIN_OUTPUT_CONTROL);
         else if (sim < '0' || sim > '9')
             palindrome.set(PALIN_OUTPUT_CONTROL);
         else {
@@ -152,16 +153,14 @@ public class lab3 {
     static int inputPalinFile(FileReader fileReader) throws IOException {
         AtomicInteger palindrome = new AtomicInteger(0);
         AtomicInteger n = new AtomicInteger(1);
-        AtomicInteger k = new AtomicInteger(1);
         int cs;
         char sim;
         boolean isCorrect = false;
         while ((cs = fileReader.read()) != -1 && palindrome.get() != PALIN_OUTPUT_CONTROL) {
             sim = (char) cs;
-            conditionCheack(sim, isCorrect, palindrome, n, k);
+            conditionCheack(sim, isCorrect, palindrome, n);
             isCorrect = true;
         }
-        palindrome.set(palindrome.get() * k.get());
         cheackForOneString(isCorrect, palindrome);
 
         return palindrome.get();
@@ -204,7 +203,7 @@ public class lab3 {
 
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
-        System.out.print("The program determines whether\n\tthe entered number is a palindrome.\n\n");
+        System.out.print("The program determines whether\n\tthe entered natural number is a palindrome.\n\n");
         System.out.printf("Where will we work through: \n\tConsole: %d \tFile: %d\n\n", CONS_NUM, FILE_NUM);
         int option = choosingAPath(in);
 
