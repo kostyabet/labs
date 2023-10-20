@@ -5,7 +5,7 @@
 using namespace std;
 const int CONS_NUM = 1;
 const int FILE_NUM = 2;
-const int MIN_ARR_SIZE = 1;
+const int MIN_ARR_SIZE = 2;
 
 
 void fileRestrict() {
@@ -82,7 +82,7 @@ int numInMassive() {
 			while (cin.get() != '\n');
 		}
 		else if (arrNumb < MIN_ARR_SIZE)
-			cout << "Number should be natural. Try again. \n";
+			cout << "Min num is " << MIN_ARR_SIZE << ". Try again. \n";
 		else
 			isIncorrect = false;
 	} while (isIncorrect);
@@ -110,22 +110,21 @@ double massiveElement(int i) {
 }
 
 
-void restrictCheack(int element, int lastElement, bool& isConditionYes) {
-	if (element > lastElement)
+void restrictCheack(int element, int lastElement, bool& isConditionYes, int i) {
+	if (element > lastElement && i > 0)
+		isConditionYes = true;
+	else if (i > 0)
 		isConditionYes = false;
 }
 
 
-bool arrayFilling(double*& arrOfNumb, int arrNumb) {
+bool arrayFilling(int*& arrOfNumb, int arrNumb) {
 	bool isConditionYes = true;
 	for (int i = 0; i < arrNumb; i++) {
 		arrOfNumb[i] = massiveElement(i);
-		restrictCheack(arrOfNumb[i], arrOfNumb[i - 1], isConditionYes);
+		restrictCheack(arrOfNumb[i], arrOfNumb[i - 1], isConditionYes, i);
 	}
-	if (isConditionYes)
-		return true;
-	else
-		return false;
+	return isConditionYes;
 }
 
 
@@ -142,7 +141,6 @@ int inputArrNumb(fstream& file) {
 	}
 
 	if (arrNumb < MIN_ARR_SIZE && isCorrect && !isWhile) {
-		file.clear();
 		file << "\tERROR.";
 		file.clear();
 		arrNumb = 0;
@@ -153,25 +151,39 @@ int inputArrNumb(fstream& file) {
 
 
 void workWithArr(int arrNumb, fstream& file) {
-	double* arrOfNumb = new double[arrNumb];
-	bool isCorrect = true;
+	int* arrOfNumb = new int[arrNumb];
+	bool isCorrect = true, isConditionYes = true, whileTrue = true;
+	char ell;
+	int size = 0;
 	for (int i = 0; i < arrNumb; i++) {
-		try {
-			file >> arrOfNumb[i];
-		}
-		catch (exception) {
-			file.clear();
-			file << "\nERROR.";
-		}
-		if (i && arrOfNumb[i] > arrOfNumb[i - 1])
-			isCorrect = false;
-	}
+		arrOfNumb[i] = 0;
+		whileTrue = true;
 
+		while (isCorrect && whileTrue && file.get(ell)) {
+			if ((ell < '0' || ell > '9') && ell != ' ')
+				isCorrect = false;
+			else if (ell != ' ') {
+				arrOfNumb[i] = arrOfNumb[i] * 10 + ell;
+				size++;
+			}
+			else
+				whileTrue = false;
+		}
+		if (arrOfNumb[i] > arrOfNumb[i - 1] && i > 0 && isCorrect);
+		else if (i > 0 && isCorrect)
+			isConditionYes = false;
+	}
+	if (file.get(ell) || size != arrNumb)
+		isCorrect = false;
+
+	file.seekg(0, ios::end);
 	file.clear();
-	if (isCorrect)
-		file << "\nOK";
+	if (!isCorrect)
+		file << "\nERROR.";
+	else if (isConditionYes)
+		file << "\nVozrost";
 	else
-		file << "\nNot OK";
+		file << "\nNe vozroct";
 }
 
 
@@ -189,11 +201,11 @@ void workWithFile(fstream& file) {
 
 void viaConsole() {
 	int arrNumb = numInMassive();
-	double* arrOfNumb = new double[arrNumb];
+	int* arrOfNumb = new int[arrNumb];
 	if (arrayFilling(arrOfNumb, arrNumb))
-		cout << "Не возростающая.";
+		cout << "Vozroct.";
 	else
-		cout << "Возростающая.";
+		cout << "Ne vozroct.";
 }
 
 
@@ -209,7 +221,7 @@ void viaFile() {
 
 int main() {
 	cout << "The program calculates whether the entered\n\t"
-		"number sequence is increasing.\n\n";
+		"natural number sequence is increasing.\n\n";
 	cout << "Where will we work through: \n\tConsole: "
 		<< CONS_NUM << "\tFile: " << FILE_NUM << "\n\n";
 	int option = choosingAPath();
