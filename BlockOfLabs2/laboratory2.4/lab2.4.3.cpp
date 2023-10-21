@@ -1,45 +1,17 @@
-﻿// 4.	Проверить является ли данная числовая последовательность а1, a2,..., an  невозрастающей.
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <fstream>
 using namespace std;
+
+
 const int CONS_NUM = 1;
 const int FILE_NUM = 2;
 const int MIN_ARR_SIZE = 2;
 
 
-void fileRestrict() {
-	cout << "\nRules for storing information in a file:\n\t"
-		"1.  The first line contains an integer: \n\t\t"
-		"the number of array elements;\n\t"
-		"2.  The second line is real number\n\t\t"
-		"sentered separated by spaces.\n\n";
-}
-
-
-void wayCondition(string way, bool& isIncorrect) {
-	if (way.size() > 4) {
-		string bufstr = way.substr(way.size() - 4);
-		if (bufstr == ".txt")
-			isIncorrect = false;
-		else
-			cout << "Write .txt file.\n";
-	}
-	else
-		cout << "The path is too short.\n";
-}
-
-
-string inputWay() {
-	string way;
-	bool isIncorrect = true;
-	do {
-		cout << "Write way to your file: ";
-		cin >> way;
-		wayCondition(way, isIncorrect);
-	} while (isIncorrect);
-
-	return way;
+void condition() {
+	cout << "The program calculates whether the entered\n\t"
+		    "natural number sequence is increasing.\n\n";
 }
 
 
@@ -59,6 +31,8 @@ void pathCondition(int& num, bool& isIncorrect) {
 
 
 int choosingAPath() {
+	cout << "Where will we work through: \n\tConsole: "
+		 << CONS_NUM << "\tFile: " << FILE_NUM << "\n\n";
 	int num;
 	bool isIncorrect = true;
 	do {
@@ -69,7 +43,7 @@ int choosingAPath() {
 	return num;
 }
 
-
+//work in console
 int numInMassive() {
 	bool isIncorrect = true;
 	int arrNumb;
@@ -110,120 +84,194 @@ double massiveElement(int i) {
 }
 
 
-void restrictCheack(int element, int lastElement, bool& isConditionYes, int i) {
-	if (element > lastElement && i > 0)
-		isConditionYes = true;
+void restrictCheack(double element, double lastElement, bool& isConditionYes, int i) {
+	if (element > lastElement && i > 0);
 	else if (i > 0)
 		isConditionYes = false;
 }
 
 
-bool arrayFilling(int*& arrOfNumb, int arrNumb) {
+bool arrayFilling(double*& arrOfNumb, int arrNumb) {
 	bool isConditionYes = true;
 	for (int i = 0; i < arrNumb; i++) {
 		arrOfNumb[i] = massiveElement(i);
 		restrictCheack(arrOfNumb[i], arrOfNumb[i - 1], isConditionYes, i);
 	}
+	
 	return isConditionYes;
-}
-
-
-int inputArrNumb(fstream& file) {
-	int arrNumb = 0;
-	bool isCorrect = true, isWhile = false;
-	char ell;
-	while (file.get(ell) && isCorrect && ell != '\n') {
-		if (ell < '0' || ell > '9')
-			isCorrect = false;
-		arrNumb *= 10;
-		arrNumb += ell - 48;
-		isWhile = true;
-	}
-
-	if (arrNumb < MIN_ARR_SIZE && isCorrect && !isWhile) {
-		file << "\tERROR.";
-		file.clear();
-		arrNumb = 0;
-	}
-
-	return arrNumb;
-}
-
-
-void workWithArr(int arrNumb, fstream& file) {
-	int* arrOfNumb = new int[arrNumb];
-	bool isCorrect = true, isConditionYes = true, whileTrue = true;
-	char ell;
-	int size = 0;
-	for (int i = 0; i < arrNumb; i++) {
-		arrOfNumb[i] = 0;
-		whileTrue = true;
-
-		while (isCorrect && whileTrue && file.get(ell)) {
-			if ((ell < '0' || ell > '9') && ell != ' ')
-				isCorrect = false;
-			else if (ell != ' ') {
-				arrOfNumb[i] = arrOfNumb[i] * 10 + ell;
-				size++;
-			}
-			else
-				whileTrue = false;
-		}
-		if (arrOfNumb[i] > arrOfNumb[i - 1] && i > 0 && isCorrect);
-		else if (i > 0 && isCorrect)
-			isConditionYes = false;
-	}
-	if (file.get(ell) || size != arrNumb)
-		isCorrect = false;
-
-	file.seekg(0, ios::end);
-	file.clear();
-	if (!isCorrect)
-		file << "\nERROR.";
-	else if (isConditionYes)
-		file << "\nVozrost";
-	else
-		file << "\nNe vozroct";
-}
-
-
-void workWithFile(fstream& file) {
-	if (file.is_open()) {
-		int arrNumb = inputArrNumb(file);
-		if (arrNumb != 0)
-			workWithArr(arrNumb, file);
-		cout << "Cheack your file.";
-	}
-	else
-		cout << "Bad File.";
 }
 
 
 void viaConsole() {
 	int arrNumb = numInMassive();
-	int* arrOfNumb = new int[arrNumb];
+	double* arrOfNumb = new double[arrNumb];
 	if (arrayFilling(arrOfNumb, arrNumb))
 		cout << "Vozroct.";
 	else
 		cout << "Ne vozroct.";
 }
 
+// work with file
+void fileRestrict() {
+	cout << "\nRules for storing information in a file:\n\t"
+		"1.  The first line contains an integer: \n\t\t"
+		"the number of array elements;\n\t"
+		"2.  The second line is real number\n\t\t"
+		"sentered separated by spaces.\n\n";
+}
 
-void viaFile() {
-	fileRestrict();
-	string fileWay = inputWay();
-	fstream file;
+
+void wayCondition(string way, bool& isIncorrect) {
+	if (way.size() > 4) {
+		string bufstr = way.substr(way.size() - 4);
+		if (bufstr == ".txt")
+			isIncorrect = false;
+		else
+			cout << "Write .txt file.\n";
+	}
+	else
+		cout << "The path is too short.\n";
+}
+
+
+string inputWay() {
+	string way;
+	bool isIncorrect = true;
+	do {
+		cout << "Write way to your file: ";
+		cin >> way;
+		wayCondition(way, isIncorrect);
+	} while (isIncorrect);
+
+	return way;
+}
+
+
+bool inputFromFile(ifstream& file, int& sizeOfAllEllements, double*& arr) {
+	file >> sizeOfAllEllements;
+	if (file.fail() || file.get() != '\n')
+		return false;
+
+	if (sizeOfAllEllements < MIN_ARR_SIZE)
+		return false;
+
+	arr = new double[sizeOfAllEllements];
+	for (int i = 0; i < sizeOfAllEllements; i++) {
+		file >> arr[i];
+		if (file.fail())
+			return false;
+	}
+
+	if (!file.eof()) {
+		return false;
+	}
+
+	return true;
+}
+
+
+bool restrictionCheck(ofstream& file, int sizeOfAllEllements, double*& arr) {
+	bool isIncorrect = false;
+	file << sizeOfAllEllements;
+	file << endl;
+	for (int i = 1; i < sizeOfAllEllements; i++) {
+		file << arr[i - 1];
+		file << " ";
+		if (arr[i] > arr[i - 1]);
+		else
+			isIncorrect = true;
+	}
+	file << arr[sizeOfAllEllements - 1];
+
+	return isIncorrect;
+}
+
+
+string resoultOutput(bool& isIncorrect) {
+	if (isIncorrect)
+		return "\nNe vozrost";
+	else
+		return "\nVozrost";
+}
+
+
+void workWithArr(int sizeOfAllEllements, double*& arr, string fileWay) {
+	ofstream(file);
 	file.open(fileWay);
-	workWithFile(file);
+	
+	bool isIncorrect = restrictionCheck(file, sizeOfAllEllements, arr);
+	file << resoultOutput(isIncorrect);
+	
+	file.clear();
 	file.close();
 }
 
 
+bool readingProcess(string fileWay, int sizeOfAllEllements, double*& arr) {
+	ifstream(file);
+	file.open(fileWay);
+	
+	bool isIncorrect = inputFromFile(file, sizeOfAllEllements, arr);
+	
+	file.clear();
+	file.close();
+	
+	return isIncorrect;
+}
+
+
+void resoultOfReading(bool isIncorrect, int sizeOfAllEllements, double*& arr, string fileWay) {
+	if (isIncorrect)
+		workWithArr(sizeOfAllEllements, arr, fileWay);
+	else
+		cout << "ERROR in file.";
+}
+
+
+void workWithFile(string fileWay) {
+	int sizeOfAllEllements;
+	double* arr;
+	
+	bool isIncorrect = readingProcess(fileWay, sizeOfAllEllements, arr);
+	
+	cout << "Cheack yout file.";
+}
+
+
+bool fileIntegrityCheck(bool& isFileGood, string fileWay) {
+	fstream file;
+	file.open(fileWay);
+	
+	bool isFileGood = false;
+	if (file.is_open())
+		isFileGood = true;
+	
+	file.clear();
+	file.close();
+
+	return isFileGood;
+}
+
+
+void intergrityResoult(bool isFileGood, string fileWay) {
+	if (isFileGood)
+		workWithFile(fileWay);
+	else
+		cout << "\nBad File.";
+}
+
+
+void viaFile() {
+	fileRestrict();
+	
+	string fileWay = inputWay();
+	bool isFileGood = fileIntegrityCheck(isFileGood, fileWay);
+	intergrityResoult(isFileGood, fileWay);
+}
+
 int main() {
-	cout << "The program calculates whether the entered\n\t"
-		"natural number sequence is increasing.\n\n";
-	cout << "Where will we work through: \n\tConsole: "
-		<< CONS_NUM << "\tFile: " << FILE_NUM << "\n\n";
+	condition();
+
 	int option = choosingAPath();
 
 	option == FILE_NUM ? viaFile() : viaConsole();
