@@ -5,16 +5,44 @@ import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+class ImportDate{
+    private boolean isIncorrect;
+
+    public ImportDate(){
+
+    }
+
+    public ImportDate(boolean isIncorrect){
+        this.isIncorrect = isIncorrect;
+    }
+
+    public boolean isIncorrect() {
+        return isIncorrect;
+    }
+
+    public void setIncorrect(boolean incorrect) {
+        isIncorrect = incorrect;
+    }
+}
+
 public class lab3 {
     static final int CONS_NUM = 1;
     static final int FILE_NUM = 2;
     static final int PALIN_OUTPUT_CONTROL = -1;
 
-    static void wayCondition(String way, AtomicBoolean isIncorrect) {
+
+    static void printStatement(){
+        System.out.print("The program determines whether\n\tthe entered natural number is a palindrome.\n\n");
+    }
+
+
+    static void wayCondition(String way, ImportDate Date) {
+        //ImportData ImDate = new ImportData(true);
+        //boolean isIncorrect = ImDate.getIsIncorrect();
         if (way.length() > 4) {
             String bufstr = way.substring(way.length() - 4);
             if (bufstr.equals(".txt"))
-                isIncorrect.set(false);
+                Date.setIncorrect(false);
             else
                 System.out.print("Write .txt file.\n");
         }
@@ -24,36 +52,40 @@ public class lab3 {
 
 
     static String inputWay(Scanner in) {
+        System.out.print("Write way to your file: ");
         String way;
-        AtomicBoolean isIncorrect = new AtomicBoolean(true);
+        ImportDate Date = new ImportDate(true);
         do {
             way = in.nextLine();
-            wayCondition(way, isIncorrect);
-        } while (isIncorrect.get());
+            wayCondition(way, Date);
+        } while (Date.isIncorrect());
 
         return way;
     }
 
-    static void pathCondition(AtomicInteger num, AtomicBoolean isIncorrect, Scanner in) {
+    static int pathCondition(ImportDate Date, Scanner in) {
+        int num = 0;
         try {
-            num.set(Integer.parseInt(in.nextLine()));
+            num = Integer.parseInt(in.nextLine());
         } catch (NumberFormatException error) {
             System.out.print("Invalid numeric input. Try again.\n");
         }
-        if (num.get() != CONS_NUM && num.get() != FILE_NUM)
+        if (num != CONS_NUM && num != FILE_NUM)
             System.out.printf("Choose only %d or %d. Try again.\n", CONS_NUM, FILE_NUM);
-        else isIncorrect.set(false);
+        else Date.setIncorrect(false);
+        return num;
     }
 
     static int choosingAPath(Scanner in) {
-        AtomicInteger num = new AtomicInteger(0);
-        AtomicBoolean isIncorrect = new AtomicBoolean(true);
+        System.out.printf("Where will we work through: \n\tConsole: %d \tFile: %d\n\n", CONS_NUM, FILE_NUM);
+        ImportDate Date = new ImportDate(true);
+        int result;
         do {
             System.out.print("Your choice: ");
-            pathCondition(num, isIncorrect, in);
-        } while (isIncorrect.get());
+            result = pathCondition(Date, in);
+        } while (Date.isIncorrect());
 
-        return num.get();
+        return result;
     }
 
     static void palinCondition(AtomicBoolean isIncorrect, AtomicInteger palindrome, Scanner in) {
@@ -124,12 +156,12 @@ public class lab3 {
     }
 
 
-    static void viaConsole(Scanner in) {
+    static int viaConsole(Scanner in) {
         int palindrome = inputPalin(in);
         if (palinCheack(palindrome) && palindrome > PALIN_OUTPUT_CONTROL)
-            System.out.print("It is palindrome.");
+            return 1;
         else
-            System.out.print("It is not a palindrome.");
+            return 0;
     }
 
 
@@ -166,18 +198,17 @@ public class lab3 {
         return palindrome.get();
     }
 
-    static void outputPalin(int palindrome,File fileWay) throws IOException {
-        FileWriter writer = new FileWriter(fileWay, true);
+    static int outputPalin(int palindrome){
         if (palindrome == PALIN_OUTPUT_CONTROL) {
-            writer.write("\nERROR.");
+            System.out.print("ERROR.");
+            return -1;
         }
         else if (palinCheack(palindrome))
-            writer.write("\nIt is palindrome.");
-        else writer.write("\nIt is not a palindrome.");
-        writer.close();
+            return 1;
+        else return 0;
     }
 
-    static void workWithFile(String fileWay, Scanner in){
+    static int workWithFile(String fileWay, Scanner in){
         assert fileWay != null;
         File file = new File(fileWay);
         try {
@@ -185,33 +216,71 @@ public class lab3 {
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             int palindrome = inputPalinFile(fileReader);
             bufferedReader.close();
-            outputPalin(palindrome, new File(fileWay));
-            System.out.print("Cheack your file.");
+            return outputPalin(palindrome);
         } catch (IOException error) {
             System.err.println("Bad File.");
+            return -1;
         }
     }
 
 
-    static void viaFile(Scanner in) {
+    static int viaFile(Scanner in) {
         String fileWay;
-        System.out.print("Write way to your file: ");
         fileWay = inputWay(in);
-        workWithFile(fileWay, in);
+        return workWithFile(fileWay, in);
     }
 
 
-    public static void main(String[] args) {
+    static void outputViaConsole(int result) {
+        if (result == 1)
+            System.out.print("Palindrome.");
+        else
+            System.out.print("Not a palidrome.");
+    }
+
+
+    static String fileCorrectOutput(int result) {
+        if (result == 1)
+            return "\nPalindrome.";
+        else
+            return "\nNot a palindrome.";
+    }
+
+
+    static void outputViaFile(int result, Scanner in) throws IOException {
+        String fileWay = inputWay(in);
+        File file = new File(fileWay);
+        try {
+            FileWriter writer = new FileWriter(fileWay, true);
+            writer.write(fileCorrectOutput(result));
+            writer.close();
+        } catch (IOException error) {
+            System.err.println("\nBad output file.");
+        }
+    }
+
+    private static void output(int option, int result, Scanner in) throws IOException {
+        if (result != -1) {
+            System.out.print("\n\nYou need to choose where to output the result.\n");
+            option = choosingAPath(in);
+
+            if (option == FILE_NUM) {
+                outputViaFile(result, in);
+            } else {
+                outputViaConsole(result);
+            }
+        }
+    }
+
+
+    public static void main(String[] args) throws IOException {
         Scanner in = new Scanner(System.in);
-        System.out.print("The program determines whether\n\tthe entered natural number is a palindrome.\n\n");
-        System.out.printf("Where will we work through: \n\tConsole: %d \tFile: %d\n\n", CONS_NUM, FILE_NUM);
+        printStatement();
         int option = choosingAPath(in);
 
-        if (option == FILE_NUM) {
-            viaFile(in);
-        } else {
-            viaConsole(in);
-        }
+        int result = option == FILE_NUM ? viaFile(in) : viaConsole(in);
+
+        output(option, result, in);
 
         in.close();
     }

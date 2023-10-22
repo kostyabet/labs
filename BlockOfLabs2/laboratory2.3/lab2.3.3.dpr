@@ -11,7 +11,14 @@ Const
     FILE_NUM: Integer = 2;
     PALIN_OUTPUT_CONTROL: Integer = -1;
 
-Procedure PathCondition(Var Num: Integer; Var IsCorrect: Boolean);
+Procedure PrintStatement();
+Begin
+    Writeln('The program determines whether', #13#10#9, 'the entered natural number is a palindrome.', #13#10);
+End;
+
+Function PathCondition(Var IsCorrect: Boolean): Integer;
+Var
+    Num: Integer;
 Begin
     Try
         Readln(Num);
@@ -22,27 +29,29 @@ Begin
         Writeln('Choose only ', CONS_NUM, ' or ', FILE_NUM, '. Try again.')
     Else
         IsCorrect := True;
+
+    PathCondition := Num;
 End;
 
 Function ChoosingAPath(): Integer;
 Var
-    Num: Integer;
+    Res: Integer;
     IsCorrect: Boolean;
 Begin
+    Writeln('Where will we work through: ', #13#10#9, 'Console: ', CONS_NUM, #9, 'File: ', FILE_NUM, #13#10);
     IsCorrect := False;
     Repeat
         Write('Your choice: ');
-        PathCondition(Num, IsCorrect);
+        Res := PathCondition(IsCorrect);
     Until IsCorrect;
 
-    ChoosingAPath := Num;
+    ChoosingAPath := Res;
 End;
 
 Procedure PalinCondition(Var IsCorrect: Boolean; Var Palindrome: Integer);
 Begin
     Try
         Readln(Palindrome);
-
     Except
         Writeln('Invalid numeric input. Try again.');
     End;
@@ -111,24 +120,30 @@ End;
 Function PalinCheack(Palindrome: Integer): Boolean;
 Var
     PalinLen: Integer;
+    Res: Boolean;
     ArrPalin: Array Of Integer;
 Begin
     PalinLen := LengthOfPalin(Abs(Palindrome));
     SetLength(ArrPalin, PalinLen);
     PutInMassive(ArrPalin, Abs(Palindrome));
 
-    PalinCheack := PalinIsPalin(ArrPalin, PalinLen, Palindrome);
+    Res := PalinIsPalin(ArrPalin, PalinLen, Palindrome);
+
+    ArrPalin := Nil;
+
+    PalinCheack := Res;
 End;
 
-Procedure ViaConsole();
+Function ViaConsole(): Integer;
 Var
-    Palindrome: Integer;
+    Palindrome, Res: Integer;
 Begin
     Palindrome := InputPalin();
     If (PalinCheack(Palindrome) And (Palindrome > PALIN_OUTPUT_CONTROL)) Then
-        Write('It is palindrome.')
+        Res := 1
     Else
-        Write('It is not a palindrome.');
+        Res := 0;
+    ViaConsole := Res;
 End;
 
 Procedure ConditionCheack(Sim: Char; IsCorrect: Boolean; Var Palindrome, N: Integer);
@@ -160,10 +175,11 @@ Begin
     Palindrome := 0;
     N := 1;
     IsCorrect := False;
-    Reset(MyFile);
     Try
+        Reset(MyFile);
         While Not EOF(MyFile) And (Palindrome <> PALIN_OUTPUT_CONTROL) Do
         Begin
+            Append(MyFile);
             Read(MyFile, Sim);
             ConditionCheack(Sim, IsCorrect, Palindrome, N);
             IsCorrect := True;
@@ -176,27 +192,27 @@ Begin
     InputPalinFile := Palindrome;
 End;
 
-Procedure OutputPalin(Palindrome: Integer; Var MyFile: TextFile);
+Function OutputPalin(Palindrome: Integer): Integer;
+Var
+    Res: Integer;
 Begin
-    Append(MyFile);
     If Palindrome = PALIN_OUTPUT_CONTROL Then
-        Write(MyFile, #13#10, 'ERROR.')
+        Res := -1
     Else
         If (PalinCheack(Palindrome)) Then
-            Write(MyFile, #13#10, 'It is palindrome.')
+            Res := 1
         Else
             If (Palindrome <> PALIN_OUTPUT_CONTROL) Then
-                Write(MyFile, #13#10, 'It is not a palindrome.');
-    CloseFile(MyFile);
+                Res := 0;
+    OutputPalin := Res;
 End;
 
-Procedure WorkWithFile(Var MyFile: TextFile);
+Function WorkWithFile(Var MyFile: TextFile): Integer;
 Var
     Palindrome: Integer;
 Begin
     Palindrome := InputPalinFile(MyFile);
-    OutputPalin(Palindrome, MyFile);
-    Write('Cheack your file.');
+    WorkWithFile := OutputPalin(Palindrome);
 End;
 
 Procedure WayCondition(Way: String; Var IsCorrect: Boolean);
@@ -220,6 +236,7 @@ Var
     Way: String;
     IsCorrect: Boolean;
 Begin
+    Write('Write way to your file: ');
     IsCorrect := False;
     Repeat
         Read(Way);
@@ -229,36 +246,95 @@ Begin
     InputWay := Way;
 End;
 
-Procedure ViaFile();
+Function ViaFile(): Integer;
 Var
     FileWay: String;
     MyFIle: TextFile;
+    Res: Integer;
 Begin
-    Write('Write way to your file: ');
     FileWay := InputWay();
     Try
         AssignFile(MyFile, FileWay);
         Reset(MyFile);
-        WorkWithFile(MyFile);
+        Res := WorkWithFile(MyFile);
     Except
         Write('Bad File.');
+        Res := -1;
+    End;
+
+    ViaFile := Res;
+End;
+
+Procedure OutputViaConsole(Result: Integer);
+Begin
+    If (Result = 1) Then
+        Writeln('Palindrome.')
+    Else
+        Writeln('Not a palindrome.');
+End;
+
+Function FileCorrectOutput(Res: Integer): String;
+Var
+    Resstr: String;
+Begin
+    If (Res = 1) Then
+        Resstr := 'Palindrome.'
+    Else
+        Resstr := 'Not a palindrome';
+    FileCorrectOutput := Resstr;
+End;
+
+Procedure OutputViaFile(Result: Integer);
+Var
+    FileWay: String;
+    MyFile: TextFile;
+Begin
+    FileWay := InputWay();
+    AssignFile(MyFile, FileWay);
+    Try
+        Try
+            Reset(MyFile);
+            Append(MyFile);
+            Write(MyFile, FileCorrectOutput(Result));
+        Finally
+            CloseFile(MyFile);
+        End;
+    Except
+        Write(#13#10, 'Bad output file.');
+    End;
+End;
+
+Procedure Output(Option, Result: Integer);
+Begin
+    If (Result <> -1) Then
+    Begin
+        Writeln(#13#10#10, 'You need to choose where to output the result.');
+        Option := ChoosingAPath();
+
+        If (Option = File_NUM) Then
+            OutputViaFile(Result)
+        Else
+            OutputViaConsole(Result);
     End;
 
 End;
 
 Var
-    Option: Integer;
+    Option, Result: Integer;
     Resoult: String;
 
 Begin
-    Writeln('The program determines whether', #13#10#9, 'the entered natural number is a palindrome.', #13#10);
-    Writeln('Where will we work through: ', #13#10#9, 'Console: ', CONS_NUM, #9, 'File: ', FILE_NUM, #13#10);
+    PrintStatement();
+
     Option := ChoosingAPath();
 
     If Option = FILE_NUM Then
-        ViaFile()
+        Result := ViaFile()
     Else
-        ViaConsole();
+        Result := ViaConsole();
+
+    Output(Option, Result);
+
     Readln;
     Readln;
 

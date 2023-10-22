@@ -6,6 +6,12 @@ const int FILE_NUM = 2;
 const int PALIN_OUTPUT_CONTROL = -1;
 
 
+void printStatement() {
+	cout << "The program determines whether\n\t"
+		<< "the entered natural number is a palindrome.\n\n";
+}
+
+
 void wayCondition(string way, bool& isIncorrect) {
 	if (way.size() > 4) {
 		string bufstr = way.substr(way.size() - 4);
@@ -20,6 +26,7 @@ void wayCondition(string way, bool& isIncorrect) {
 
 
 string inputWay() {
+	cout << "Write way to your file: ";
 	string way;
 	bool isIncorrect = true;
 	do {
@@ -31,7 +38,8 @@ string inputWay() {
 }
 
 
-void pathCondition(int& num, bool& isIncorrect) {
+int pathCondition(bool& isIncorrect) {
+	int num = 0;
 	cin >> num;
 	if (cin.fail() || cin.get() != '\n') {
 		cout << "Invalid numeric input. Try again.\n";
@@ -43,18 +51,21 @@ void pathCondition(int& num, bool& isIncorrect) {
 		<< FILE_NUM << ". Try again.\n";
 	else
 		isIncorrect = false;
+	return num;
 }
 
 
 int choosingAPath() {
-	int num;
+	cout << "Where will we work through: \n\tConsole: "
+		<< CONS_NUM << "\tFile: " << FILE_NUM << "\n\n";
+	int result;
 	bool isIncorrect = true;
 	do {
 		cout << "Your choice: ";
-		pathCondition(num, isIncorrect);
+		result = pathCondition(isIncorrect);
 	} while (isIncorrect);
 
-	return num;
+	return result;
 }
 
 
@@ -155,61 +166,110 @@ bool palinCheack(int palindrome) {
 	int* arrPalin = new int[palinLen];
 	putInMassive(arrPalin, palindrome);
 
-	return palinIsPalin(arrPalin, palinLen, palindrome);
+	bool result = palinIsPalin(arrPalin, palinLen, palindrome);
+
+	delete[] arrPalin;
+	arrPalin = nullptr;
+
+	return result;
 }
 
 
-void viaConsole() {
+int viaConsole() {
 	int palindrome = inputPalin();
 	if (palinCheack(palindrome) && palindrome > PALIN_OUTPUT_CONTROL)
-		cout << "It is palindrome.";
+		return 1;
 	else
-		cout << "It is not a palindrome.";
+		return 0;
 }
 
 
-void outputPalin(int palindrome, fstream& file) {
-	file.seekg(0, ios::end);
-	if (palindrome == PALIN_OUTPUT_CONTROL)
-		file << "\nERROR.";
+int outputPalin(int palindrome) {
+	if (palindrome == PALIN_OUTPUT_CONTROL) {
+		cout << "ERROR.";
+		return -1;
+	}
 	else if (palinCheack(palindrome))
-		file << "\nIt is palindrome.";
+		return 1;
 	else if (palindrome != PALIN_OUTPUT_CONTROL)
-		file << "\nIt is not a palindrome.";
+		return 0;
 }
 
 
-void workWithFile(fstream& file) {
+int workWithFile(fstream& file) {
 	if (file.is_open()) {
 		int palindrome = inputPalinFile(file);
-		file.clear();
-		outputPalin(palindrome, file);
-		cout << "Cheack your file.";
+		return outputPalin(palindrome);
 	}
-	else
+	else {
 		cout << "Bad File.";
+		return -1;
+	}
 }
 
 
-void viaFile() {
+int viaFile() {
 	string fileWay;
-	cout << "Write way to your file: ";
 	fileWay = inputWay();
 	fstream file;
 	file.open(fileWay);
-	workWithFile(file);
+	int result = workWithFile(file);
+	file.clear();
+	file.close();
+
+	return result;
+}
+
+
+void outputViaConsole(int result) {
+	if (result)
+		cout << "Palindrome.";
+	else
+		cout << "Not a palidrome.";
+}
+
+
+string fileCorrectOutput(int result) {
+	if (result)
+		return "\nPalindrome.";
+	else
+		return "\nNot a palindrome.";
+}
+
+
+void outputViaFile(int result) {
+	string fileWay = inputWay();
+	ofstream file(fileWay, ios::app);
+
+	if (file.is_open()) {
+		file << fileCorrectOutput(result);
+		cout << "Check your file.";
+	}
+	else
+		cout << "\nBad output file.";
+
+	file.clear();
 	file.close();
 }
 
 
+void output(int option, int result) {
+	if (result != -1) {
+		cout << "\n\nYou need to choose where to output the result.\n";
+		option = choosingAPath();
+
+		option == FILE_NUM ? outputViaFile(result) : outputViaConsole(result);
+	}
+}
+
+
 int main() {
-	cout << "The program determines whether\n\t"
-		<< "the entered natural number is a palindrome.\n\n";
-	cout << "Where will we work through: \n\tConsole: "
-		<< CONS_NUM << "\tFile: " << FILE_NUM << "\n\n";
+	printStatement();
 	int option = choosingAPath();
 
-	option == FILE_NUM ? viaFile() : viaConsole();
+	int result = option == FILE_NUM ? viaFile() : viaConsole();
+
+	output(option, result);
 
 	return 0;
 }
