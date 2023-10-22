@@ -12,19 +12,19 @@ namespace UnitTest1
 		
 		TEST_METHOD(TestMethod1)
 		{
-			int arrNumb = 3;
+			int arrSize = 3;
 			double** arrOfNumb{ 
 				new double* [4] { 
-					new double [arrNumb] {1.0, 2.0, 3.0},
-					new double [arrNumb] {2.0, 2.0, 3.0},
-					new double [arrNumb] {3.0, 2.0, 3.0},
-					new double [arrNumb] {1.0, 1.0, 1.0}
+					new double [arrSize] {0.0, 0.0, 0.0},
+					new double [arrSize] {0.000010, 0.000011, 0.000009},
+					new double [arrSize] {-12345, -12344, -12343},
+					new double [arrSize] {1e+10, 1e+10 + 1, 1e+10 + 2}
 				} 
 			};
-			Assert::AreEqual(arrayFilling(arrOfNumb[0], arrNumb), true);
-			Assert::AreEqual(arrayFilling(arrOfNumb[1], arrNumb), false);
-			Assert::AreEqual(arrayFilling(arrOfNumb[2], arrNumb), false);
-			Assert::AreEqual(arrayFilling(arrOfNumb[3], arrNumb), false);
+			Assert::AreEqual(isArrIncreasing(arrOfNumb[0], arrSize), false);
+			Assert::AreEqual(isArrIncreasing(arrOfNumb[1], arrSize), false);
+			Assert::AreEqual(isArrIncreasing(arrOfNumb[2], arrSize), true);
+			Assert::AreEqual(isArrIncreasing(arrOfNumb[3], arrSize), true);
 		}
 	};
 }
