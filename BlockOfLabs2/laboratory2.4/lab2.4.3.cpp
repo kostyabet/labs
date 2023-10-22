@@ -63,11 +63,11 @@ bool isArrIncreasing(double*& arrOfNumb, int arrSize) {
 }
 
 
-string resoultOfArrChecking(bool isIncreas) {
+int resoultOfArrChecking(bool isIncreas) {
 	if (isIncreas)
-		return "\nIncreasing.\n";
+		return 1;
 	else
-		return "\nNot increasing.\n";
+		return 0;
 }
 
 
@@ -123,12 +123,19 @@ void inputArr(double*& arrOfNumb, int arrSize) {
 }
 
 
-void viaConsole() {
+int viaConsole() {
 	int arrSize = inputArrSize();
 	double* arrOfNumb = new double[arrSize];
+
 	inputArr(arrOfNumb, arrSize);
 	bool isIncreasing = isArrIncreasing(arrOfNumb, arrSize);
-	cout << resoultOfArrChecking(isIncreasing);
+
+	int result = resoultOfArrChecking(isIncreasing);
+
+	delete[] arrOfNumb;
+	arrOfNumb = nullptr;
+
+	return result;
 }
 
 
@@ -162,6 +169,7 @@ string inputWayToTheFile() {
 	do {
 		cout << "Write way to your file: ";
 		cin >> way;
+
 		wayCondition(way, isIncorrect);
 	} while (isIncorrect);
 
@@ -192,14 +200,11 @@ bool isCorrectInputFromFile(ifstream& file, int& arrSize, double*& arrOfNumb) {
 }
 
 
-void workWithArr(int arrSize, double*& arrOfNumb, string fileWay) {
-	ofstream file(fileWay, ios::app);
-
+int workWithArr(int arrSize, double*& arrOfNumb) {
 	bool isIncreasin = isArrIncreasing(arrOfNumb, arrSize);
-	file << resoultOfArrChecking(isIncreasin);
+	int result = resoultOfArrChecking(isIncreasin);
 
-	file.clear();
-	file.close();
+	return result;
 }
 
 
@@ -215,23 +220,30 @@ bool isReadingCorrect(string fileWay, int arrSize, double*& arrOfNumb) {
 }
 
 
-void resultOfReading(bool isCorrect, int arrSize, double*& arrOfNumb,
+int resultOfReading(bool isCorrect, int arrSize, double*& arrOfNumb,
 	string fileWay) {
 	if (isCorrect) {
-		workWithArr(arrSize, arrOfNumb, fileWay);
-		cout << "Cheack yout file.";
+		return workWithArr(arrSize, arrOfNumb);
 	}
-	else
+	else {
 		cout << "ERROR in file.";
+
+		return -1;
+	}
 }
 
 
-void workWithFile(string fileWay) {
+int workWithFile(string fileWay) {
 	int arrSize = 0;
 	double* arrOfNumb;
 
 	bool isCorrect = isReadingCorrect(fileWay, arrSize, arrOfNumb);
-	resultOfReading(isCorrect, arrSize, arrOfNumb, fileWay);
+	int result = resultOfReading(isCorrect, arrSize, arrOfNumb, fileWay);
+
+	delete[] arrOfNumb;
+	arrOfNumb = nullptr;
+
+	return result;
 }
 
 
@@ -251,20 +263,69 @@ bool isFileIntegrity(string fileWay) {
 }
 
 
-void workWithIntergrityResoult(bool isIntegrity, string fileWay) {
+int workWithIntergrityResoult(bool isIntegrity, string fileWay) {
 	if (isIntegrity)
-		workWithFile(fileWay);
-	else
+		return workWithFile(fileWay);
+	else {
 		cout << "Bad File.";
+
+		return -1;
+	}
 }
 
 
-void viaFile() {
+int viaFile() {
 	fileRestriction();
 
 	string fileWay = inputWayToTheFile();
 	bool isIntegrity = isFileIntegrity(fileWay);
-	workWithIntergrityResoult(isIntegrity, fileWay);
+
+	return workWithIntergrityResoult(isIntegrity, fileWay);
+}
+
+
+/// output console
+void outputViaConsole(int result) {
+	if (result)
+		cout << "Increase.";
+	else
+		cout << "Unincrease.";
+}
+
+
+/// output file
+string fileCorrectOutput(int result) {
+	if (result)
+		return "\nIncrease.";
+	else
+		return "\nUnincrease.";
+}
+
+
+void outputViaFile(int result) {
+	string fileWay = inputWayToTheFile();
+	ofstream file(fileWay, ios::app);
+
+	if (file.is_open()) {
+		file << fileCorrectOutput(result);
+		cout << "Check your file.";
+	}
+	else
+		cout << "\nBad output file.";
+
+	file.clear();
+	file.close();
+}
+
+
+/// output
+void output(int option, int result) {
+	if (result != -1) {
+		cout << "\n\nYou need to choose where to output the result.\n";
+		option = choosingAPath();
+
+		option == FILE_NUM ? outputViaFile(result) : outputViaConsole(result);
+	}
 }
 
 
@@ -273,7 +334,9 @@ int main() {
 	printStatement();
 
 	int option = choosingAPath();
+	int result = option == FILE_NUM ? viaFile() : viaConsole();
 
-	option == FILE_NUM ? viaFile() : viaConsole();
+	output(option, result);
+
 	return 0;
 }
