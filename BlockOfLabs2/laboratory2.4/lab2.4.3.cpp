@@ -18,7 +18,8 @@ void printStatement() {
 
 
 // work with way to the file
-void pathСheck(int& path, bool& isIncorrect) {
+int pathСheck(bool& isIncorrect) {
+	int path;
 	cin >> path;
 
 	if (cin.fail() || cin.get() != '\n') {
@@ -31,6 +32,8 @@ void pathСheck(int& path, bool& isIncorrect) {
 		<< FILE_NUM << ". Try again.\n";
 	else
 		isIncorrect = false;
+
+	return path;
 }
 
 
@@ -42,7 +45,7 @@ int choosingAPath() {
 	bool isIncorrect = true;
 	do {
 		cout << "Your choice: ";
-		pathСheck(path, isIncorrect);
+		path = pathСheck(isIncorrect);
 	} while (isIncorrect);
 
 	return path;
@@ -81,12 +84,12 @@ int inputArrSize() {
 		cin >> arrSize;
 
 		if (cin.fail() || cin.get() != '\n') {
-			cout << "Invalid numeric input. Try again. \n";
+			cout << "Invalid numeric input. Try again.\n";
 			cin.clear();
 			while (cin.get() != '\n');
 		}
 		else if (arrSize < MIN_ARR_SIZE)
-			cout << "Min num is " << MIN_ARR_SIZE << ". Try again. \n";
+			cout << "Min num is " << MIN_ARR_SIZE << ". Try again.\n";
 		else
 			isIncorrect = false;
 	} while (isIncorrect);
@@ -145,7 +148,7 @@ void fileRestriction() {
 		"1.  The first line contains an integer: \n\t\t"
 		"the number of array elements;\n\t"
 		"2.  The second line is real number\n\t\t"
-		"sentered separated by spaces.\n\n";
+		"entered separated by spaces.\n\n";
 }
 
 
