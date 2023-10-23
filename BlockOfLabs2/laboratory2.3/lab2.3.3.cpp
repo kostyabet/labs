@@ -95,33 +95,25 @@ int inputPalin() {
 }
 
 
-void conditionCheack(char sim, bool isCorrect, int& palindrome, int& n) {
-	if ((sim == '-' || sim == '0') && !isCorrect)
-		palindrome = PALIN_OUTPUT_CONTROL;
-	else if (sim < '0' || sim > '9')
-		palindrome = PALIN_OUTPUT_CONTROL;
-	else {
-		palindrome += (sim - 48) * n;
-		n *= 10;
-	}
-}
-
-
-void cheackForOneString(bool isCorrect, int& palindrome) {
-	if (!isCorrect)
-		palindrome = PALIN_OUTPUT_CONTROL;
-}
-
-
 int inputPalinFile(fstream& file) {
-	int palindrome = 0, n = 1;
-	char sim;
-	bool isCorrect = false;
-	while (file.get(sim) && palindrome != PALIN_OUTPUT_CONTROL) {
-		conditionCheack(sim, isCorrect, palindrome, n);
-		isCorrect = true;
+	int palindrome = 0;
+	file >> palindrome;
+	if (file.fail()) {
+		cout << "Bad number in file.";
+		palindrome = -1;
+		file.clear();
 	}
-	cheackForOneString(isCorrect, palindrome);
+
+	char sim;
+	if (palindrome < 0) {
+		cout << "Number should be > 0.";
+		palindrome = -1;
+	}
+	else if (file.get(sim) && sim != ' ' && sim != '\n') {
+		palindrome = -1;
+		cout << "Should be only one num.";
+	}
+
 
 	return palindrome;
 }

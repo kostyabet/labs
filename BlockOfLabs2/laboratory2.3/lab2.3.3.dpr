@@ -139,56 +139,37 @@ Var
     Palindrome, Res: Integer;
 Begin
     Palindrome := InputPalin();
-    If (PalinCheack(Palindrome) And (Palindrome > PALIN_OUTPUT_CONTROL)) Then
+    If PalinCheack(Palindrome) And (Palindrome > PALIN_OUTPUT_CONTROL) Then
         Res := 1
     Else
         Res := 0;
+
     ViaConsole := Res;
-End;
-
-Procedure ConditionCheack(Sim: Char; IsCorrect: Boolean; Var Palindrome, N: Integer);
-Begin
-    If ((Sim = '-') Or (Sim = '0')) And (IsCorrect = False) Then
-        Palindrome := PALIN_OUTPUT_CONTROL
-    Else
-        If ((Sim < '0') Or (Sim > '9')) Then
-            Palindrome := PALIN_OUTPUT_CONTROL
-        Else
-        Begin
-            Palindrome := Palindrome + (Ord(Sim) - 48) * N;
-            N := N * 10;
-        End;
-End;
-
-Procedure CheackForOneString(IsCorrect: Boolean; Var Palindrome: Integer);
-Begin
-    If (IsCorrect = False) Then
-        Palindrome := PALIN_OUTPUT_CONTROL;
 End;
 
 Function InputPalinFile(Var MyFile: TextFile): Integer;
 Var
-    Palindrome, N: Integer;
-    Sim: Char;
-    IsCorrect: Boolean;
+    Palindrome: Integer;
 Begin
-    Palindrome := 0;
-    N := 1;
-    IsCorrect := False;
+    Reset(MyFile);
     Try
-        Reset(MyFile);
-        While Not EOF(MyFile) And (Palindrome <> PALIN_OUTPUT_CONTROL) Do
-        Begin
-            Append(MyFile);
-            Read(MyFile, Sim);
-            ConditionCheack(Sim, IsCorrect, Palindrome, N);
-            IsCorrect := True;
-        End;
-    Finally
-        CloseFile(MyFile);
+        Readln(MyFile, Palindrome);
+    Except
+        Write('Bad number in file.');
+        Palindrome := -1;
     End;
-    CheackForOneString(IsCorrect, Palindrome);
 
+    If Palindrome < 0 Then
+    Begin
+        Write('Number should be > 0.');
+        Palindrome := -1;
+    End
+    Else
+        If Not SeekEof(MyFile) Then
+        Begin
+            Write('Should be only one num.');
+            Palindrome := -1;
+        End;
     InputPalinFile := Palindrome;
 End;
 
@@ -204,31 +185,28 @@ Begin
         Else
             If (Palindrome <> PALIN_OUTPUT_CONTROL) Then
                 Res := 0;
+
     OutputPalin := Res;
 End;
 
 Function WorkWithFile(Var MyFile: TextFile): Integer;
 Var
-    Palindrome: Integer;
+    Palindrome, Res: Integer;
 Begin
     Palindrome := InputPalinFile(MyFile);
-    WorkWithFile := OutputPalin(Palindrome);
+    Res := OutputPalin(Palindrome);
+
+    WorkWithFile := Res;
 End;
 
 Procedure WayCondition(Way: String; Var IsCorrect: Boolean);
 Var
     Bufstr: String;
 Begin
-    If Way.Length > 4 Then
-    Begin
-        Bufstr := Way.Substring(Way.Length - 4);
-        If Bufstr = '.txt' Then
-            IsCorrect := True
-        Else
-            Writeln('Write .txt file.');
-    End
+    If ExtractFileExt(Way) <> '.txt' Then
+        Writeln('Write .txt file.')
     Else
-        Writeln('The path is too short.');
+        IsCorrect := True;
 End;
 
 Function InputWay(): String;
@@ -237,10 +215,11 @@ Var
     IsCorrect: Boolean;
 Begin
     Write('Write way to your file: ');
-    IsCorrect := False;
     Repeat
+        IsCorrect := False;
         Read(Way);
         WayCondition(Way, IsCorrect);
+        Readln;
     Until IsCorrect;
 
     InputWay := Way;
@@ -253,13 +232,15 @@ Var
     Res: Integer;
 Begin
     FileWay := InputWay();
+    AssignFile(MyFile, FileWay);
     Try
-        AssignFile(MyFile, FileWay);
         Reset(MyFile);
         Res := WorkWithFile(MyFile);
     Except
-        Write('Bad File.');
-        Res := -1;
+        Begin
+            Write('Bad File.', #13#10);
+            Res := -1;
+        End;
     End;
 
     ViaFile := Res;
@@ -267,7 +248,7 @@ End;
 
 Procedure OutputViaConsole(Result: Integer);
 Begin
-    If (Result = 1) Then
+    If Result = 1 Then
         Writeln('Palindrome.')
     Else
         Writeln('Not a palindrome.');
@@ -277,7 +258,7 @@ Function FileCorrectOutput(Res: Integer): String;
 Var
     Resstr: String;
 Begin
-    If (Res = 1) Then
+    If Res = 1 Then
         Resstr := 'Palindrome.'
     Else
         Resstr := 'Not a palindrome';
@@ -296,6 +277,7 @@ Begin
             Reset(MyFile);
             Append(MyFile);
             Write(MyFile, FileCorrectOutput(Result));
+            Write('Cheack your file.');
         Finally
             CloseFile(MyFile);
         End;
@@ -306,7 +288,7 @@ End;
 
 Procedure Output(Option, Result: Integer);
 Begin
-    If (Result <> -1) Then
+    If Result <> -1 Then
     Begin
         Writeln(#13#10#10, 'You need to choose where to output the result.');
         Option := ChoosingAPath();
@@ -316,7 +298,6 @@ Begin
         Else
             OutputViaConsole(Result);
     End;
-
 End;
 
 Var

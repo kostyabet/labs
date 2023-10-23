@@ -7,12 +7,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 class ImportDate{
     private boolean isIncorrect;
+    private int palindrome;
 
     public ImportDate(){
 
     }
 
-    public ImportDate(boolean isIncorrect){
+    public ImportDate(boolean isIncorrect, int palindrome){
+        this.palindrome = palindrome;
         this.isIncorrect = isIncorrect;
     }
 
@@ -22,6 +24,14 @@ class ImportDate{
 
     public void setIncorrect(boolean incorrect) {
         isIncorrect = incorrect;
+    }
+
+    public int getPalindrome() {
+        return palindrome;
+    }
+
+    public void setPalindrome(int palindrome) {
+        this.palindrome = palindrome;
     }
 }
 
@@ -37,8 +47,6 @@ public class lab3 {
 
 
     static void wayCondition(String way, ImportDate Date) {
-        //ImportData ImDate = new ImportData(true);
-        //boolean isIncorrect = ImDate.getIsIncorrect();
         if (way.length() > 4) {
             String bufstr = way.substring(way.length() - 4);
             if (bufstr.equals(".txt"))
@@ -54,7 +62,7 @@ public class lab3 {
     static String inputWay(Scanner in) {
         System.out.print("Write way to your file: ");
         String way;
-        ImportDate Date = new ImportDate(true);
+        ImportDate Date = new ImportDate(true, 0);
         do {
             way = in.nextLine();
             wayCondition(way, Date);
@@ -78,7 +86,7 @@ public class lab3 {
 
     static int choosingAPath(Scanner in) {
         System.out.printf("Where will we work through: \n\tConsole: %d \tFile: %d\n\n", CONS_NUM, FILE_NUM);
-        ImportDate Date = new ImportDate(true);
+        ImportDate Date = new ImportDate(true, 0);
         int result;
         do {
             System.out.print("Your choice: ");
@@ -88,28 +96,27 @@ public class lab3 {
         return result;
     }
 
-    static void palinCondition(AtomicBoolean isIncorrect, AtomicInteger palindrome, Scanner in) {
+    static void palinCondition(ImportDate Date, Scanner in) {
         try{
-            palindrome.set(Integer.parseInt(in.nextLine()));
+            Date.setPalindrome(Integer.parseInt(in.nextLine()));
         } catch (NumberFormatException error) {
             System.out.print("Invalid numeric input.Try again.\n");
         }
-        if (palindrome.get() < 1)
+        if (Date.getPalindrome() < 1)
             System.out.print("Number should be natural.\n");
         else
-            isIncorrect.set(false);
+            Date.setIncorrect(false);
     }
 
 
     static int inputPalin(Scanner in) {
-        AtomicBoolean isIncorrect = new AtomicBoolean(true);
-        AtomicInteger palindrome = new AtomicInteger(0);
+        ImportDate Date = new ImportDate(true, 0);
         do {
             System.out.print("Write your number: ");
-            palinCondition(isIncorrect, palindrome, in);
-        } while (isIncorrect.get());
+            palinCondition(Date, in);
+        } while (Date.isIncorrect());
 
-        return palindrome.get();
+        return Date.getPalindrome();
     }
 
 
@@ -165,37 +172,18 @@ public class lab3 {
     }
 
 
-    static void conditionCheack(char sim, boolean isCorrect, AtomicInteger palindrome, AtomicInteger n) {
-        if ((sim == '-' || sim == '0') && !isCorrect)
-            palindrome.set(PALIN_OUTPUT_CONTROL);
-        else if (sim < '0' || sim > '9')
-            palindrome.set(PALIN_OUTPUT_CONTROL);
-        else {
-            palindrome.set(palindrome.get() + (sim - 48) * n.get());
-            n.set(n.get() * 10);
+
+    static int inputPalinFile(BufferedReader bufferedReader) throws IOException {
+        int palindrome = 0;
+        String line = bufferedReader.readLine();
+        if (line != null)
+            palindrome = Integer.parseInt(line);
+
+        if (palindrome < 0) {
+            System.out.print("Number should be > 0.");
+            palindrome = -1;
         }
-    }
-
-
-    static void cheackForOneString(boolean isCorrect, AtomicInteger palindrome) {
-        if (!isCorrect)
-            palindrome.set(PALIN_OUTPUT_CONTROL);
-    }
-
-    static int inputPalinFile(FileReader fileReader) throws IOException {
-        AtomicInteger palindrome = new AtomicInteger(0);
-        AtomicInteger n = new AtomicInteger(1);
-        int cs;
-        char sim;
-        boolean isCorrect = false;
-        while ((cs = fileReader.read()) != -1 && palindrome.get() != PALIN_OUTPUT_CONTROL) {
-            sim = (char) cs;
-            conditionCheack(sim, isCorrect, palindrome, n);
-            isCorrect = true;
-        }
-        cheackForOneString(isCorrect, palindrome);
-
-        return palindrome.get();
+        return palindrome;
     }
 
     static int outputPalin(int palindrome){
@@ -214,7 +202,7 @@ public class lab3 {
         try {
             FileReader fileReader = new FileReader(file);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
-            int palindrome = inputPalinFile(fileReader);
+            int palindrome = inputPalinFile(bufferedReader);
             bufferedReader.close();
             return outputPalin(palindrome);
         } catch (IOException error) {
@@ -254,6 +242,7 @@ public class lab3 {
             FileWriter writer = new FileWriter(fileWay, true);
             writer.write(fileCorrectOutput(result));
             writer.close();
+            System.out.print("Cheack your file.");
         } catch (IOException error) {
             System.err.println("\nBad output file.");
         }
