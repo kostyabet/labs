@@ -8,9 +8,6 @@ import java.util.Scanner;
 class SaveData{
     private boolean isCorrect;
     private int arrSize;
-    public SaveData(){
-
-    }
 
     public SaveData(boolean isCorrect, int arrSize){
         this.isCorrect = isCorrect;
@@ -166,7 +163,8 @@ public class lab4 {
                 \t1.  The first line contains an integer:
                 \t\tthe number of array elements;
                 \t2.  The second line is real number
-                \t\tentered separated by spaces.\n
+                \t\tentered separated by spaces.
+                
                 """);
     }
 
@@ -254,7 +252,6 @@ public class lab4 {
 
 
     static int isReadingCorrect(String fileWay, SaveData SD)  {
-        File file = new File(fileWay);
         try {
             Scanner fileScanner = new Scanner(new File(fileWay));
             return isCorrectInputFromFile(fileScanner, SD);

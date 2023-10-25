@@ -20,15 +20,18 @@ End;
 Function PathCheck(Var IsIncorrect: Boolean): Integer;
 Var
     Path: Integer;
+    IsCorrect: boolean;
 Begin
+    IsCorrect := false;
     Try
         Read(Path);
+        IsCorrect := true;
     Except
         Write('Invalid numeric input. Try again.', #13#10);
     End;
-    If (Path <> CONS_NUM) And (Path <> FILE_NUM) Then
+    If (Path <> CONS_NUM) And (Path <> FILE_NUM) And IsCorrect Then
         Write('Choose only ', CONS_NUM, ' or ', FILE_NUM, ' Try again.', #13#10)
-    Else
+    Else if IsCorrect then
         IsIncorrect := True;
 
     PathCheck := Path;
@@ -40,7 +43,7 @@ Var
     IsIncorrect: Boolean;
 Begin
     Writeln('Where will we work throught: ', #13#10#9, 'Console: ', CONS_NUM, #9, 'File: ', FILE_NUM, #13#10);
-    IsIncorrect := True;
+    IsIncorrect := False;
     Repeat
         Write('Your choise: ');
         Path := PathCheck(IsIncorrect);
@@ -99,7 +102,7 @@ End;
 
 Function EnteringTheCurrentNumber(I: Integer): Real;
 Var
-    CurrentNum: Integer;
+    CurrentNum: Real;
     IsCorrect: Boolean;
 Begin
     IsCorrect := False;
@@ -147,7 +150,7 @@ End;
 ///work with file
 Procedure FileRestriction();
 Begin
-    Write(#13#10, 'Rules for storing information in a file: ', #13#10#9, '1.  The first line contains an integer: ', #13#10#9#9,
+    Writeln(#13#10, 'Rules for storing information in a file: ', #13#10#9, '1.  The first line contains an integer: ', #13#10#9#9,
         'the number of array elements;', #13#10#9, '2.  The second line is real nuber', #13#10#9#9, 'entered separated by spaces.', #13#10);
 End;
 
@@ -181,17 +184,9 @@ Var
     MyFile: TextFile;
     IsIntegrity: Boolean;
 Begin
-    IsIntegrity := True;
-    AssignFile(MyFile, FileWay);
-    Try
-        Try
-            Reset(MyFile);
-        Finally
-            CloseFile(MyFile);
-        End;
-    Except
-        IsIntegrity := False;
-    End;
+    IsIntegrity := False;
+    If FileExists(FileWay) Then
+        IsIntegrity := True;
 
     IsFileIntegrity := IsIntegrity;
 End;
@@ -246,7 +241,7 @@ Begin
             End;
     End;
 
-    If SeekEof(MyFile) Then
+    If SeekEof(MyFile) <> True Then
         IsCorrect := False;
 
     IsCorrectInputFromFile := ResultOfReading(IsCorrect, ArrSize, ArrOfNumb);
@@ -267,12 +262,13 @@ Begin
             Res := -1;
         End;
     End;
+
+    IsReadingCorrect := Res;
 End;
 
 Function WorkWithFile(FileWay: String): Integer;
 Var
     ArrSize, Res: Integer;
-    ArrOfNumb: Array Of Real;
 Begin
     Res := IsReadingCorrect(FileWay, ArrSize);
 
@@ -300,7 +296,7 @@ Begin
 
     FileWay := InputWayToTheFile();
     IsIntegrity := IsFileIntegrity(FileWay);
-                        
+
     ViaFile := WorkWithIntergrityResoult(IsIntegrity, FileWay);
 End;
 
@@ -374,4 +370,5 @@ Begin
 
     Readln;
     Readln;
+
 End.
