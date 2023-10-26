@@ -53,7 +53,7 @@ public class lab4 {
             System.err.print("Invalid numeric input. Try again.\n");
         }
         if (path != CONS_NUM && path != FILE_NUM)
-            System.out.printf("Choose only %d or %d. Try again.\n", CONS_NUM, FILE_NUM);
+            System.err.printf("Choose only %d or %d. Try again.\n", CONS_NUM, FILE_NUM);
         else
             SD.setCorrect(false);
 
@@ -62,8 +62,11 @@ public class lab4 {
 
 
     static int choosingAPath(Scanner in){
-        System.out.printf("Where will we work through: \n\t\tConsole: " +
-                "%d\t\tFile: %d\n\n", CONS_NUM, FILE_NUM);
+        System.out.printf("""
+                Where will we work through:\s
+                \t\tConsole: %d\t\tFile: %d
+
+                """, CONS_NUM, FILE_NUM);
 
         int path;
         SaveData SD = new SaveData(true, 0);
@@ -77,20 +80,19 @@ public class lab4 {
 
 
     // block of condition check
-    static boolean isArrIncreasing(double[] arrOfNumb, SaveData SD){
-        boolean isConditionYes = true;
-        for (int i = 1; i < SD.getArrSize(); i++) {
-            if (arrOfNumb[i] > arrOfNumb[i - 1]);
-            else
-                isConditionYes = false;
+    static boolean isArrIncreasing(double[] arrOfNumb) {
+        for (int i = 1; i < arrOfNumb.length; i++) {
+            if (!(arrOfNumb[i] <= arrOfNumb[i - 1])) {
+                return false;
+            }
         }
 
-        return isConditionYes;
+        return true;
     }
 
 
-    static int resultOfArrChecking(boolean isIncreas){
-        if (isIncreas)
+    static int resultOfArrChecking(boolean isIncrease){
+        if (isIncrease)
             return 1;
         else
             return 0;
@@ -120,18 +122,18 @@ public class lab4 {
 
 
     static double enteringTheCurrentNumber(int i, Scanner in){
-        boolean isIncorret = true;
+        boolean isIncorrect = true;
         double currentNum = 0.0;
 
         do{
             System.out.printf("Write your %d number: ", i + 1);
             try{
                 currentNum = Double.parseDouble(in.nextLine());
-                isIncorret = false;
+                isIncorrect = false;
             } catch(Exception error){
                 System.err.print("Invalid numeric input. Try again.\n");
             }
-        } while (isIncorret);
+        } while (isIncorrect);
 
         return currentNum;
     }
@@ -144,15 +146,15 @@ public class lab4 {
     }
 
 
-    static int viaConsole(Scanner in){
+    static double[] viaConsole(Scanner in){
         SaveData SD = new SaveData(true, 0);
         SD.setArrSize(inputArrSize(in));
         double[] arrOfNumb = new double[SD.getArrSize()];
 
         inputArr(arrOfNumb, SD.getArrSize(), in);
-        boolean isIncreasing = isArrIncreasing(arrOfNumb, SD);
+        //boolean isIncreasing = isArrIncreasing(arrOfNumb);
 
-        return resultOfArrChecking(isIncreasing);
+        return arrOfNumb;//resultOfArrChecking(isIncreasing);
     }
 
 
@@ -208,24 +210,19 @@ public class lab4 {
         return isIntegrity;
     }
 
-    static int workWithArr(SaveData SD, double[] arrOfNumb) {
-        boolean isIncreasin = isArrIncreasing(arrOfNumb, SD);
-        return resultOfArrChecking(isIncreasin);
-    }
-
-    static int resultOfReading(boolean isCorrect, SaveData SD, double[] arrOfNumb)
+    static double[] resultOfReading(boolean isCorrect, double[] arrOfNumb)
     {
         if (isCorrect)
-            return workWithArr(SD, arrOfNumb);
+            return arrOfNumb;
         else {
             System.err.print("ERROR in file.");
 
-            return -1;
+            return null;
         }
     }
 
 
-    static int isCorrectInputFromFile(Scanner in, SaveData SD){
+    static double[] isCorrectInputFromFile(Scanner in, SaveData SD){
         boolean isCorrect = true;
         double[] arrOfNumb = new double[0];
         if (!in.hasNextInt())
@@ -240,71 +237,74 @@ public class lab4 {
             for (int i = 0; i < arrSize; i++) {
                 if (!in.hasNextDouble())
                     isCorrect = false;
-
-                arrOfNumb[i] = in.nextDouble();
+                try{
+                    arrOfNumb[i] = in.nextDouble();
+                } catch(Exception error) {
+                    isCorrect = false;
+                }
             }
 
             if (in.hasNext())
                 isCorrect = false;
         }
-        return resultOfReading (isCorrect, SD, arrOfNumb);
+        return resultOfReading (isCorrect, arrOfNumb);
     }
 
 
-    static int isReadingCorrect(String fileWay, SaveData SD)  {
+    static double[] isReadingCorrect(String fileWay, SaveData SD)  {
         try {
             Scanner fileScanner = new Scanner(new File(fileWay));
             return isCorrectInputFromFile(fileScanner, SD);
         } catch(FileNotFoundException error) {
-            System.out.print("File not found.\n");
-            return -1;
+            System.err.print("File not found.\n");
+            return null;
         }
     }
 
-    static int workWithFile(String fileWay) {
+    static double[] workWithFile(String fileWay) {
         SaveData SD = new SaveData(true, 0);
 
         return isReadingCorrect(fileWay, SD);
     }
 
 
-    static int workWithIntergrityResoult(boolean isIntegrity, String fileWay) {
+    static double[] workWithIntegrityResult(boolean isIntegrity, String fileWay) {
         if (isIntegrity)
             return workWithFile(fileWay);
         else
         {
-            System.out.print("Bad File.");
+            System.err.print("Bad File.");
 
-            return -1;
+            return null;
         }
     }
 
 
-    static int viaFile(Scanner in){
+    static double[] viaFile(Scanner in){
         fileRestriction();
 
         String fileWay = inputWayToTheFile(in);
-        boolean isIntergrity = isFileIntegrity(fileWay);
+        boolean isIntegrity = isFileIntegrity(fileWay);
 
-        return workWithIntergrityResoult(isIntergrity, fileWay);
+        return workWithIntegrityResult(isIntegrity, fileWay);
     }
 
 
     /// output console
     static void outputViaConsole(int result){
         if (result == 1)
-            System.out.print("Increasing.");
-        else
             System.out.print("Uncreased.");
+        else
+            System.out.print("Increasing.");
     }
 
 
     // output file
     static String fileCorrectOutput(int result){
         if (result == 1)
-            return "\nIncrease.";
-        else
             return "\nUncreased.";
+        else
+            return "\nIncrease.";
     }
 
 
@@ -332,12 +332,12 @@ public class lab4 {
 
 
     /// output
-    static void output(int option, int result, Scanner in)
+    static void output(int result, Scanner in)
     {
         if (result != -1)
         {
             System.out.print("\n\nYou need to choose where to output the result.\n");
-            option = choosingAPath(in);
+            int option = choosingAPath(in);
 
             if (option == FILE_NUM) {
                 outputViaFile(result, in);
@@ -354,8 +354,14 @@ public class lab4 {
         printStatement();
 
         int option = choosingAPath(in);
-        int result = option == FILE_NUM ? viaFile(in) : viaConsole(in);
+        double[] arrOfNumb = option == FILE_NUM ? viaFile(in) : viaConsole(in);
 
-        output(option, result, in);
+        if (arrOfNumb != null) {
+            boolean isIncreasing = isArrIncreasing(arrOfNumb);
+            int result = resultOfArrChecking(isIncreasing);
+            output(result, in);
+        }
+
+        in.close();
     }
 }

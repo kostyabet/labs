@@ -60,20 +60,19 @@ int choosingAPath()
 // block of conditon check
 bool isArrIncreasing(double*& arrOfNumb, int arrSize)
 {
-	bool isConditionYes = true;
+	for (int i = 1; i < arrSize; i++) {
+		if (!(arrOfNumb[i] <= arrOfNumb[i - 1])) {
+			return false;
+		}
+	}
 
-	for (int i = 1; i < arrSize; i++)
-		if (arrOfNumb[i] > arrOfNumb[i - 1]);
-		else
-			isConditionYes = false;
-
-	return isConditionYes;
+	return true;
 }
 
 
-int resultOfArrChecking(bool isIncreas)
+int resultOfArrChecking(bool isIncrease)
 {
-	if (isIncreas)
+	if (isIncrease)
 		return 1;
 	else
 		return 0;
@@ -138,20 +137,13 @@ void inputArr(double*& arrOfNumb, int arrSize)
 }
 
 
-int viaConsole()
+double viaConsole(double*& arrOfNumb)
 {
 	int arrSize = inputArrSize();
-	double* arrOfNumb = new double[arrSize];
 
 	inputArr(arrOfNumb, arrSize);
-	bool isIncreasing = isArrIncreasing(arrOfNumb, arrSize);
 
-	int result = resultOfArrChecking(isIncreasing);
-
-	delete[] arrOfNumb;
-	arrOfNumb = nullptr;
-
-	return result;
+	return arrSize;
 }
 
 
@@ -215,20 +207,11 @@ bool isFileIntegrity(string fileWay)
 }
 
 
-int workWithArr(int arrSize, double*& arrOfNumb)
-{
-	bool isIncreasin = isArrIncreasing(arrOfNumb, arrSize);
-	return resultOfArrChecking(isIncreasin);
-}
-
-
 int resultOfReading(bool isCorrect, int arrSize, double*& arrOfNumb)
 {
 	if (isCorrect) {
-		int res = workWithArr(arrSize, arrOfNumb);
-		delete[] arrOfNumb;
-		arrOfNumb = nullptr;
-		return res;
+		arrOfNumb = NULL;
+		return arrSize;
 	}
 	else {
 		cerr << "ERROR in file.";
@@ -278,10 +261,9 @@ int isReadingCorrect(string fileWay, int arrSize, double*& arrOfNumb)
 }
 
 
-int workWithFile(string fileWay)
+int workWithFile(string fileWay, double*& arrOfNumb)
 {
 	int arrSize = 0;
-	double* arrOfNumb;
 
 	int result = isReadingCorrect(fileWay, arrSize, arrOfNumb);
 
@@ -289,10 +271,10 @@ int workWithFile(string fileWay)
 }
 
 
-int workWithIntergrityResoult(bool isIntegrity, string fileWay)
+int workWithIntergrityResoult(bool isIntegrity, string fileWay, double*& arrOfNumb)
 {
 	if (isIntegrity)
-		return workWithFile(fileWay);
+		return workWithFile(fileWay, arrOfNumb);
 	else
 	{
 		cerr << "Bad File.";
@@ -302,14 +284,14 @@ int workWithIntergrityResoult(bool isIntegrity, string fileWay)
 }
 
 
-int viaFile()
+int viaFile(double*& arrOfNumb)
 {
 	fileRestriction();
 
 	string fileWay = inputWayToTheFile();
 	bool isIntegrity = isFileIntegrity(fileWay);
 
-	return workWithIntergrityResoult(isIntegrity, fileWay);
+	return workWithIntergrityResoult(isIntegrity, fileWay, arrOfNumb);
 }
 
 
@@ -352,12 +334,12 @@ void outputViaFile(int result)
 
 
 /// output
-void output(int option, int result)
+void output(int result)
 {
 	if (result != -1)
 	{
 		cout << "\n\nYou need to choose where to output the result.\n";
-		option = choosingAPath();
+		int option = choosingAPath();
 
 		option == FILE_NUM ? outputViaFile(result) : outputViaConsole(result);
 	}
@@ -370,9 +352,16 @@ int main()
 	printStatement();
 
 	int option = choosingAPath();
-	int result = option == FILE_NUM ? viaFile() : viaConsole();
+	double* arrOfNumb;
+	int arrSize = option == FILE_NUM ? viaFile(arrOfNumb) : viaConsole(arrOfNumb);
 
-	output(option, result);
+	if (arrOfNumb != NULL) {
+		bool isIncreasing = isArrIncreasing(arrOfNumb, arrSize);
+		int result = resultOfArrChecking(isIncreasing);
+		output(result);
+	}
 
+	delete[] arrOfNumb;
+	arrOfNumb = nullptr;
 	return 0;
 }

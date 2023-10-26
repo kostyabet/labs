@@ -2,8 +2,6 @@ package lab2;
 
 import java.io.*;
 import java.util.Scanner;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 class ImportDate{
     private boolean isIncorrect;
@@ -142,19 +140,16 @@ public class lab3 {
 
 
     static boolean palinIsPalin(int[] arrPalin, int palinLen, int palindrome) {
-        boolean isCorrect = true;
         for (int i = 0; i < palinLen / 2; i++) {
             if (arrPalin[i] != arrPalin[palinLen - i - 1])
-                isCorrect = false;
+                return false;
         }
-        if (palindrome < 0)
-            isCorrect = false;
 
-        return isCorrect;
+        return palindrome >= 0;
     }
 
 
-    static boolean palinCheack(int palindrome) {
+    static boolean palingCheck(int palindrome) {
         int palinLen = lengthOfPalin(palindrome);
         int[] arrPalin = new int[palinLen];
         putInMassive(arrPalin, palindrome);
@@ -165,21 +160,35 @@ public class lab3 {
 
     static int viaConsole(Scanner in) {
         int palindrome = inputPalin(in);
-        if (palinCheack(palindrome) && palindrome > PALIN_OUTPUT_CONTROL)
+        if (palingCheck(palindrome) && palindrome > PALIN_OUTPUT_CONTROL)
             return 1;
         else
             return 0;
     }
 
 
-
-    static int inputPalinFile(BufferedReader bufferedReader) throws IOException {
+    static int inputPalinFile(BufferedReader bufferedReader) {
         int palindrome = 0;
-        String line = bufferedReader.readLine();
-        if (line != null)
-            palindrome = Integer.parseInt(line);
+        boolean isCorrect = true;
+        String line = "";
+        try{
+            line = bufferedReader.readLine();
+        } catch(Exception error){
+            System.out.print("Can't read from file.");
+            palindrome = -1;
+            isCorrect = false;
+        }
 
-        if (palindrome < 0) {
+        if (line != null && isCorrect)
+            try{
+                palindrome = Integer.parseInt(line);
+            } catch(Exception error){
+                System.out.print("Number is so big. ");
+                palindrome = -1;
+                isCorrect = false;
+            }
+
+        if (palindrome < 0 && isCorrect) {
             System.out.print("Number should be > 0.");
             palindrome = -1;
         }
@@ -187,16 +196,14 @@ public class lab3 {
     }
 
     static int outputPalin(int palindrome){
-        if (palindrome == PALIN_OUTPUT_CONTROL) {
-            System.out.print("ERROR.");
+        if (palindrome == PALIN_OUTPUT_CONTROL)
             return -1;
-        }
-        else if (palinCheack(palindrome))
+        else if (palingCheck(palindrome))
             return 1;
         else return 0;
     }
 
-    static int workWithFile(String fileWay, Scanner in){
+    static int workWithFile(String fileWay){
         assert fileWay != null;
         File file = new File(fileWay);
         try {
@@ -215,7 +222,7 @@ public class lab3 {
     static int viaFile(Scanner in) {
         String fileWay;
         fileWay = inputWay(in);
-        return workWithFile(fileWay, in);
+        return workWithFile(fileWay);
     }
 
 
@@ -223,7 +230,7 @@ public class lab3 {
         if (result == 1)
             System.out.print("Palindrome.");
         else
-            System.out.print("Not a palidrome.");
+            System.out.print("Not a palindrome.");
     }
 
 
@@ -235,23 +242,22 @@ public class lab3 {
     }
 
 
-    static void outputViaFile(int result, Scanner in) throws IOException {
+    static void outputViaFile(int result, Scanner in) {
         String fileWay = inputWay(in);
-        File file = new File(fileWay);
         try {
             FileWriter writer = new FileWriter(fileWay, true);
             writer.write(fileCorrectOutput(result));
             writer.close();
-            System.out.print("Cheack your file.");
+            System.out.print("Check your file.");
         } catch (IOException error) {
             System.err.println("\nBad output file.");
         }
     }
 
-    private static void output(int option, int result, Scanner in) throws IOException {
+    private static void output(int result, Scanner in) {
         if (result != -1) {
             System.out.print("\n\nYou need to choose where to output the result.\n");
-            option = choosingAPath(in);
+            int option = choosingAPath(in);
 
             if (option == FILE_NUM) {
                 outputViaFile(result, in);
@@ -262,14 +268,14 @@ public class lab3 {
     }
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         printStatement();
         int option = choosingAPath(in);
 
         int result = option == FILE_NUM ? viaFile(in) : viaConsole(in);
 
-        output(option, result, in);
+        output(result, in);
 
         in.close();
     }
