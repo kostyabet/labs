@@ -1,6 +1,6 @@
 #include <iostream>
-#include <string>
-#include <fstream>
+#include <string> // for work with string
+#include <fstream> // for work with file (.txt)
 
 
 using namespace std;
@@ -8,84 +8,79 @@ using namespace std;
 
 const int MIN_K = 1;
 const int MIN_FILE_WAY_SIZE = 5;
+const int CONSOLE_KEY = 1;
+const int FILE_KEY = 0;
 
 
-enum class IOMethod {
-	FILE,
-	CONSOLE
-};
-
-
-/// text information 
-void conditionOutput() {
+/// text information
+void conditionOutput()
+{
 	cout << "The program determines the position number K \n"
-		<< "of the occurrence of the first line in the second\n"
+		<< "of the occurrence of the first line in the second.\n"
 		<< "If there are no matches, returns -1.\n\n";
 }
 
 
-void pathConditionOutput() {
-	cout << "Where will we work through: \n\tFile: " << (int)IOMethod::FILE << " Console: "
-		<< (int)IOMethod::CONSOLE << endl << endl;
+void pathConditionOutput()
+{
+	cout << "Where will we work through: \n\tFile: " << FILE_KEY << " Console: "
+		<< CONSOLE_KEY << endl << endl;
 }
 
 
-void fileRestriction() {
+void fileRestriction()
+{
 	cout << "\n*the first number in the file\n\t should be a number, followed by 2 lines*\n";
 }
 
 
 /// writing a path
-bool cheackPathCondition(int path) {
-	IOMethod result = (IOMethod)path;
-	if (cin.fail() || cin.get() != '\n')
-	{
-		cerr << "Error. You should write a number. Try again.\n";
-		cin.clear();
-		while (cin.get() != '\n');
-	}
-	else
-	{
-		switch (result) {
-		case IOMethod::CONSOLE: return false;
-		case IOMethod::FILE: return false;
-
-		default: cerr << "Error method. Try again.\n";
-		}
-	}
-
-	return true;
-}
-
-
-int choosingAPath() {
+int checkPathCondition()
+{
 	int path = 0;
 	bool isIncorrect = true;
-
-	pathConditionOutput();
-
-	do {
+	do
+	{
 		cout << "Please write were we should work: ";
 		cin >> path;
-
-		isIncorrect = cheackPathCondition(path);
+		if (cin.fail() || cin.get() != '\n')
+		{
+			cerr << "Error. You should write a number. Try again.\n";
+			cin.clear();
+			while (cin.get() != '\n');
+		}
+		else
+		{
+			if (path == CONSOLE_KEY || path == FILE_KEY) isIncorrect = false;
+			else cerr << "Error method. Try again.\n";
+		}
 	} while (isIncorrect);
 
 	return path;
 }
 
 
+int choosingAPath()
+{
+	pathConditionOutput();
+
+	return checkPathCondition();
+}
+
+
 /// input way to the file 
 bool wayCondition(string way)
 {
-	if (way.size() < MIN_FILE_WAY_SIZE) {
+	if (way.size() < MIN_FILE_WAY_SIZE)
+	{
 		cerr << "The path is too short. Try again: ";
 
 		return false;
 	}
 
 	string bufstr = way.substr(way.size() - 4);
-	if (bufstr != ".txt") {
+	if (bufstr != ".txt")
+	{
 		cerr << "Write .txt file. Try again: ";
 
 		return false;
@@ -112,7 +107,8 @@ string inputWayToTheFile()
 
 
 /// input from file
-bool isCanOpenFile(string way, ios_base::openmode mode) {
+bool isCanOpenFile(string way, ios_base::openmode mode)
+{
 	fstream file(way, ios::in);
 	file.close();
 
@@ -120,82 +116,96 @@ bool isCanOpenFile(string way, ios_base::openmode mode) {
 }
 
 
-bool workWithFileInput(int& k, string& str1, string& str2, ifstream& file) {
-	file >> k;
-	if (file.fail() && file.get() != '\n')
-		return false;
-
-	if (k < MIN_K)
-		return false;
-
-	file >> str1 >> str2;
-
-	if (!file.eof())
-		return false;
+bool checkEndOfLine(ifstream& file)
+{
+	char currentChar;
+	int startPos = file.tellg();
+	while ((currentChar = file.get()) != '\n')
+	{
+		if (!isspace(currentChar))
+		{
+			file.seekg(startPos);
+			return false;
+		}
+	}
 
 	return true;
 }
 
 
-void inputFromFile(int& k, string& str1, string& str2) {
+string inputFile() {
 	fileRestriction();
-
-	ifstream file;
+	string fileWay;
 	bool isIncorrect = true;
 
+	ifstream file;
 	cout << "Write way to your file: ";
 	do {
-		string fileWay = inputWayToTheFile();
-		if (isCanOpenFile(fileWay, ios::in)) {
-			file.open(fileWay, ios::in);
-
-			if (!workWithFileInput(k, str1, str2, file))
-				cout << "Error in file reading. Try again: ";
-			else
-				isIncorrect = false;
-		}
-		else
+		bool isCorrect = true;
+		fileWay = inputWayToTheFile();
+		if (!isCanOpenFile(fileWay, ios::in))
 			cout << "Can't open a file. Try write another way: ";
 	} while (isIncorrect);
 
 	file.close();
+
+	return fileWay;
+}
+
+
+bool afterReadingCheck(ifstream& file, bool isCorrect) {
+	bool isIncorrect = true;
+	if (!checkEndOfLine(file) && isCorrect)
+		isCorrect = false;
+
+	if (!isCorrect)
+		cout << "Error in file reading. Try again: ";
+	else
+		isIncorrect = false;
+
+	return isIncorrect;
 }
 
 
 /// input from console
-void checkKCondition(int k, bool& isIncorrect) {
-	if (cin.fail() && cin.get() != '\n') {
-		cout << "You should write a number. Try again: ";
+bool checkKCondition(int k)
+{
+	bool isIncorrect = true;
+	if (cin.fail() && cin.get() != '\n')
+	{
+		cerr << "You should write a number. Try again: ";
 		cin.clear();
 		while (cin.get() != '\n');
 	}
-	else if (k < MIN_K) {
-		cout << "Min position number is " << MIN_K << ". Try again: ";
+	else if (k < MIN_K)
+	{
+		cerr << "Min position number is " << MIN_K << ". Try again: ";
 	}
 	else
 		isIncorrect = false;
+
+	return isIncorrect;
 }
 
 
-void inputFromConsole(int& k, string& str1, string& str2) {
+int inputKFromConsole() {
+	int k;
 	cout << "The position numbers of which occurrence you want to find: ";
 	bool isIncorrect = true;
-	do {
+	do
+	{
 		cin >> k;
 
-		checkKCondition(k, isIncorrect);
+		isIncorrect = checkKCondition(k);
 	} while (isIncorrect);
 
-	cout << "Write your first string: ";
-	cin >> str1;
-
-	cout << "Write your second string: ";
-	cin >> str2;
+	return k;
 }
 
 
-/// cheack 
-int calculationOfTheResult(int k, string str1, string str2) {
+/// cheack condition 
+int calculationOfTheResult(int k, string str1, string str2)
+{
 	for (int i = 0; i < str2.size(); i++)
 		if (str2[i] == str1[0])
 			if (str2.substr(i, str1.size()) == str1)
@@ -207,15 +217,18 @@ int calculationOfTheResult(int k, string str1, string str2) {
 
 
 /// output from file
-void outputFromFile(int result) {
+void outputFromFile(int result)
+{
 	ofstream file;
 
 	bool isIncorrect = true;
 	cout << "Write way to your file: ";
-	do {
+	do
+	{
 		string fileWay = inputWayToTheFile();
 
-		if (isCanOpenFile(fileWay, ios::out) && file.is_open()) {
+		if (isCanOpenFile(fileWay, ios::out) && file.is_open())
+		{
 			file.open(fileWay, ios::out);
 
 			file << result;
@@ -224,7 +237,7 @@ void outputFromFile(int result) {
 			isIncorrect = false;
 		}
 		else
-			cout << "Can't open a file. Try write another way: ";
+			cerr << "Can't open a file. Try write another way: ";
 	} while (isIncorrect);
 
 	file.close();
@@ -232,21 +245,15 @@ void outputFromFile(int result) {
 
 
 /// outputfrom console
-void outputFromConsole(int result) {
+void outputFromConsole(int result)
+{
 	cout << result << endl;
 }
 
 
 /// block of main void-s
-void dataInput(int& k, string& str1, string& str2) {
-	cout << "\nYou need to choose where to read information from.\n";
-	int path = choosingAPath();
-
-	path ? inputFromConsole(k, str1, str2) : inputFromFile(k, str1, str2);
-}
-
-
-void resultOutput(int result) {
+void resultOutput(int result)
+{
 	cout << "You need to choose where to write information from.\n";
 	int path = choosingAPath();
 
@@ -254,16 +261,42 @@ void resultOutput(int result) {
 }
 
 
-int main() {
+int main()
+{
 	conditionOutput();
 
-	int k;
+	int k = 0;
 	string str1, str2;
-	dataInput(k, str1, str2);
 
-	int result = calculationOfTheResult(k, str1, str2);
+	cout << "\nYou need to choose where to read information from.\n";
+	int path = choosingAPath();
 
-	resultOutput(result);
+	if (path == CONSOLE_KEY) {
+		k = inputKFromConsole();
+		cout << "Write your first string: ";
+		cin >> str1;
+		cout << "Write your second string: ";
+		cin >> str2;
+	}
+	else {
+		bool isIncorrect;
+		do {
+			bool isCorrect = true;
+			string fileWay = inputFile();
+			ifstream file(fileWay, ios::in);
+			file >> k;
+			if ((file.fail() && file.get() != '\n') || (k < MIN_K))
+				isCorrect = false;
+
+			file >> str1 >> str2;
+
+			isIncorrect = afterReadingCheck(file, isCorrect);
+		} while (isIncorrect);
+	}
+
+	int resultOfProg = calculationOfTheResult(k, str1, str2);
+
+	resultOutput(resultOfProg);
 
 	return 0;
 }
