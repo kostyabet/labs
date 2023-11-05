@@ -24,7 +24,8 @@ void pathConditionOutput()
 
 void fileRestriction()
 {
-	cout << "\n*the first number in the file\n\t should be a number, followed by 2 lines*\n";
+	cout << "\n*The first number is the number of elements \n"
+		"of the array, and subsequent numbers of this array*\n";
 }
 
 int choosingAPath()
@@ -95,7 +96,7 @@ int inputCurrentNumbFromConsole() {
 
 void arrOfNumbInputFromConsole(int arrSize, int*& arrOfNumb) {
 	for (int i = 0; i < arrSize; i++) {
-		cout << "Write your " << i + 1 << " simbol: ";
+		cout << "Write your " << i + 1 << " number: ";
 		arrOfNumb[i] = inputCurrentNumbFromConsole();
 	}
 }
