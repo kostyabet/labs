@@ -1,25 +1,32 @@
 ﻿#include <iostream>
 #include <string> // for work with string
 #include <fstream> // for work with file (.txt)
+
 using namespace std;
+
 const int FILE_KEY = 1;
 const int CONSOLE_KEY = 2;
 const int MIN_K = 1;
 const int MIN_FILE_WAY_SIZE = 5;
+
 void conditionOutput()
 {
 	cout << "The program determines the position number K \n"
 		<< "of the occurrence of the first line in the second.\n"
 		<< "If there are no matches, returns -1.\n\n";
 }
+
 void pathConditionOutput()
 {
-	cout << "Where will we work through: \n\tFile: " << FILE_KEY << " Console: " << CONSOLE_KEY << endl << endl;
+	cout << "Where will we work through: \n\tFile: " <<
+		FILE_KEY << " Console: " << CONSOLE_KEY << endl << endl;
 }
+
 void fileRestriction()
 {
 	cout << "\n*the first number in the file\n\t should be a number, followed by 2 lines*\n";
 }
+
 int choosingAPath()
 {
 	pathConditionOutput();
@@ -44,6 +51,7 @@ int choosingAPath()
 	} while (isIncorrect);
 	return path;
 }
+
 // input way
 bool wayCondition(string way)
 {
@@ -60,6 +68,7 @@ bool wayCondition(string way)
 	}
 	return true;
 }
+
 string inputWayToTheFile()
 {
 	string way;
@@ -71,6 +80,7 @@ string inputWayToTheFile()
 	} while (isIncorrect);
 	return way;
 }
+
 /// input from file
 bool isCanOpenFile(string way, ios_base::openmode mode)
 {
@@ -78,6 +88,7 @@ bool isCanOpenFile(string way, ios_base::openmode mode)
 	file.close();
 	return file.good();
 }
+
 string inputFile() {
 	string fileWay;
 	bool isIncorrect = true;
@@ -91,6 +102,7 @@ string inputFile() {
 	} while (isIncorrect);
 	return fileWay;
 }
+
 bool afterReadingCheck(ifstream& file, bool isCorrect, string str1, string str2)
 {
 	if ((str1 == "" || str2 == "") && isCorrect)
@@ -105,6 +117,7 @@ bool afterReadingCheck(ifstream& file, bool isCorrect, string str1, string str2)
 	}
 	return isCorrect;
 }
+
 /// input from console
 bool checkKCondition(int k)
 {
@@ -121,6 +134,7 @@ bool checkKCondition(int k)
 		isIncorrect = false;
 	return isIncorrect;
 }
+
 int inputKFromConsole()
 {
 	int k;
@@ -133,6 +147,7 @@ int inputKFromConsole()
 	} while (isIncorrect);
 	return k;
 }
+
 /// check condition 
 int calculationOfTheResult(int k, string str1, string str2)
 {
@@ -148,6 +163,7 @@ int calculationOfTheResult(int k, string str1, string str2)
 		}
 	return -1;
 }
+
 /// output from file
 void outputFromFile(int result)
 {
@@ -168,11 +184,13 @@ void outputFromFile(int result)
 			cerr << "Can't open a file. Try write another way: ";
 	} while (isIncorrect);
 }
+
 /// output from console
 void outputFromConsole(int result)
 {
 	cout << result << endl;
 }
+
 /// block of main void-s
 void resultOutput(int result)
 {
@@ -180,11 +198,13 @@ void resultOutput(int result)
 	int path = choosingAPath();
 	path == CONSOLE_KEY ? outputFromConsole(result) : outputFromFile(result);
 }
+
 int main()
 {
 	int k = 0;
 	string str1, str2;
 	conditionOutput();
+	
 	cout << "\nYou need to choose where to read information from.\n";
 	int path = choosingAPath();
 	if (path == CONSOLE_KEY)
@@ -199,24 +219,31 @@ int main()
 	{
 		bool isIncorrect;
 		fileRestriction();
+		
 		cout << "Write way to your file: ";
 		do
 		{
 			bool isCorrect = true;
 			string fileWay = inputFile();
 			ifstream file(fileWay, ios::in);
+			
 			file >> k;
 			if ((file.fail() && file.get() != '\n') || (k < MIN_K))
 			{
 				isCorrect = false;
 				cout << "Error in k reading. Try again: ";
 			}
+			
 			file >> str1 >> str2;
+			
 			isIncorrect = !afterReadingCheck(file, isCorrect, str1, str2);
 			file.close();
 		} while (isIncorrect);
 	}
+
 	int result = calculationOfTheResult(k, str1, str2);
+	
 	resultOutput(result);
+	
 	return 0;
 }

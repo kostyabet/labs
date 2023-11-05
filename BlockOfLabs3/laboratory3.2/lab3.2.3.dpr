@@ -35,7 +35,7 @@ Var
 Begin
     PathConditionOutput();
     Path := 0;
-    IsCorrect := False;
+    IsCorrect := True;
     Repeat
         IsCorrectPath := False;
         Write('Please write were we should work: ');
@@ -45,11 +45,11 @@ Begin
         Except
             Writeln('Error. You should write a number. Try again.');
         End;
-        If (((Path <> CONSOLE_KEY) And (Path <> FILE_KEY)) And IsCorrectPath) Then
-            Writeln('Error method. Try again.')
+        If (((Path <> CONSOLE_KEY) Or (Path <> FILE_KEY)) And IsCorrectPath) Then
+            IsCorrect := True
         Else
             If (IsCorrectPath) Then
-                IsCorrect := True;
+                Writeln('Error method. Try again.');
     Until IsCorrect;
     ChoosingAPath := Path;
 End;
@@ -74,43 +74,44 @@ Begin
     IsCorrect := False;
     Repeat
         Readln(Way);
-        IsCorrect := WayCondition(Way);
+        IsCorrect := Not WayCondition(Way);
     Until IsCorrect;
     InputWayToTheFile := Way;
 End;
 
 ///input from file
-Function InputFileWay(): String;
+Function IsCanOpenFile(Way: String): Boolean;
+Var
+    MyFile: TextFile;
+Begin
+    IsCanOpenFile := FileExists(Way);
+End;
+
+Function InputFile(): String;
 Var
     FileWay: String;
-    IsCorrect: Boolean;
+    IsCorrect, IsCorrectFileInput: Boolean;
 Begin
     IsCorrect := False;
-    FileWay := '';
     Repeat
+        IsCorrectFileInput := True;
         FileWay := InputWayToTheFile();
-        If (Not FileExists(FileWay)) Then
+        If (IsCanOpenFile(FileWay)) Then
             Write('Can not open a file. Try write another way: ')
         Else
             IsCorrect := True;
     Until IsCorrect;
-    InputFileWay := FileWay;
+    InputFile := FileWay;
 End;
 
-Function AfterReadingCheck(Var MyFile: TextFile; IsCorrect: Boolean; Str1, Str2: String; K: Integer): Boolean;
+Function AfterReadingCheck(Var MyFile: TextFile; IsCorrect: Boolean; Str1, Str2: String): Boolean;
 Begin
-    IsCorrect := True;
-    If ((K < MIN_K) And IsCorrect) Then
-    Begin
-        IsCorrect := False;
-        Write('Minimal k in file is ', MIN_K, '. Try again: ');
-    End;
     If ((Str1 = '') Or (Str2 = '')) And IsCorrect Then
     Begin
         IsCorrect := False;
-        Write('There can not be empty lines. Try again: ');
+        Write('There cannot be empty lines. Try again: ');
     End;
-    If (Not SeekEof(MyFile) And IsCorrect) Then
+    If (SeekEof(MyFile) And IsCorrect) Then
     Begin
         IsCorrect := False;
         Write('The file should only contain 1 number and 2 lines. Try again: ');
@@ -128,74 +129,24 @@ Begin
         Write('Min position number is ', MIN_K, '. Try again: ')
     Else
         IsCorrect := True;
-
-    CheckKCondition := IsCorrect;
 End;
 
 Function InputKFromConsole(): Integer;
 Var
     K: Integer;
-    IsCorrect, IsCorrectReading: Boolean;
-Begin
-    IsCorrect := False;
-    K := 0;
-    Write('The position numbers of which occurrence you want to find: ');
-    Repeat
-        IsCorrectReading := True;
-        Try
-            Readln(K);
-        Except
-            Write('You should write a natural number. Try again: ');
-            IsCorrectReading := False;
-        End;
-        If IsCorrectReading Then
-            IsCorrect := CheckKCondition(K);
-    Until IsCorrect;
-    InputKFromConsole := K;
-End;
-
-Function StrInput(): String;
-Var
-    Str: String;
     IsCorrect: Boolean;
 Begin
     IsCorrect := False;
+    Write('The position numbers of which occurrence you want to find: ');
     Repeat
-        Readln(Str);
-        If Str = '' Then
-            Write('String can not be empty. Try again: ')
-        Else
-            IsCorrect := True;
+        Try
+            Readln(K);
+        Except
+            Write('You should write a number. Try again: ');
+        End;
+        IsCorrect := Not CheckKCondition(K);
     Until IsCorrect;
-    StrInput := Str;
-End;
-
-Function FileStrInput(Var MyFile: TextFile): String;
-Var
-    Str: String;
-    Current: Char;
-Begin
-    Str := '';
-    Read(MyFile, Current);
-    If Current = ' ' Then
-        Read(MyFile, Current);
-    If Current = #$D Then
-    Begin
-        Read(MyFile, Current);
-        Read(MyFile, Current);
-    End;
-
-    While (Not Eof(MyFile) And (Current <> ' ') And (Current <> #$D)) Do
-    Begin
-        Str := Str + Current;
-        Read(MyFile, Current)
-    End;
-    If Current <> #$D Then
-        Str := Str + Current
-    Else
-        Read(MyFile, Current);
-
-    FileStrInput := Str;
+    InputKFromConsole := K;
 End;
 
 ///check condition
@@ -205,17 +156,17 @@ Var
     IsCorrect: Boolean;
 Begin
     Res := -1;
-    For I := 1 To Length(Str2) - 1 Do
+    For I := 1 To Length(Str2) Do
         If (Str2[I] = Str1[1]) Then
         Begin
+            Write(Str2[I]);
             IsCorrect := True;
-            For J := 2 To Length(Str1) - 1 Do
-                If (Str2[I + J - 1] <> Str1[J]) Then
+            For J := 2 To Length(Str1) Do
+                If (Str2[I + J] <> Str1[J]) Then
                     IsCorrect := False;
-            If IsCorrect Then
-                K := K - 1;
+            K := K - 1;
             If ((K = 0) And IsCorrect) Then
-                Res := I;
+                Res := I + 1;
         End;
     CalculationOfTheResult := Res;
 End;
@@ -230,21 +181,24 @@ Begin
     IsCorrect := False;
     Write('Write way to your file: ');
     Repeat
-        FileWay := InputFileWay();
+        FileWay := InputWayToTheFile();
         AssignFile(MyFile, FileWay);
-        Try
+        If (IsCanOpenFile(FileWay)) Then
+        Begin
             Try
-                Append(MyFile);
-                ReWrite(MyFile);
-                Writeln(MyFile, Result);
-                Write('Cheack your file.');
-                IsCorrect := True;
-            Finally
-                Close(MyFile);
+                Try
+                    ReWrite(MyFile);
+                    Write(MyFile, Result);
+                    Write('Cheack your file.');
+                Finally
+                    CloseFile(MyFile);
+                End;
+            Except
+                Write(#13#10, 'Bad output file.');
             End;
-        Except
-            Write('Bad output file. Try again: ');
-        End;
+        End
+        Else
+            Write('Ca not open a file. Try write another way: ');
     Until IsCorrect;
 End;
 
@@ -274,9 +228,6 @@ Var
     MyFile: TextFile;
 
 Begin
-    K := 0;
-    Str1 := '';
-    Str2 := '';
     ConditionOutput();
     Writeln(#13#10, 'You need to choose where to read information from.');
     Path := ChoosingAPath();
@@ -284,36 +235,32 @@ Begin
     Begin
         K := InputKFromConsole();
         Write('Write your first string: ');
-        Str1 := StrInput();
+        Readln(Str1);
         Write('Write your second string: ');
-        Str2 := StrInput();
+        Readln(Str2);
     End
     Else
     Begin
         IsCorrect := False;
-        Write('Write way to your file: ');
-        Repeat
-            FileWay := InputFileWay();
-            AssignFile(MyFile, FileWay);
+        FileWay := InputFile();
+        AssignFile(MyFile, FileWay);
+        Try
             Try
+                Reset(MyFile);
                 Try
-                    Reset(MyFile);
-                    Try
-                        Read(MyFile, K);
-                        Str1 := FileStrInput(MyFile);
-                        Str2 := FileStrInput(MyFile);
-                    Except
-                        IsCorrect := False;
-                        Write('Error in k reading. Try again: ');
-                    End;
-                    IsCorrect := AfterReadingCheck(MyFile, IsCorrect, Str1, Str2, K);
-                Finally
-                    Close(MyFile);
+                    Readln(K);
+                Except
+                    IsCorrect := False;
+                    Write('Error in k reading. Try again: ');
                 End;
-            Except
-                Write('Bad input file. Try again: ');
+                Readln(Str1, Str2);
+                IsCorrect := Not AfterReadingCheck(MyFile, IsCorrect, Str1, Str2);
+            Finally
+                Close(MyFile);
             End;
-        Until IsCorrect;
+        Except
+            Write('Bad output file. Try again: ');
+        End;
     End;
     Result := CalculationOfTheResult(K, Str1, Str2);
     ResultOutput(Result);
