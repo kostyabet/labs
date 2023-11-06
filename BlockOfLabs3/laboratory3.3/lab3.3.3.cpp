@@ -30,9 +30,11 @@ void fileRestriction()
 
 int choosingAPath()
 {
-	pathConditionOutput();
 	int path = 0;
 	bool isIncorrect = true;
+
+	pathConditionOutput();
+
 	do
 	{
 		cout << "Please write were we should work: ";
@@ -56,14 +58,17 @@ int choosingAPath()
 }
 
 /// input from console
-int arrSizeInputFromConsole() {
+int arrSizeInputFromConsole()
+{
 	int arrSize;
 	bool isIncorrect = true;
 
 	cout << "Write your arr size: ";
-	do {
+	do
+	{
 		cin >> arrSize;
-		if (cin.fail() || cin.get() != '\n') {
+		if (cin.fail() || cin.get() != '\n')
+		{
 			cout << "Invalid numeric input. Try again: ";
 			cin.clear();
 			while (cin.get() != '\n');
@@ -77,12 +82,15 @@ int arrSizeInputFromConsole() {
 	return arrSize;
 }
 
-int inputCurrentNumbFromConsole() {
+int inputCurrentNumbFromConsole()
+{
 	int currentNumb;
 	bool isIncorrect = true;
-	do {
+	do
+	{
 		cin >> currentNumb;
-		if (cin.fail() || cin.get() != '\n') {
+		if (cin.fail() || cin.get() != '\n')
+		{
 			cout << "Invalid numeric input. Try again: ";
 			cin.clear();
 			while (cin.get() != '\n');
@@ -94,8 +102,10 @@ int inputCurrentNumbFromConsole() {
 	return currentNumb;
 }
 
-void arrOfNumbInputFromConsole(int arrSize, int*& arrOfNumb) {
-	for (int i = 0; i < arrSize; i++) {
+void arrOfNumbInputFromConsole(int arrSize, int*& arrOfNumb)
+{
+	for (int i = 0; i < arrSize; i++)
+	{
 		cout << "Write your " << i + 1 << " number: ";
 		arrOfNumb[i] = inputCurrentNumbFromConsole();
 	}
@@ -128,7 +138,7 @@ bool wayCondition(string way)
 string inputWayToTheFile()
 {
 	string way;
-	bool isIncorrect = true;
+	bool isIncorrect;
 	do
 	{
 		cin >> way;
@@ -138,10 +148,12 @@ string inputWayToTheFile()
 }
 
 
-string inputFile() {
+string inputFile()
+{
 	string fileWay;
 	bool isIncorrect = true;
-	do {
+	do
+	{
 		bool isCorrect = true;
 		fileWay = inputWayToTheFile();
 		if (!isCanOpenFile(fileWay, ios::in))
@@ -152,7 +164,8 @@ string inputFile() {
 	return fileWay;
 }
 
-bool arrSizeInputFromFile(ifstream& file, int arrSize) {
+bool arrSizeInputFromFile(ifstream& file, int arrSize)
+{
 	bool isIncorrect = true;
 	if (file.fail() || file.get() != '\n')
 		cout << "Error in input size of massive. Try again: ";
@@ -164,7 +177,8 @@ bool arrSizeInputFromFile(ifstream& file, int arrSize) {
 	return isIncorrect;
 }
 
-bool isIncorrectInputCurrentNumbFromFile(ifstream& file) {
+bool isIncorrectInputCurrentNumbFromFile(ifstream& file)
+{
 	bool isIncorrect = false;
 	if (file.fail())
 		isIncorrect = true;
@@ -172,9 +186,11 @@ bool isIncorrectInputCurrentNumbFromFile(ifstream& file) {
 	return isIncorrect;
 }
 
-bool isIncorrectArrOfNumbInputFromFile(ifstream& file, int*& arrOfNumb, int arrSize) {
+bool isIncorrectArrOfNumbInputFromFile(ifstream& file, int*& arrOfNumb, int arrSize)
+{
 	bool isIncorrect = false;
-	for (int i = 0; i < arrSize; i++) {
+	for (int i = 0; i < arrSize; i++)
+	{
 		file >> arrOfNumb[i];
 		isIncorrect = isIncorrectInputCurrentNumbFromFile(file);
 	}
@@ -183,16 +199,19 @@ bool isIncorrectArrOfNumbInputFromFile(ifstream& file, int*& arrOfNumb, int arrS
 }
 
 /// result calc.. 
-void sortMassive(int*& arr, int size) {
+void sortMassive(int*& arrOfNumb, int arrSize)
+{
 	int temp; // временная переменная для хранения значения элемента сортируемого массива
-	for (int i = 1; i < size; i++)
+
+	for (int i = 1; i < arrSize; i++)
 	{
-		temp = arr[i]; // инициализируем временную переменную текущим значением элемента массива
-		int j = i - 1; // запоминаем индекс предыдущего элемента массива j - индекс прошлого эллемента
-		while (j >= 0 && arr[j] > temp) // пока индекс не равен 0 и предыдущий элемент массива больше текущего
+		temp = arrOfNumb[i]; // инициализируем временную переменную текущим значением элемента массива
+
+		int j = i - 1; // запоминаем индекс предыдущего элемента массива
+		while (j >= 0 && arrOfNumb[j] > temp) // пока индекс не равен 0 и предыдущий элемент массива больше текущего
 		{
-			arr[j + 1] = arr[j]; // перестановка элементов массива
-			arr[j] = temp;
+			arrOfNumb[j + 1] = arrOfNumb[j]; // перестановка элементов массива
+			arrOfNumb[j] = temp;
 			j--;
 		}
 	}
@@ -236,14 +255,14 @@ void resultOutput(int* arrOfNumb, int arrSize)
 }
 
 int main() {
-	int path = 0, arrSize = 0;
+	int arrSize = 0;
 	int* arrOfNumb = new int[0];
 
 	conditionOutput();
 
 	cout << "\nYou need to choose where to read information from.\n";
 
-	path = choosingAPath();
+	int path = choosingAPath();
 	if (path == CONSOLE_KEY) {
 		arrSize = arrSizeInputFromConsole();
 
@@ -265,7 +284,7 @@ int main() {
 				isIncorrect = isIncorrectArrOfNumbInputFromFile(file, arrOfNumb, arrSize);
 			}
 			if (isIncorrect)
-				cout << "Invalid massiv elements input. Try again: ";
+				cout << "Invalid massive elements input. Try again: ";
 			file.close();
 		} while (isIncorrect);
 	}
