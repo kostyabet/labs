@@ -119,25 +119,80 @@ begin
 
 end;
 
+Function WayCondition(Way: String): Boolean;
+Var
+    IsCorrect: Boolean;
+Begin
+    IsCorrect := False;
+    If ExtractFileExt(Way) <> '.txt' Then
+        Write('Write .txt file. Try again: ')
+    Else
+        IsCorrect := True;
+    WayCondition := IsCorrect;
+End;
 
+Function InputWayToTheFile(): String;
+Var
+    Way: String;
+    IsCorrect: Boolean;
+Begin
+    IsCorrect := False;
+    Repeat
+        Readln(Way);
+        IsCorrect := WayCondition(Way);
+    Until IsCorrect;
+    InputWayToTheFile := Way;
+End;
 
+Function InputFileWay(): String;
+Var
+    FileWay: String;
+    IsCorrect: Boolean;
+Begin
+    IsCorrect := False;
+    FileWay := '';
+    Repeat
+        FileWay := InputWayToTheFile();
+        If (Not FileExists(FileWay)) Then
+            Write('Can not open a file. Try write another way: ')
+        Else
+            IsCorrect := True;
+    Until IsCorrect;
+    InputFileWay := FileWay;
+End;
 
+function arrSizeInputFromFile(arrSize:integer):boolean;
+var
+    isCorrect:boolean;
+begin
+    isCorrect := false;
+    if arrSize < MIN_ARR_SIZE then
+        Write('Minimal arr size is ',  MIN_ARR_SIZE, '. Try again:')
+    else
+        isCorrect := true;
 
+    arrSizeInputFromFile := isCorrect;
+end;
 
+function isIncorrectArrOfNumbInputFromFile(var arrOfNumb:Array Of Integer; 
+                                  arrSize:integer;var MyFile:TextFile):boolean;
+var
+    isCorrect:boolean;
+    i:integer;
+begin
+    isCorrect := true;
 
+    for I := 0 to arrSize - 1 do
+    begin
+        try    
+            Read(MyFile, arrOfNumb[i]);
+        except
+            isCorrect := false;
+        end;
+    end;
 
-
-
-
-
-
-
-
-
-
-
-
-
+    isIncorrectArrOfNumbInputFromFile := isCorrect;
+end;
 
 procedure sortMassive(var arrOfNumb: Array Of Integer);
 var
@@ -158,9 +213,36 @@ begin
 end;
 
 procedure outputFromFile(var arrOfNumb: Array Of integer);
-begin
-
-end;
+Var
+    IsCorrect: Boolean;
+    FileWay: String;
+    MyFile: TextFile;
+    I:Integer;
+Begin
+    IsCorrect := False;
+    Write('Write way to your file: ');
+    Repeat
+        FileWay := InputFileWay();
+        AssignFile(MyFile, FileWay);
+        Try
+            Try
+                Append(MyFile);
+                ReWrite(MyFile);
+                for I := 0 to High(ArrOfNumb) do
+                begin
+                    Write(MyFile, ArrOfNumb[i]);
+                    Write(MyFile, ' ');
+                end;
+                Write('Cheack your file.');
+                IsCorrect := True;
+            Finally
+                Close(MyFile);
+            End;
+        Except
+            Write('Bad output file. Try again: ');
+        End;
+    Until IsCorrect;
+End;
 
 procedure outputFromConsole(var arrOfNumb: Array Of Integer);
 var
@@ -183,9 +265,12 @@ begin
 end;
 
 var
+    isCorrect:boolean;
     arrSize, path:integer;
     ArrOfNumb:Array Of Integer;
-
+    FileWay:string;
+    MyFile:TextFile;
+    
 Begin
     arrSize := 0;
     
@@ -203,7 +288,37 @@ Begin
     end
     else
     begin
-    
+        IsCorrect := True;
+        fileRestriction();
+        Write('Write way to your file: ');
+        Repeat
+            FileWay := InputFileWay();
+            AssignFile(MyFile, FileWay);
+            Try
+                Try
+                    Reset(MyFile);
+                    Try
+                        Readln(MyFile, arrSize);    
+                    Except
+                        Write('Error in array size reading. Try again: ');
+                        IsCorrect := False;
+                    End;
+                    if isCorrect then
+                        isCorrect := arrSizeInputFromFile(arrSize);
+                    if isCorrect then
+                    begin
+                        SetLength(ArrOfNumb, arrSize);
+                        isCorrect := isIncorrectArrOfNumbInputFromFile(arrOfNumb, arrSize, MyFile);
+                        if not isCorrect then
+                            Write('Invalid massive elements input. Try again: ');
+                    end;
+                Finally
+                    Close(MyFile);
+                End;
+            Except
+                Write('Bad input file. Try again: ');
+            End;
+        Until IsCorrect;
     end;
 
     sortMassive(arrOfNumb);
