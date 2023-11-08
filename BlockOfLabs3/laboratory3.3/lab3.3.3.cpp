@@ -6,8 +6,8 @@
 using namespace std;
 
 const int FILE_KEY = 1;
-const int CONSOLE_KEY = 2;
 const int MIN_ARR_SIZE = 1;
+const int CONSOLE_KEY = 2;
 const int MIN_FILE_WAY_SIZE = 5;
 
 void conditionOutput()
@@ -74,7 +74,8 @@ int arrSizeInputFromConsole()
 			while (cin.get() != '\n');
 		}
 		else if (arrSize < MIN_ARR_SIZE)
-			cout << "Minimal arr size is: " << MIN_ARR_SIZE << ". Try again: ";
+			cout << "Minimal arr size is: " << MIN_ARR_SIZE <<
+			". Try again: ";
 		else
 			isIncorrect = false;
 	} while (isIncorrect);
@@ -186,7 +187,8 @@ bool isIncorrectInputCurrentNumbFromFile(ifstream& file)
 	return isIncorrect;
 }
 
-bool isIncorrectArrOfNumbInputFromFile(ifstream& file, int*& arrOfNumb, int arrSize)
+bool isIncorrectArrOfNumbInputFromFile(ifstream& file, int*& arrOfNumb,
+	int arrSize)
 {
 	bool isIncorrect = false;
 	for (int i = 0; i < arrSize; i++)
@@ -251,7 +253,8 @@ void resultOutput(int* arrOfNumb, int arrSize)
 {
 	cout << "You need to choose where to write information from.\n";
 	int path = choosingAPath();
-	path == CONSOLE_KEY ? outputFromConsole(arrOfNumb, arrSize) : outputFromFile(arrOfNumb, arrSize);
+	path == CONSOLE_KEY ? outputFromConsole(arrOfNumb, arrSize)
+		: outputFromFile(arrOfNumb, arrSize);
 }
 
 int main() {
@@ -279,12 +282,15 @@ int main() {
 			ifstream file(fileWay, ios::in);
 			file >> arrSize;
 			isIncorrect = arrSizeInputFromFile(file, arrSize);
-			if (!isIncorrect) {
+			if (!isIncorrect)
+			{
 				arrOfNumb = new int[arrSize];
-				isIncorrect = isIncorrectArrOfNumbInputFromFile(file, arrOfNumb, arrSize);
+				isIncorrect = isIncorrectArrOfNumbInputFromFile(file,
+					arrOfNumb, arrSize);
+				if (isIncorrect)
+					cout << "Invalid massive elements input. Try again: ";
 			}
-			if (isIncorrect)
-				cout << "Invalid massive elements input. Try again: ";
+
 			file.close();
 		} while (isIncorrect);
 	}

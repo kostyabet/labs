@@ -1,3 +1,5 @@
+package lab3;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -321,7 +323,7 @@ public class Lab3 {
             arrOfNumbInputFromConsole(arrSize, arrOfNumb, in);
         }
         else {
-            boolean isIncorrect = false;
+            boolean isIncorrect = true;
             fileRestriction();
             System.out.print("Write way to your file: ");
             do
@@ -330,21 +332,27 @@ public class Lab3 {
                 try
                 {
                     Scanner fileScanner = new Scanner(new File(fileWay));
-                    if (fileScanner.hasNextInt())
+                    if (fileScanner.hasNextLine())
                     {
-                        arrSize = fileScanner.nextInt();
-                        isIncorrect = arrSizeInputFromFile(arrSize);
+                        try {
+                            arrSize = fileScanner.nextInt();
+                            isIncorrect = false;
+                        } catch(Exception error){
+                            System.err.print("Error in input size of massive. Try again: ");
+                        }
+                        if (!isIncorrect)
+                            isIncorrect = arrSizeInputFromFile(arrSize);
                         if (!isIncorrect)
                         {
                             arrOfNumb = new int[arrSize];
                             isIncorrect = isIncorrectArrOfNumbInputFromFile(fileScanner, arrOfNumb, arrSize);
+                            if (isIncorrect)
+                                System.err.print("Invalid massive elements input. Try again: ");
                         }
-                        if (isIncorrect)
-                            System.out.print("Invalid massive elements input. Try again: ");
                     }
                     else
                     {
-                        System.out.print("Empty file. Try again: ");
+                        System.err.print("Empty file. Try again: ");
                     }
                     fileScanner.close();
                 } catch (FileNotFoundException error)
