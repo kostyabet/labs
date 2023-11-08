@@ -34,15 +34,14 @@ int choosingAPath()
 	bool isIncorrect = true;
 
 	pathConditionOutput();
-
+	cout << "Please write were we should work: ";
 	do
 	{
-		cout << "Please write were we should work: ";
 		cin >> path;
 
 		if (cin.fail() || cin.get() != '\n')
 		{
-			cerr << "Error. You should write a one natural number. Try again.\n";
+			cerr << "Error. You should write a one natural number. Try again: ";
 			cin.clear();
 			while (cin.get() != '\n');
 		}
@@ -50,7 +49,7 @@ int choosingAPath()
 		{
 			if (path == CONSOLE_KEY || path == FILE_KEY)
 				isIncorrect = false;
-			else cerr << "Error method. Try again.\n";
+			else cerr << "Error method. Try again: ";
 		}
 	} while (isIncorrect);
 

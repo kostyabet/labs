@@ -44,18 +44,18 @@ public class Lab3 {
 
         pathConditionOutput();
 
+        System.out.print("Please write were we should work: ");
         do
         {
             boolean isCorrect = false;
 
-            System.out.print("Please write were we should work: ");
             try
             {
                 path = Integer.parseInt(in.nextLine());
                 isCorrect = true;
             } catch(Exception error)
             {
-                System.err.println("Error. You should write a one natural number. Try again.");
+                System.err.print("Error. You should write a one natural number. Try again: ");
             }
 
             if (path == CONSOLE_KEY || path == FILE_KEY)
@@ -64,7 +64,7 @@ public class Lab3 {
             }
             else if (isCorrect)
             {
-                System.err.println("Error method. Try again.");
+                System.err.print("Error method. Try again: ");
             }
         } while (isIncorrect);
 
@@ -87,12 +87,12 @@ public class Lab3 {
                 isCorrect = true;
             } catch(Exception error)
             {
-                System.out.print("Invalid numeric input. Try again: ");
+                System.err.print("Invalid numeric input. Try again: ");
             }
 
             if (arrSize < MIN_ARR_SIZE && isCorrect)
             {
-                System.out.printf("Minimal arr size is: %d. Try again: ", MIN_ARR_SIZE);
+                System.err.printf("Minimal arr size is: %d. Try again: ", MIN_ARR_SIZE);
             }
             else if (isCorrect)
             {
@@ -116,7 +116,7 @@ public class Lab3 {
                 isIncorrect = false;
             } catch(Exception error)
             {
-                System.out.print("Invalid numeric input. Try again: ");
+                System.err.print("Invalid numeric input. Try again: ");
             }
 
         } while (isIncorrect);

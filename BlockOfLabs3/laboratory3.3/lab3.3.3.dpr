@@ -6,118 +6,115 @@ Program lab3;
 Uses
     System.SysUtils;
 
-const 
-    FILE_KEY : integer = 1;
-    MIN_ARR_SIZE : integer = 1;
-    CONSOLE_KEY : integer = 2;
-    MIN_FILE_WAY_SIZE : integer = 5;
+Const
+    FILE_KEY: Integer = 1;
+    MIN_ARR_SIZE: Integer = 1;
+    CONSOLE_KEY: Integer = 2;
+    MIN_FILE_WAY_SIZE: Integer = 5;
 
-procedure conditionOutput();
-begin
-    Write('The program is designed to sort an array', #13#10#9,
-          'using the simple insertion method.', #13#10#10);
-end;
+Procedure ConditionOutput();
+Begin
+    Write('The program is designed to sort an array', #13#10#9, 'using the simple insertion method.', #13#10#10);
+End;
 
-procedure pathConditionOutput();
-begin
-    Write('Where will we work through: ', #13#10#9, 'File: ',
-          FILE_KEY, ' Console: ', CONSOLE_KEY, #13#10#10);
-end;
+Procedure PathConditionOutput();
+Begin
+    Write('Where will we work through: ', #13#10#9, 'File: ', FILE_KEY, ' Console: ', CONSOLE_KEY, #13#10#10);
+End;
 
-procedure fileRestriction();
-begin
-    Write(#13#10, '*The first number is the number of elements ', #13#10,
-          'of the array, and subsequent numbers of this array*', #13#10);
-end;
+Procedure FileRestriction();
+Begin
+    Write(#13#10, '*The first number is the number of elements ', #13#10, 'of the array, and subsequent numbers of this array*', #13#10);
+End;
 
-function choosingAPath():integer;
-var
-    path:integer;
-    isCorrect, isCorrectInput:boolean;
-begin
-    path := 0;
-    isCorrect := false;
-    isCorrectInput := false;
+Function ChoosingAPath(): Integer;
+Var
+    Path: Integer;
+    IsCorrect, IsCorrectInput: Boolean;
+Begin
+    Path := 0;
+    IsCorrect := False;
+    IsCorrectInput := False;
 
-    pathConditionOutput();
-
-    repeat
-        Write('Please write were we should work: ');
-        try
+    PathConditionOutput();
+    Write('Please write were we should work: ');
+    Repeat
+        Try
             Readln(Path);
-            isCorrectInput := true;
-        except
-            Writeln('Error. You should write a one natural number. Try again.');
-        end;
+            IsCorrectInput := True;
+        Except
+            Write('Error. You should write a one natural number. Try again: ');
+        End;
 
-        if (path = CONSOLE_KEY) or (path = FILE_KEY) then
-            isCorrect := true
-        else if isCorrectInput then
-            Writeln('Error method. Try again.');
-    until isCorrect;
+        If (Path = CONSOLE_KEY) Or (Path = FILE_KEY) Then
+            IsCorrect := True
+        Else
+            If IsCorrectInput Then
+                Write('Error method. Try again: ');
+    Until IsCorrect;
 
-    choosingAPath := Path;
-end;
+    ChoosingAPath := Path;
+End;
 
-function arrSizeInputFromConsole():integer;
-var
-    arrSize:integer;
-    isCorrect, isCorrectInput : boolean;
-begin
-    isCorrect := false;
-    isCorrectInput := false;
-    arrSize := 0;
-    
+Function ArrSizeInputFromConsole(): Integer;
+Var
+    ArrSize: Integer;
+    IsCorrect, IsCorrectInput: Boolean;
+Begin
+    IsCorrect := False;
+    IsCorrectInput := False;
+    ArrSize := 0;
+
     Write('Write your arr size: ');
-    repeat
-        try
-            Readln(arrSize);
-            isCorrectInput := true;
-        except
+    Repeat
+        Try
+            Readln(ArrSize);
+            IsCorrectInput := True;
+        Except
             Write('Invalid numeric input. Try again: ');
-        end;
+        End;
 
-        if (arrSize < MIN_ARR_SIZE) and isCorrectInput then
-            Write('Minimal arr size is: ', MIN_ARR_SIZE, 
-                  '. Try again: ')
-        else if isCorrectInput then
-            isCorrect := true;
-    until isCorrect;
+        If (ArrSize < MIN_ARR_SIZE) And IsCorrectInput Then
+            Write('Minimal arr size is: ', MIN_ARR_SIZE, '. Try again: ')
+        Else
+            If IsCorrectInput Then
+                IsCorrect := True;
+    Until IsCorrect;
 
-    arrSizeInputFromConsole := arrSize;
-end;
+    ArrSizeInputFromConsole := ArrSize;
+End;
 
-function inputCurrentNumbFromConsole():integer;
-var
-    currentNumb:integer;
-    isCorrect :boolean;
-begin
-    isCorrect := false;
-    currentNumb := 0;
-    
-    repeat
-        try
-            Readln(currentNumb);
-            isCorrect := true;
-        except
+Function InputCurrentNumbFromConsole(): Integer;
+Var
+    CurrentNumb: Integer;
+    IsCorrect: Boolean;
+Begin
+    IsCorrect := False;
+    CurrentNumb := 0;
+
+    Repeat
+        Try
+            Readln(CurrentNumb);
+            IsCorrect := True;
+        Except
             Write('Invalid numeric input. Try again: ');
-        end;
-    until isCorrect;
+        End;
+    Until IsCorrect;
 
-    inputCurrentNumbFromConsole := currentNumb;
-end;
+    InputCurrentNumbFromConsole := CurrentNumb;
+End;
 
-procedure arrOfNumbInputFromConsole(var arrOfNumb:Array of Integer);
-var
-    i:integer;
-begin
-    for I := 0 to High(ArrOfNumb) do
-    begin
-        Write('Write your ', i + 1, ' numbers: ');
-        arrOfNumb[i] := inputCurrentNumbFromConsole();
-    end;
+Procedure ArrOfNumbInputFromConsole(Var ArrOfNumb: Array Of Integer);
+Var
+    I: Integer;
+Begin
+    For I := 0 To High(ArrOfNumb) Do
+    Begin
+        Write('Write your ', I + 1, ' numbers: ');
+        ArrOfNumb[I] := InputCurrentNumbFromConsole();
+    End;
 
-end;
+End;
 
 Function WayCondition(Way: String): Boolean;
 Var
@@ -161,63 +158,62 @@ Begin
     InputFileWay := FileWay;
 End;
 
-function arrSizeInputFromFile(arrSize:integer):boolean;
-var
-    isCorrect:boolean;
-begin
-    isCorrect := false;
-    if arrSize < MIN_ARR_SIZE then
-        Write('Minimal arr size is ',  MIN_ARR_SIZE, '. Try again:')
-    else
-        isCorrect := true;
+Function ArrSizeInputFromFile(ArrSize: Integer): Boolean;
+Var
+    IsCorrect: Boolean;
+Begin
+    IsCorrect := False;
+    If ArrSize < MIN_ARR_SIZE Then
+        Write('Minimal arr size is ', MIN_ARR_SIZE, '. Try again:')
+    Else
+        IsCorrect := True;
 
-    arrSizeInputFromFile := isCorrect;
-end;
+    ArrSizeInputFromFile := IsCorrect;
+End;
 
-function isIncorrectArrOfNumbInputFromFile(var arrOfNumb:Array Of Integer; 
-                                  arrSize:integer;var MyFile:TextFile):boolean;
-var
-    isCorrect:boolean;
-    i:integer;
-begin
-    isCorrect := true;
+Function IsIncorrectArrOfNumbInputFromFile(Var ArrOfNumb: Array Of Integer; ArrSize: Integer; Var MyFile: TextFile): Boolean;
+Var
+    IsCorrect: Boolean;
+    I: Integer;
+Begin
+    IsCorrect := True;
 
-    for I := 0 to arrSize - 1 do
-    begin
-        try    
-            Read(MyFile, arrOfNumb[i]);
-        except
-            isCorrect := false;
-        end;
-    end;
+    For I := 0 To ArrSize - 1 Do
+    Begin
+        Try
+            Read(MyFile, ArrOfNumb[I]);
+        Except
+            IsCorrect := False;
+        End;
+    End;
 
-    isIncorrectArrOfNumbInputFromFile := isCorrect;
-end;
+    IsIncorrectArrOfNumbInputFromFile := IsCorrect;
+End;
 
-procedure sortMassive(var arrOfNumb: Array Of Integer);
-var
-    temp, I, J:integer;
-begin        
-    for I := 1 to High(ArrOfNumb) do
-    begin
-        temp := arrOfNumb[i];
+Procedure SortMassive(Var ArrOfNumb: Array Of Integer);
+Var
+    Temp, I, J: Integer;
+Begin
+    For I := 1 To High(ArrOfNumb) Do
+    Begin
+        Temp := ArrOfNumb[I];
 
-        j := i - 1;
-        while (j >= 0) And (arrOfNumb[j] > temp) do
-        begin
-            arrOfNumb[j + 1] := arrOfNumb[j];
-            arrOfNumb[j] := temp;
-            dec(j);
-        end;
-    end;
-end;
+        J := I - 1;
+        While (J >= 0) And (ArrOfNumb[J] > Temp) Do
+        Begin
+            ArrOfNumb[J + 1] := ArrOfNumb[J];
+            ArrOfNumb[J] := Temp;
+            Dec(J);
+        End;
+    End;
+End;
 
-procedure outputFromFile(var arrOfNumb: Array Of integer);
+Procedure OutputFromFile(Var ArrOfNumb: Array Of Integer);
 Var
     IsCorrect: Boolean;
     FileWay: String;
     MyFile: TextFile;
-    I:Integer;
+    I: Integer;
 Begin
     IsCorrect := False;
     Write('Write way to your file: ');
@@ -228,11 +224,11 @@ Begin
             Try
                 Append(MyFile);
                 ReWrite(MyFile);
-                for I := 0 to High(ArrOfNumb) do
-                begin
-                    Write(MyFile, ArrOfNumb[i]);
+                For I := 0 To High(ArrOfNumb) Do
+                Begin
+                    Write(MyFile, ArrOfNumb[I]);
                     Write(MyFile, ' ');
-                end;
+                End;
                 Write('Cheack your file.');
                 IsCorrect := True;
             Finally
@@ -244,74 +240,79 @@ Begin
     Until IsCorrect;
 End;
 
-procedure outputFromConsole(var arrOfNumb: Array Of Integer);
-var
-  I: Integer;
-begin
-    for I := 0 to High(arrOfNumb) do
-        Write(arrOfNumb[i], ' ');
-end;
-
-procedure resultOutput(var arrOfNumb: Array of integer);
-var
-    path:integer;    
-begin
-    Writeln('You need to choose where to write information from.');
-    path := choosingAPath();
-    if Path = CONSOLE_KEY then
-        outputFromConsole(arrOfNumb)
-    else
-        outputFromFile(arrOfNumb);
-end;
-
-var
-    isCorrect:boolean;
-    arrSize, path:integer;
-    ArrOfNumb:Array Of Integer;
-    FileWay:string;
-    MyFile:TextFile;
-    
+Procedure OutputFromConsole(Var ArrOfNumb: Array Of Integer);
+Var
+    I: Integer;
 Begin
-    arrSize := 0;
-    
-    conditionOutput();
+    For I := 0 To High(ArrOfNumb) Do
+        Write(ArrOfNumb[I], ' ');
+End;
+
+Procedure ResultOutput(Var ArrOfNumb: Array Of Integer);
+Var
+    Path: Integer;
+Begin
+    Writeln('You need to choose where to write information from.');
+    Path := ChoosingAPath();
+    If Path = CONSOLE_KEY Then
+        OutputFromConsole(ArrOfNumb)
+    Else
+        OutputFromFile(ArrOfNumb);
+End;
+
+Var
+    IsCorrect: Boolean;
+    ArrSize, Path: Integer;
+    ArrOfNumb: Array Of Integer;
+    FileWay: String;
+    MyFile: TextFile;
+
+Begin
+    ArrSize := 0;
+
+    ConditionOutput();
 
     Writeln(#13#10, 'You need to choose where to read information from.');
 
-    path := choosingAPath();
-    if path = CONSOLE_KEY then
-    begin
-        arrSize := arrSizeInputFromConsole();
+    Path := ChoosingAPath();
+    If Path = CONSOLE_KEY Then
+    Begin
+        ArrSize := ArrSizeInputFromConsole();
 
-        SetLength(arrOfNumb, arrSize);
-        arrOfNumbInputFromConsole(arrOfNumb);
-    end
-    else
-    begin
-        IsCorrect := True;
-        fileRestriction();
+        SetLength(ArrOfNumb, ArrSize);
+        ArrOfNumbInputFromConsole(ArrOfNumb);
+    End
+    Else
+    Begin
+        FileRestriction();
         Write('Write way to your file: ');
         Repeat
+            IsCorrect := True;
             FileWay := InputFileWay();
             AssignFile(MyFile, FileWay);
             Try
                 Try
                     Reset(MyFile);
-                    Try
-                        Readln(MyFile, arrSize);    
-                    Except
-                        Write('Error in array size reading. Try again: ');
-                        IsCorrect := False;
-                    End;
-                    if isCorrect then
-                        isCorrect := arrSizeInputFromFile(arrSize);
-                    if isCorrect then
-                    begin
-                        SetLength(ArrOfNumb, arrSize);
-                        isCorrect := isIncorrectArrOfNumbInputFromFile(arrOfNumb, arrSize, MyFile);
-                        if not isCorrect then
-                            Write('Invalid massive elements input. Try again: ');
-                    end;
+                    If Not Eof(MyFile) Then
+                    Begin
+                        Try
+                            Readln(MyFile, ArrSize);
+                        Except
+                            Write('Error in array size reading. Try again: ');
+                            IsCorrect := False;
+                        End;
+                        If IsCorrect Then
+                            IsCorrect := ArrSizeInputFromFile(ArrSize);
+                        If IsCorrect Then
+                        Begin
+                            SetLength(ArrOfNumb, ArrSize);
+                            IsCorrect := IsIncorrectArrOfNumbInputFromFile(ArrOfNumb, ArrSize, MyFile);
+                            If not IsCorrect Then
+                                Write('Invalid massive elements input. Try again: ');
+                        End;
+                    End
+                    Else
+                        Write('mpty file. Try again: ');
                 Finally
                     Close(MyFile);
                 End;
@@ -319,12 +320,13 @@ Begin
                 Write('Bad input file. Try again: ');
             End;
         Until IsCorrect;
-    end;
+    End;
 
-    sortMassive(arrOfNumb);
+    SortMassive(ArrOfNumb);
 
-    resultOutput(arrOfNumb);
+    ResultOutput(ArrOfNumb);
 
-    arrOfNumb := nil;
+    ArrOfNumb := Nil;
     Readln;
+
 End.
