@@ -1,7 +1,6 @@
 package lab3;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.util.Scanner;
 
@@ -30,11 +29,11 @@ public class Lab3 {
 
     static void fileRestriction()
     {
-        System.out.println("""
-        
-        *The first number is the number of elements
-        of the array, and subsequent numbers of this array*
-        """);
+        System.out.print("""
+                        
+                *The first number is the number of elements
+                of the array, and subsequent numbers of this array*
+                Write way to your file:\s""");
     }
 
     static int choosingAPath(Scanner in)
@@ -124,13 +123,15 @@ public class Lab3 {
         return currentNumb;
     }
 
-    static void arrOfNumbInputFromConsole(int arrSize, int[] arrOfNumb, Scanner in)
+    static boolean isCorrectArrOfNumbInputFromConsole(int arrSize, int[] arrOfNumb, Scanner in)
     {
         for (int i = 0; i < arrSize; i++)
         {
             System.out.printf("Write your %d number: ", i + 1);
             arrOfNumb[i] = inputCurrentNumbFromConsole(in);
         }
+
+        return false;
     }
 
     static boolean isCanOpenFile(String way)
@@ -140,7 +141,7 @@ public class Lab3 {
         return file.canRead();
     }
 
-    static boolean wayCondition(String way)
+    static boolean pathCondition(String way)
     {
         if (way.length() < MIN_FILE_WAY_SIZE)
         {
@@ -158,7 +159,7 @@ public class Lab3 {
         return true;
     }
 
-    static String inputWayToTheFile(Scanner in)
+    static String inputPath(Scanner in)
     {
         String way;
         boolean isIncorrect;
@@ -166,21 +167,21 @@ public class Lab3 {
         do
         {
             way = in.nextLine();
-            isIncorrect = !wayCondition(way);
+            isIncorrect = !pathCondition(way);
         } while (isIncorrect);
 
         return way;
     }
 
 
-    static String inputFile(Scanner in)
+    static String inputPathToTheFile(Scanner in)
     {
         String fileWay;
         boolean isIncorrect = true;
 
         do
         {
-            fileWay = inputWayToTheFile(in);
+            fileWay = inputPath(in);
 
             if (!isCanOpenFile(fileWay))
             {
@@ -195,38 +196,47 @@ public class Lab3 {
         return fileWay;
     }
 
-    static boolean arrSizeInputFromFile(int arrSize)
+    static int arrSizeInputFromFile(String fileWay)
     {
-        boolean isIncorrect = true;
-
+        int arrSize;
+        try (Scanner fileScanner = new Scanner(new File(fileWay))){
+            arrSize = Integer.parseInt(fileScanner.nextLine());
+        } catch(Exception error){
+            System.err.print("Error in input size of massive. Try again: ");
+            arrSize = -1;
+        }
         if (arrSize < MIN_ARR_SIZE)
         {
-            System.out.printf("Minimal arr size is %d. Try again: ", MIN_ARR_SIZE);
-        }
-        else
-        {
-            isIncorrect = false;
+            System.err.printf("Minimal arr size is %d. Try again: ", MIN_ARR_SIZE);
+            arrSize = -1;
         }
 
-        return isIncorrect;
+        return arrSize;
     }
 
-    static boolean isIncorrectArrOfNumbInputFromFile(Scanner fileScanner, int[] arrOfNumb, int arrSize)
+    static boolean isCorrectArrOfNumbInputFromFile(int arrSize,int[] arrOfNumb,String fileWay)
     {
-        boolean isIncorrect = false;
+        if (arrSize == -1)
+            return true;
 
-        for (int i = 0; i < arrSize; i++)
+        try (Scanner fileScanner = new Scanner(new File(fileWay)))
         {
-            try
+            fileScanner.nextInt();
+            for (int i = 0; i < arrSize; i++)
             {
                 arrOfNumb[i] = fileScanner.nextInt();
-            } catch(Exception error)
-            {
-                isIncorrect = true;
             }
+
+            if (fileScanner.hasNext())
+                return true;
+
+        } catch(Exception error)
+        {
+            System.err.print("Error in reading massive elements. Try again: ");
+            return true;
         }
 
-        return isIncorrect;
+        return false;
     }
 
     static void sortMassive(int[] arrOfNumb, int arrSize)
@@ -254,7 +264,7 @@ public class Lab3 {
         System.out.print("Write way to your file: ");
         do
         {
-            String fileWay = inputWayToTheFile(in);
+            String fileWay = inputPath(in);
             File file = new File(fileWay);
             StringBuilder builder;
             if (file.canWrite())
@@ -303,11 +313,23 @@ public class Lab3 {
         }
     }
 
+    static String inputFileWay(Scanner in, int path){
+        return path == FILE_KEY ? inputPathToTheFile(in) : "";
+    }
+
+    static int arrSizeInput(Scanner in, int path, String fileWay){
+        return path == FILE_KEY ? arrSizeInputFromFile(fileWay) : arrSizeInputFromConsole(in);
+    }
+
+    static boolean inputArrOfNumb(int arrSize,int[] arrOfNumb,int path,String fileWay,Scanner in){
+        return path == FILE_KEY ? isCorrectArrOfNumbInputFromFile(arrSize, arrOfNumb, fileWay) : isCorrectArrOfNumbInputFromConsole(arrSize, arrOfNumb, in);
+    }
+
     public static void main(String[] args)
     {
         Scanner in = new Scanner(System.in);
 
-        int arrSize = 0;
+        int arrSize;
         int[] arrOfNumb = new int[0];
 
         conditionOutput();
@@ -315,52 +337,18 @@ public class Lab3 {
         System.out.println("\nYou need to choose where to read information from.");
 
         int path = choosingAPath(in);
-        if (path == CONSOLE_KEY)
-        {
-            arrSize = arrSizeInputFromConsole(in);
 
-            arrOfNumb = new int[arrSize];
-            arrOfNumbInputFromConsole(arrSize, arrOfNumb, in);
-        }
-        else {
-            boolean isIncorrect = true;
+        boolean isIncorrect;
+        if (path == FILE_KEY)
             fileRestriction();
-            System.out.print("Write way to your file: ");
-            do
-            {
-                String fileWay = inputFile(in);
-                try
-                {
-                    Scanner fileScanner = new Scanner(new File(fileWay));
-                    if (fileScanner.hasNextLine())
-                    {
-                        try {
-                            arrSize = fileScanner.nextInt();
-                            isIncorrect = false;
-                        } catch(Exception error){
-                            System.err.print("Error in input size of massive. Try again: ");
-                        }
-                        if (!isIncorrect)
-                            isIncorrect = arrSizeInputFromFile(arrSize);
-                        if (!isIncorrect)
-                        {
-                            arrOfNumb = new int[arrSize];
-                            isIncorrect = isIncorrectArrOfNumbInputFromFile(fileScanner, arrOfNumb, arrSize);
-                            if (isIncorrect)
-                                System.err.print("Invalid massive elements input. Try again: ");
-                        }
-                    }
-                    else
-                    {
-                        System.err.print("Empty file. Try again: ");
-                    }
-                    fileScanner.close();
-                } catch (FileNotFoundException error)
-                {
-                    System.err.print("File not found. Try again: ");
-                }
-            } while (isIncorrect);
-        }
+
+        do {
+            String fileWay = inputFileWay(in, path);
+            arrSize = arrSizeInput(in, path, fileWay);
+            if (arrSize != -1)
+                arrOfNumb = new int [arrSize];
+            isIncorrect = inputArrOfNumb(arrSize, arrOfNumb, path, fileWay, in);
+        } while (isIncorrect);
 
         sortMassive(arrOfNumb, arrSize);
 

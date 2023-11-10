@@ -12,6 +12,9 @@ Const
     CONSOLE_KEY: Integer = 2;
     MIN_FILE_WAY_SIZE: Integer = 5;
 
+Type
+    TMassive = Array Of Integer;
+
 Procedure ConditionOutput();
 Begin
     Write('The program is designed to sort an array', #13#10#9, 'using the simple insertion method.', #13#10#10);
@@ -24,7 +27,8 @@ End;
 
 Procedure FileRestriction();
 Begin
-    Write(#13#10, '*The first number is the number of elements ', #13#10, 'of the array, and subsequent numbers of this array*', #13#10);
+    Write(#13#10, '*The first number is the number of elements ', #13#10, 'of the array, and subsequent numbers of this array*', #13#10,
+        'Write way to your file: ');
 End;
 
 Function ChoosingAPath(): Integer;
@@ -104,19 +108,21 @@ Begin
     InputCurrentNumbFromConsole := CurrentNumb;
 End;
 
-Procedure ArrOfNumbInputFromConsole(Var ArrOfNumb: Array Of Integer);
+Function IsCorrectArrOfNumbInputFromConsole(ArrSize: Integer; ArrOfNumb: TMassive): Boolean;
 Var
     I: Integer;
 Begin
+    SetLength(ArrOfNumb, ArrSize);
     For I := 0 To High(ArrOfNumb) Do
     Begin
         Write('Write your ', I + 1, ' numbers: ');
         ArrOfNumb[I] := InputCurrentNumbFromConsole();
     End;
 
+    IsCorrectArrOfNumbInputFromConsole := True;
 End;
 
-Function WayCondition(Way: String): Boolean;
+Function PathCondition(Way: String): Boolean;
 Var
     IsCorrect: Boolean;
 Begin
@@ -125,10 +131,10 @@ Begin
         Write('Write .txt file. Try again: ')
     Else
         IsCorrect := True;
-    WayCondition := IsCorrect;
+    PathCondition := IsCorrect;
 End;
 
-Function InputWayToTheFile(): String;
+Function InputPath(): String;
 Var
     Way: String;
     IsCorrect: Boolean;
@@ -136,12 +142,12 @@ Begin
     IsCorrect := False;
     Repeat
         Readln(Way);
-        IsCorrect := WayCondition(Way);
+        IsCorrect := PathCondition(Way);
     Until IsCorrect;
-    InputWayToTheFile := Way;
+    InputPath := Way;
 End;
 
-Function InputFileWay(): String;
+Function InputPathToTheFile(): String;
 Var
     FileWay: String;
     IsCorrect: Boolean;
@@ -149,48 +155,79 @@ Begin
     IsCorrect := False;
     FileWay := '';
     Repeat
-        FileWay := InputWayToTheFile();
+        FileWay := InputPath();
         If (Not FileExists(FileWay)) Then
             Write('Can not open a file. Try write another way: ')
         Else
             IsCorrect := True;
     Until IsCorrect;
-    InputFileWay := FileWay;
+    InputPathToTheFile := FileWay;
 End;
 
-Function ArrSizeInputFromFile(ArrSize: Integer): Boolean;
+Function ArrSizeInputFromFile(FileWay: String): Integer;
 Var
-    IsCorrect: Boolean;
+    MyFile: TextFile;
+    ArrSize: Integer;
 Begin
-    IsCorrect := False;
-    If ArrSize < MIN_ARR_SIZE Then
-        Write('Minimal arr size is ', MIN_ARR_SIZE, '. Try again:')
-    Else
-        IsCorrect := True;
 
-    ArrSizeInputFromFile := IsCorrect;
+    Try
+        AssignFile(MyFile, FileWay);
+        Try
+            Reset(MyFile);
+            Readln(MyFile, ArrSize);
+        Finally
+            Close(MyFile);
+        End;
+        If ArrSize < MIN_ARR_SIZE Then
+        Begin
+            Write('Minimal arr size is ', MIN_ARR_SIZE, '. Try again: ');
+            ArrSize := -1;
+        End;
+    Except
+        Write('Error in input size of massive. Try again: ');
+        ArrSize := -1;
+    End;
+
+    ArrSizeInputFromFile := ArrSize;
 End;
 
-Function IsIncorrectArrOfNumbInputFromFile(Var ArrOfNumb: Array Of Integer; ArrSize: Integer; Var MyFile: TextFile): Boolean;
+Function IsCorrectArrOfNumbInputFromFile(ArrSize: Integer; Var ArrOfNumb: TMassive; FileWay: String): Boolean;
 Var
     IsCorrect: Boolean;
     I: Integer;
+    MyFile: TextFile;
 Begin
     IsCorrect := True;
 
-    For I := 0 To ArrSize - 1 Do
+    If ArrSize = -1 Then
+        IsCorrect := False
+    Else
     Begin
+        SetLength(ArrOfNumb, ArrSize);
         Try
-            Read(MyFile, ArrOfNumb[I]);
+            AssignFile(MyFile, FileWay);
+            Try
+                Reset(MyFile);
+                Readln(MyFile);
+                For I := 0 To ArrSize - 1 Do
+                    Read(MyFile, ArrOfNumb[I]);
+                If (Not Seekeof(MyFile)) Then
+                Begin
+                    IsCorrect := False;
+                    Write('More then ', ArrSize, ' elements in massive. Try again: ');
+                End;
+            Finally
+            End;
         Except
             IsCorrect := False;
+            Write('Error in reading massive elements. Try again: ');
         End;
     End;
 
-    IsIncorrectArrOfNumbInputFromFile := IsCorrect;
+    IsCorrectArrOfNumbInputFromFile := IsCorrect;
 End;
 
-Procedure SortMassive(Var ArrOfNumb: Array Of Integer);
+Procedure SortMassive(Var ArrOfNumb: TMassive);
 Var
     Temp, I, J: Integer;
 Begin
@@ -208,7 +245,7 @@ Begin
     End;
 End;
 
-Procedure OutputFromFile(Var ArrOfNumb: Array Of Integer);
+Procedure OutputFromFile(Var ArrOfNumb: TMassive);
 Var
     IsCorrect: Boolean;
     FileWay: String;
@@ -218,11 +255,10 @@ Begin
     IsCorrect := False;
     Write('Write way to your file: ');
     Repeat
-        FileWay := InputFileWay();
+        FileWay := InputPathToTheFile();
         AssignFile(MyFile, FileWay);
         Try
             Try
-                Append(MyFile);
                 ReWrite(MyFile);
                 For I := 0 To High(ArrOfNumb) Do
                 Begin
@@ -240,7 +276,7 @@ Begin
     Until IsCorrect;
 End;
 
-Procedure OutputFromConsole(Var ArrOfNumb: Array Of Integer);
+Procedure OutputFromConsole(Var ArrOfNumb: TMassive);
 Var
     I: Integer;
 Begin
@@ -248,7 +284,7 @@ Begin
         Write(ArrOfNumb[I], ' ');
 End;
 
-Procedure ResultOutput(Var ArrOfNumb: Array Of Integer);
+Procedure ResultOutput(Var ArrOfNumb: TMassive);
 Var
     Path: Integer;
 Begin
@@ -260,67 +296,61 @@ Begin
         OutputFromFile(ArrOfNumb);
 End;
 
+Function InputFileWay(Path: Integer): String;
+Var
+    Res: String;
+Begin
+    If Path = FILE_KEY Then
+        Res := InputPathToTheFile()
+    Else
+        Res := '';
+
+    InputFileWay := Res;
+End;
+
+Function ArrSizeInput(Path: Integer; FileWay: String): Integer;
+Var
+    Res: Integer;
+Begin
+    If Path = FILE_KEY Then
+        Res := ArrSizeInputFromFile(FileWay)
+    Else
+        Res := ArrSizeInputFromConsole();
+    ArrSizeInput := Res;
+End;
+
+Function InputArrOfNumb(ArrSize: Integer; Var ArrOfNumb: TMassive; Path: Integer; FileWay: String): Boolean;
+Var
+    Res: Boolean;
+Begin
+    If Path = FILE_KEY Then
+        Res := IsCorrectArrOfNumbInputFromFile(ArrSize, ArrOfNumb, FileWay)
+    Else
+        Res := IsCorrectArrOfNumbInputFromConsole(ArrSize, ArrOfNumb);
+    InputArrOfNumb := Res;
+End;
+
 Var
     IsCorrect: Boolean;
     ArrSize, Path: Integer;
-    ArrOfNumb: Array Of Integer;
+    ArrOfNumb: TMassive;
     FileWay: String;
-    MyFile: TextFile;
 
 Begin
-    ArrSize := 0;
-
     ConditionOutput();
 
     Writeln(#13#10, 'You need to choose where to read information from.');
-
     Path := ChoosingAPath();
-    If Path = CONSOLE_KEY Then
-    Begin
-        ArrSize := ArrSizeInputFromConsole();
 
-        SetLength(ArrOfNumb, ArrSize);
-        ArrOfNumbInputFromConsole(ArrOfNumb);
-    End
-    Else
-    Begin
+    If Path = FILE_KEY Then
         FileRestriction();
-        Write('Write way to your file: ');
-        Repeat
-            IsCorrect := True;
-            FileWay := InputFileWay();
-            AssignFile(MyFile, FileWay);
-            Try
-                Try
-                    Reset(MyFile);
-                    If Not Eof(MyFile) Then
-                    Begin
-                        Try
-                            Readln(MyFile, ArrSize);
-                        Except
-                            Write('Error in array size reading. Try again: ');
-                            IsCorrect := False;
-                        End;
-                        If IsCorrect Then
-                            IsCorrect := ArrSizeInputFromFile(ArrSize);
-                        If IsCorrect Then
-                        Begin
-                            SetLength(ArrOfNumb, ArrSize);
-                            IsCorrect := IsIncorrectArrOfNumbInputFromFile(ArrOfNumb, ArrSize, MyFile);
-                            If not IsCorrect Then
-                                Write('Invalid massive elements input. Try again: ');
-                        End;
-                    End
-                    Else
-                        Write('mpty file. Try again: ');
-                Finally
-                    Close(MyFile);
-                End;
-            Except
-                Write('Bad input file. Try again: ');
-            End;
-        Until IsCorrect;
-    End;
+
+    Repeat
+        FileWay := InputFileWay(Path);
+
+        ArrSize := ArrSizeInput(Path, FileWay);
+        IsCorrect := InputArrOfNumb(ArrSize, ArrOfNumb, Path, FileWay);
+    Until IsCorrect;
 
     SortMassive(ArrOfNumb);
 
