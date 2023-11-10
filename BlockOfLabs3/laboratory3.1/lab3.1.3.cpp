@@ -26,7 +26,17 @@ void fileRestriction()
 {
 	cout << "\n*the first number in the file is the number\n"
 		"of the occurrence the index of which you want to find,\n"
-		"and after that the substring and the string*\n";
+		"and after that the substring and the string*\n"
+		"Write way to your file: ";
+}
+
+/// input from file
+bool isCanOpenFile(string way, ios_base::openmode mode)
+{
+	fstream file(way, mode);
+	file.close();
+
+	return file.good();
 }
 
 int choosingAPath()
@@ -57,63 +67,49 @@ int choosingAPath()
 }
 
 // input way to the file
-bool wayCondition(string way)
+bool pathCondition(string way)
 {
 	if (way.size() < MIN_FILE_WAY_SIZE)
 	{
 		cerr << "The path is too short. Try again: ";
-
 		return false;
 	}
-
 	string bufstr = way.substr(way.size() - 4);
 	if (bufstr != ".txt")
 	{
 		cerr << "Write .txt file. Try again: ";
-
 		return false;
 	}
-
 	return true;
 }
-
-string inputWayToTheFile()
+string inputPath()
 {
 	string way;
-	bool isIncorrect = true;
+	bool isIncorrect;
 	do
 	{
 		cin >> way;
-		isIncorrect = !wayCondition(way);
+		isIncorrect = !pathCondition(way);
 	} while (isIncorrect);
-
 	return way;
 }
-
-/// input from file
-bool isCanOpenFile(string way, ios_base::openmode mode)
+string inputPathToTheFile()
 {
-	fstream file(way, mode);
-	file.close();
-
-	return file.good();
-}
-
-string inputFile() {
 	string fileWay;
 	bool isIncorrect = true;
-	do {
-		bool isCorrect = true;
-		fileWay = inputWayToTheFile();
 
+	do
+	{
+		bool isCorrect = true;
+		fileWay = inputPath();
 		if (!isCanOpenFile(fileWay, ios::in))
-			cout << "Can't open a file. Try write another way: ";
+			cerr << "Can't open a file. Try write another way: ";
 		else
 			isIncorrect = false;
 	} while (isIncorrect);
-
 	return fileWay;
 }
+
 
 bool afterReadingCheck(ifstream& file, bool isCorrect, string str1, string str2)
 {
@@ -132,12 +128,29 @@ bool afterReadingCheck(ifstream& file, bool isCorrect, string str1, string str2)
 }
 
 /// input from console
-bool checkKCondition(int k)
+int inputKFromFile(string fileWay)
 {
-	bool isIncorrect = true;
-	if (cin.fail() && cin.get() != '\n')
+	int k;
+	ifstream file(fileWay, ios::in);
+	file >> k;
+	if (file.fail())
 	{
-		cerr << "You should write a number. Try again: ";
+		cerr << "First string is natural number. Try again: ";
+		k = -1;
+	}
+	else if (k < MIN_K)
+	{
+		cerr << "Min position number is " << MIN_K << ". Try again: ";
+		k = -1;
+	}
+	file.close();
+	return k;
+}
+
+bool checkKCondition(int k) {
+	bool isIncorrect = true;
+	if (cin.fail() || cin.get() != '\n') {
+		cerr << "First string is natural number. Try again: ";
 		cin.clear();
 		while (cin.get() != '\n');
 	}
@@ -163,6 +176,19 @@ int inputKFromConsole()
 	return k;
 }
 
+string inputStringFromFile(ifstream& file) {
+	string str;
+	file >> str;
+	file.close();
+	return str;
+}
+
+string inputStringFromConsole() {
+	string str;
+	cin >> str;
+	return str;
+}
+
 /// check condition 
 int calculationOfTheResult(int k, string str1, string str2)
 {
@@ -173,7 +199,9 @@ int calculationOfTheResult(int k, string str1, string str2)
 			for (int j = 1; j < str1.size(); j++)
 				if (str2[i + j] != str1[j])
 					isCorrect = false;
-			if (--k == 0 && isCorrect)
+			if (isCorrect)
+				k--;
+			if (!k && isCorrect)
 				return i + 1;
 		}
 
@@ -187,7 +215,7 @@ void outputFromFile(int result)
 	cout << "Write way to your file: ";
 	do
 	{
-		string fileWay = inputWayToTheFile();
+		string fileWay = inputPathToTheFile();
 		if (isCanOpenFile(fileWay, ios::out))
 		{
 			ofstream file(fileWay, ios::out);
@@ -216,49 +244,109 @@ void resultOutput(int result)
 	path == CONSOLE_KEY ? outputFromConsole(result) : outputFromFile(result);
 }
 
+string inputFileWay(int path) {
+	return path == CONSOLE_KEY ? "" : inputPathToTheFile();
+}
+
+int kInput(int path, string fileWay) {
+	return path == CONSOLE_KEY ? inputKFromConsole() : inputKFromFile(fileWay);
+}
+
+void settingTheCursor(ifstream& file, string str1, string str2) {
+	int bufferInt;
+	file >> bufferInt;
+
+	if (str1 == "" && str2 == "")
+	{
+		string bufferStr;
+		file >> bufferStr;
+		file >> bufferStr;
+	}
+}
+
+void settingTheCursor(ifstream& file, string str1) {
+	int bufferInt;
+	file >> bufferInt;
+
+	if (str1 != "")
+	{
+		string bufferStr;
+		file >> bufferStr;
+	}
+}
+
+string stringInput(int path, string fileWay, string str1, int k) {
+	string res = "";
+	if (path == CONSOLE_KEY && k != -1)
+	{
+		cout << "Write your first string: ";
+		res = inputStringFromConsole();
+	}
+	else if (k != -1)
+	{
+		ifstream file(fileWay, ios::in);
+		settingTheCursor(file, str1);
+		res = inputStringFromFile(file);
+		file.close();
+	}
+
+	return res;
+}
+
+bool checkEndOfFile(string fileWay) {
+	bool isEOF = true;
+	ifstream file(fileWay, ios::in);
+	settingTheCursor(file, "", "");
+	isEOF = file.eof();
+	file.close();
+
+	return isEOF;
+}
+
+bool isCorrectInput(int path, string fileWay, int k, string str1, string str2) {
+	if (path == FILE_KEY)
+	{
+		if (k == -1)
+			return false;
+
+		if (str1 == "" || str2 == "")
+		{
+			cerr << "Bad strings input. Try again: ";
+			return false;
+		}
+
+		if (!checkEndOfFile(fileWay))
+		{
+			cerr << "In file should be only 1 number and 2 strings. Try again: ";
+			return false;
+		}
+	}
+
+	return true;
+}
+
 int main()
 {
 	int k = 0;
-	string str1, str2;
+	string str1 = "";
+	string str2 = "";
 	conditionOutput();
 
 	cout << "\nYou need to choose where to read information from.\n";
 	int path = choosingAPath();
-	if (path == CONSOLE_KEY)
-	{
-		k = inputKFromConsole();
 
-		cout << "Write your first string: ";
-		cin >> str1;
-
-		cout << "Write your second string: ";
-		cin >> str2;
-	}
-	else
-	{
-		bool isIncorrect;
+	bool isIncorrect = true;
+	if (path == FILE_KEY)
 		fileRestriction();
 
-		cout << "Write way to your file: ";
-		do
-		{
-			bool isCorrect = true;
-			string fileWay = inputFile();
-			ifstream file(fileWay, ios::in);
+	do {
+		string fileWay = inputFileWay(path);
 
-			file >> k;
-			if ((file.fail() && file.get() != '\n') || (k < MIN_K))
-			{
-				isCorrect = false;
-				cout << "Error in k reading. Try again: ";
-			}
-
-			file >> str1 >> str2;
-
-			isIncorrect = !afterReadingCheck(file, isCorrect, str1, str2);
-			file.close();
-		} while (isIncorrect);
-	}
+		k = kInput(path, fileWay);
+		str1 = stringInput(path, fileWay, str1, k);
+		str2 = stringInput(path, fileWay, str1, k);
+		isIncorrect = !isCorrectInput(path, fileWay, k, str1, str2);
+	} while (isIncorrect);
 
 	int result = calculationOfTheResult(k, str1, str2);
 
