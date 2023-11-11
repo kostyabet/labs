@@ -1,27 +1,26 @@
 ﻿#include <iostream>
 #include <string>
 #include <fstream>
-
 using namespace std;
-
-const int FILE_KEY = 1;
 const int MIN_K = 1;
-const int CONSOLE_KEY = 2;
+const int ERR_VALUE_OF_K = -1;
+const int VALUE_OF_DEFOULT_RESULT = -1;
+const int STANDART_NUMBER_OF_STRINGS = 2;
 const int MIN_FILE_WAY_SIZE = 5;
-
+const int FILE_KEY = 1;
+const int CONSOLE_KEY = 2;
+//text information output block
 void conditionOutput()
 {
 	cout << "The program determines the position number K \n"
-		<< "of the occurrence of the first line in the second.\n"
-		<< "If there are no matches, returns -1.\n\n";
+		"of the occurrence of the first line in the second.\n"
+		"If there are no matches, returns -1.\n\n";
 }
-
 void pathConditionOutput()
 {
 	cout << "Where will we work through: \n\tFile: " <<
 		FILE_KEY << " Console: " << CONSOLE_KEY << endl << endl;
 }
-
 void fileRestriction()
 {
 	cout << "\n*the first number in the file is the number\n"
@@ -29,16 +28,7 @@ void fileRestriction()
 		"and after that the substring and the string*\n"
 		"Write way to your file: ";
 }
-
-/// input from file
-bool isCanOpenFile(string way, ios_base::openmode mode)
-{
-	fstream file(way, mode);
-	file.close();
-
-	return file.good();
-}
-
+// choice of direction
 int choosingAPath()
 {
 	pathConditionOutput();
@@ -58,15 +48,19 @@ int choosingAPath()
 		else
 		{
 			if (path == CONSOLE_KEY || path == FILE_KEY)
+			{
 				isIncorrect = false;
-			else cerr << "Error method. Try again.\n";
+			}
+			else
+			{
+				cerr << "Error method. Try again.\n";
+			}
 		}
 	} while (isIncorrect);
 
 	return path;
 }
-
-// input way to the file
+// input and check path to the file
 bool pathCondition(string way)
 {
 	if (way.size() < MIN_FILE_WAY_SIZE)
@@ -91,6 +85,7 @@ string inputPath()
 		cin >> way;
 		isIncorrect = !pathCondition(way);
 	} while (isIncorrect);
+
 	return way;
 }
 string inputPathToTheFile()
@@ -100,34 +95,42 @@ string inputPathToTheFile()
 
 	do
 	{
-		bool isCorrect = true;
 		fileWay = inputPath();
 		if (!isCanOpenFile(fileWay, ios::in))
+		{
 			cerr << "Can't open a file. Try write another way: ";
+		}
 		else
+		{
 			isIncorrect = false;
+		}
 	} while (isIncorrect);
+
 	return fileWay;
 }
+// input from file
+bool isCanOpenFile(string way, ios_base::openmode mode)
+{
+	fstream file(way, mode);
+	file.close();
 
-
+	return file.good();
+}
 bool afterReadingCheck(ifstream& file, bool isCorrect, string str1, string str2)
 {
 	if ((str1 == "" || str2 == "") && isCorrect)
 	{
 		isCorrect = false;
-		cout << "There cannot be empty lines. Try again: ";
+		cerr << "There cannot be empty lines. Try again: ";
 	}
-	if (!file.eof() && isCorrect)
+	else if (!file.eof() && isCorrect)
 	{
 		isCorrect = false;
-		cout << "The file should only contain 1 number and 2 lines. Try again: ";
+		cerr << "The file should only contain 1 number and 2 lines. Try again: ";
 	}
 
 	return isCorrect;
 }
-
-/// input from console
 int inputKFromFile(string fileWay)
 {
 	int k;
@@ -136,32 +139,76 @@ int inputKFromFile(string fileWay)
 	if (file.fail())
 	{
 		cerr << "First string is natural number. Try again: ";
-		k = -1;
+		k = ERR_VALUE_OF_K;
 	}
 	else if (k < MIN_K)
 	{
 		cerr << "Min position number is " << MIN_K << ". Try again: ";
-		k = -1;
+		k = ERR_VALUE_OF_K;
 	}
 	file.close();
+
 	return k;
 }
+void inputStringFromFile(ifstream& file, string*& str)
+{
+	char counter;
+	int i = 0;
+	while (file.get(counter))
+	{
+		if (counter != '\n')
+		{
+			str[i] += counter;
+		}
+		else
+		{
+			i++;
+		}
+	}
+}
+void settingTheCursor(ifstream& file)
+{
+	int bufferInt;
+	char nextString;
+	file >> bufferInt;
+	file.get(nextString);
+}
+bool checkEndOfFile(ifstream& file)
+{
+	if (!file.eof()) {
+		cerr << "In file should be only 1 number and 2 strings. Try again: ";
+		return false;
+	}
+	file.close();
 
-bool checkKCondition(int k) {
+	return true;
+}
+void sysOfInputStringsFromFile(ifstream& file, string*& str)
+{
+	settingTheCursor(file);
+	inputStringFromFile(file, str);
+}
+/// input from console
+bool checkKCondition(int k)
+{
 	bool isIncorrect = true;
-	if (cin.fail() || cin.get() != '\n') {
+	if (cin.fail() || cin.get() != '\n')
+	{
 		cerr << "First string is natural number. Try again: ";
 		cin.clear();
 		while (cin.get() != '\n');
 	}
 	else if (k < MIN_K)
+	{
 		cerr << "Min position number is " << MIN_K << ". Try again: ";
+	}
 	else
+	{
 		isIncorrect = false;
+	}
 
 	return isIncorrect;
 }
-
 int inputKFromConsole()
 {
 	int k;
@@ -175,40 +222,67 @@ int inputKFromConsole()
 
 	return k;
 }
-
-string inputStringFromFile(ifstream& file) {
-	string str;
-	file >> str;
-	file.close();
-	return str;
-}
-
 string inputStringFromConsole() {
 	string str;
 	cin >> str;
 	return str;
 }
+bool isCorrectInput(int path, string fileWay, string str1, string str2, bool isItEndOfFile)
+{
+	if (path == FILE_KEY)
+	{
+		if (str1 == "" || str2 == "")
+		{
+			cerr << "Bad strings input. Try again: ";
+			return false;
+		}
 
-/// check condition 
+		if (!isItEndOfFile)
+			return false;
+	}
+
+	return true;
+}
+void sysOfInputStringsFromConsole(string*& str) {
+	cout << "Write your first string: ";
+	str[0] = inputStringFromConsole();
+	cout << "Write your second string: ";
+	str[1] = inputStringFromConsole();
+}
+/// search for result 
 int calculationOfTheResult(int k, string str1, string str2)
 {
+	if (str2.size() < str1.size())
+	{
+		return VALUE_OF_DEFOULT_RESULT;
+	}
+
 	for (int i = 0; i < str2.size(); i++)
+	{
 		if (str2[i] == str1[0])
 		{
 			bool isCorrect = true;
 			for (int j = 1; j < str1.size(); j++)
+			{
 				if (str2[i + j] != str1[j])
+				{
 					isCorrect = false;
+				}
+			}
 			if (isCorrect)
+			{
 				k--;
+			}
 			if (!k && isCorrect)
+			{
 				return i + 1;
+			}
 		}
+	}
 
-	return -1;
+	return VALUE_OF_DEFOULT_RESULT;
 }
-
-/// output from file
+/// output systeme
 void outputFromFile(int result)
 {
 	bool isIncorrect = true;
@@ -226,129 +300,83 @@ void outputFromFile(int result)
 			isIncorrect = false;
 		}
 		else
+		{
 			cerr << "Can't open a file. Try write another way: ";
+		}
 	} while (isIncorrect);
 }
-
-/// output from console
 void outputFromConsole(int result)
 {
 	cout << result << endl;
 }
-
-/// block of main void-s
 void resultOutput(int result)
 {
-	cout << "You need to choose where to write information from.\n";
+	cout << "\nYou need to choose where to write information from.\n";
 	int path = choosingAPath();
 	path == CONSOLE_KEY ? outputFromConsole(result) : outputFromFile(result);
 }
-
-string inputFileWay(int path) {
+/// block of distributive functions
+string inputFileWay(int path)
+{
 	return path == CONSOLE_KEY ? "" : inputPathToTheFile();
 }
-
-int kInput(int path, string fileWay) {
+int kInput(int path, string fileWay)
+{
 	return path == CONSOLE_KEY ? inputKFromConsole() : inputKFromFile(fileWay);
 }
-
-void settingTheCursor(ifstream& file, string str1, string str2) {
-	int bufferInt;
-	file >> bufferInt;
-
-	if (str1 == "" && str2 == "")
+bool isCorrectStringsInput(int path, string fileWay, string*& str, int k) {
+	if (k == ERR_VALUE_OF_K)
 	{
-		string bufferStr;
-		file >> bufferStr;
-		file >> bufferStr;
+		return false;
 	}
-}
 
-void settingTheCursor(ifstream& file, string str1) {
-	int bufferInt;
-	file >> bufferInt;
-
-	if (str1 != "")
+	if (path == CONSOLE_KEY)
 	{
-		string bufferStr;
-		file >> bufferStr;
+		sysOfInputStringsFromConsole(str);
+		return true;
 	}
-}
-
-string stringInput(int path, string fileWay, string str1, int k) {
-	string res = "";
-	if (path == CONSOLE_KEY && k != -1)
-	{
-		cout << "Write your first string: ";
-		res = inputStringFromConsole();
-	}
-	else if (k != -1)
+	else
 	{
 		ifstream file(fileWay, ios::in);
-		settingTheCursor(file, str1);
-		res = inputStringFromFile(file);
+		sysOfInputStringsFromFile(file, str);
+		bool isItEndOfFile = checkEndOfFile(file);
 		file.close();
+		return isCorrectInput(path, fileWay, str[0], str[1], isItEndOfFile);
 	}
-
-	return res;
 }
-
-bool checkEndOfFile(string fileWay) {
-	bool isEOF = true;
-	ifstream file(fileWay, ios::in);
-	settingTheCursor(file, "", "");
-	isEOF = file.eof();
-	file.close();
-
-	return isEOF;
-}
-
-bool isCorrectInput(int path, string fileWay, int k, string str1, string str2) {
-	if (path == FILE_KEY)
-	{
-		if (k == -1)
-			return false;
-
-		if (str1 == "" || str2 == "")
-		{
-			cerr << "Bad strings input. Try again: ";
-			return false;
-		}
-
-		if (!checkEndOfFile(fileWay))
-		{
-			cerr << "In file should be only 1 number and 2 strings. Try again: ";
-			return false;
-		}
-	}
-
-	return true;
-}
-
-int main()
+// input distributive
+int inputSystem(string*& str)
 {
-	int k = 0;
-	string str1 = "";
-	string str2 = "";
-	conditionOutput();
-
 	cout << "\nYou need to choose where to read information from.\n";
 	int path = choosingAPath();
 
-	bool isIncorrect = true;
 	if (path == FILE_KEY)
+	{
 		fileRestriction();
+	}
 
-	do {
+	int k;
+	bool isIncorrect = true;
+	do
+	{
 		string fileWay = inputFileWay(path);
 
 		k = kInput(path, fileWay);
-		str1 = stringInput(path, fileWay, str1, k);
-		str2 = stringInput(path, fileWay, str1, k);
-		isIncorrect = !isCorrectInput(path, fileWay, k, str1, str2);
+		isIncorrect = !isCorrectStringsInput(path, fileWay, str, k);
 	} while (isIncorrect);
 
-	int result = calculationOfTheResult(k, str1, str2);
+	return k;
+}
+// main
+int main()
+{
+	conditionOutput();
+
+	string* str = new string[STANDART_NUMBER_OF_STRINGS];
+	int k = inputSystem(str);
+
+	int result = calculationOfTheResult(k, str[0], str[1]);
+	delete[] str;
 
 	resultOutput(result);
 
