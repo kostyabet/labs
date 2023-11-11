@@ -4,8 +4,8 @@
 using namespace std;
 const int MIN_K = 1;
 const int ERR_VALUE_OF_K = -1;
-const int VALUE_OF_DEFOULT_RESULT = -1;
-const int STANDART_NUMBER_OF_STRINGS = 2;
+const int VALUE_OF_DEFAULT_RESULT = -1;
+const int STANDARD_NUMBER_OF_STRINGS = 2;
 const int MIN_FILE_WAY_SIZE = 5;
 const int FILE_KEY = 1;
 const int CONSOLE_KEY = 2;
@@ -116,21 +116,6 @@ string inputPathToTheFile()
 	return fileWay;
 }
 // input from file
-bool afterReadingCheck(ifstream& file, bool isCorrect, string str1, string str2)
-{
-	if ((str1 == "" || str2 == "") && isCorrect)
-	{
-		isCorrect = false;
-		cerr << "There cannot be empty lines. Try again: ";
-	}
-	else if (!file.eof() && isCorrect)
-	{
-		isCorrect = false;
-		cerr << "The file should only contain 1 number and 2 lines. Try again: ";
-	}
-
-	return isCorrect;
-}
 int inputKFromFile(string fileWay)
 {
 	int k;
@@ -179,7 +164,6 @@ bool checkEndOfFile(ifstream& file)
 		cerr << "In file should be only 1 number and 2 strings. Try again: ";
 		return false;
 	}
-	file.close();
 
 	return true;
 }
@@ -239,21 +223,15 @@ string inputStringFromConsole() {
 	}
 	return str;
 }
-bool isCorrectInput(int path, string fileWay, string str1, string str2, bool isItEndOfFile)
+bool isCorrectInput(string str1, string str2, bool isItEndOfFile)
 {
-	if (path == FILE_KEY)
+	if (str1 == "" || str2 == "")
 	{
-		if (str1 == "" || str2 == "")
-		{
-			cerr << "Bad strings input. Try again: ";
-			return false;
-		}
-
-		if (!isItEndOfFile)
-			return false;
+		cerr << "Bad strings input. Try again: ";
+		return false;
 	}
 
-	return true;
+	return isItEndOfFile;
 }
 void sysOfInputStringsFromConsole(string*& str) {
 	cout << "Write your first string: ";
@@ -266,7 +244,7 @@ int calculationOfTheResult(int k, string str1, string str2)
 {
 	if (str2.size() < str1.size())
 	{
-		return VALUE_OF_DEFOULT_RESULT;
+		return VALUE_OF_DEFAULT_RESULT;
 	}
 
 	for (int i = 0; i < str2.size(); i++)
@@ -276,7 +254,7 @@ int calculationOfTheResult(int k, string str1, string str2)
 			bool isCorrect = true;
 			for (int j = 1; j < str1.size(); j++)
 			{
-				if (str2[i + j] != str1[j])
+				if ((str2[i + j] != str1[j]) && isCorrect)
 				{
 					isCorrect = false;
 				}
@@ -284,15 +262,15 @@ int calculationOfTheResult(int k, string str1, string str2)
 			if (isCorrect)
 			{
 				k--;
-			}
-			if (!k && isCorrect)
-			{
-				return i + 1;
+				if (!k)
+				{
+					return i + 1;
+				}
 			}
 		}
 	}
 
-	return VALUE_OF_DEFOULT_RESULT;
+	return VALUE_OF_DEFAULT_RESULT;
 }
 /// output systeme
 void outputFromFile(int result)
@@ -353,7 +331,7 @@ bool isCorrectStringsInput(int path, string fileWay, string*& str, int k) {
 		sysOfInputStringsFromFile(file, str);
 		bool isItEndOfFile = checkEndOfFile(file);
 		file.close();
-		return isCorrectInput(path, fileWay, str[0], str[1], isItEndOfFile);
+		return isCorrectInput(str[0], str[1], isItEndOfFile);
 	}
 }
 // input distributive
@@ -384,7 +362,7 @@ int main()
 {
 	conditionOutput();
 
-	string* str = new string[STANDART_NUMBER_OF_STRINGS];
+	string* str = new string[STANDARD_NUMBER_OF_STRINGS];
 	int k = inputSystem(str);
 
 	int result = calculationOfTheResult(k, str[0], str[1]);
