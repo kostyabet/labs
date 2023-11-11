@@ -88,6 +88,13 @@ string inputPath()
 
 	return way;
 }
+bool isCanOpenFile(string way, ios_base::openmode mode)
+{
+	fstream file(way, mode);
+	file.close();
+
+	return file.good();
+}
 string inputPathToTheFile()
 {
 	string fileWay;
@@ -109,13 +116,6 @@ string inputPathToTheFile()
 	return fileWay;
 }
 // input from file
-bool isCanOpenFile(string way, ios_base::openmode mode)
-{
-	fstream file(way, mode);
-	file.close();
-
-	return file.good();
-}
 bool afterReadingCheck(ifstream& file, bool isCorrect, string str1, string str2)
 {
 	if ((str1 == "" || str2 == "") && isCorrect)
@@ -223,8 +223,20 @@ int inputKFromConsole()
 	return k;
 }
 string inputStringFromConsole() {
-	string str;
-	cin >> str;
+	string str = "";
+	char current;
+	bool isCorrect = true;
+	while (isCorrect && cin.get(current))
+	{
+		if (current != '\n')
+		{
+			str += current;
+		}
+		else
+		{
+			isCorrect = false;
+		}
+	}
 	return str;
 }
 bool isCorrectInput(int path, string fileWay, string str1, string str2, bool isItEndOfFile)
