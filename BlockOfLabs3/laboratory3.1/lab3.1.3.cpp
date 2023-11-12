@@ -16,7 +16,7 @@ void conditionOutput()
 		"of the occurrence of the first line in the second.\n"
 		"If there are no matches, returns -1.\n\n";
 }
-void pathConditionOutput()
+void workWayConditionOutput()
 {
 	cout << "Where will we work through: \n\tFile: " <<
 		FILE_KEY << " Console: " << CONSOLE_KEY << endl << endl;
@@ -29,19 +29,19 @@ void fileRestriction()
 		"Write way to your file: ";
 }
 // choice of direction
-int choosingAPath()
+int choosingWorkWay()
 {
-	pathConditionOutput();
+	workWayConditionOutput();
 
 	int path = 0;
 	bool isIncorrect = true;
+	cout << "Please write were we should work: ";
 	do
 	{
-		cout << "Please write were we should work: ";
 		cin >> path;
 		if (cin.fail() || cin.get() != '\n')
 		{
-			cerr << "Error. You should write a number. Try again.\n";
+			cerr << "Error. You should write a natural number. Try again: ";
 			cin.clear();
 			while (cin.get() != '\n');
 		}
@@ -53,7 +53,7 @@ int choosingAPath()
 			}
 			else
 			{
-				cerr << "Error method. Try again.\n";
+				cerr << "Error method. Try again: ";
 			}
 		}
 	} while (isIncorrect);
@@ -301,10 +301,10 @@ void outputFromConsole(int result)
 void resultOutput(int result)
 {
 	cout << "\nYou need to choose where to write information from.\n";
-	int path = choosingAPath();
+	int path = choosingWorkWay();
 	path == CONSOLE_KEY ? outputFromConsole(result) : outputFromFile(result);
 }
-/// block of distributive functions
+// block of distributive functions
 string inputFileWay(int path)
 {
 	return path == CONSOLE_KEY ? "" : inputPathToTheFile();
@@ -337,7 +337,7 @@ bool isCorrectStringsInput(int path, string fileWay, string*& str, int k) {
 int inputSystem(string*& str)
 {
 	cout << "\nYou need to choose where to read information from.\n";
-	int path = choosingAPath();
+	int path = choosingWorkWay();
 
 	if (path == FILE_KEY)
 	{
@@ -349,7 +349,10 @@ int inputSystem(string*& str)
 	do
 	{
 		string fileWay = inputFileWay(path);
-
+		for (int i = 0; i < STANDARD_NUMBER_OF_STRINGS; i++)
+		{
+			str[i] = "";
+		}
 		k = kInput(path, fileWay);
 		isIncorrect = !isCorrectStringsInput(path, fileWay, str, k);
 	} while (isIncorrect);

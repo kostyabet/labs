@@ -52,10 +52,10 @@ Begin
             Readln(Path);
             IsCorrectPath := True;
         Except
-            Writeln('Error. You should write a number. Try again: ');
+            Write('Error. You should write a number. Try again: ');
         End;
-        If (Path <> CONSOLE_KEY) And (Path <> FILE_KEY) Then
-            Writeln('Error method. Try again: ')
+        If (Path <> CONSOLE_KEY) And (Path <> FILE_KEY) And IsCorrectPath Then
+            Write('Error method. Try again: ')
         Else
             If (IsCorrectPath) Then
                 IsCorrect := True;
@@ -81,7 +81,6 @@ Var
     Way: String;
     IsCorrect: Boolean;
 Begin
-    IsCorrect := False;
     Repeat
         Readln(Way);
         IsCorrect := PathCondition(Way);
@@ -138,18 +137,15 @@ Var
     Counter: Char;
     I: Integer;
 Begin
-    I := 0;
-
-    While Not EOF(MyFile) Do
+    For I := 0 To 1 Do
     Begin
-        Read(MyFile, Counter);
-        If Counter <> #$D Then
-            Str[I] := Str[I] + Counter
-        Else
-        Begin
-            Inc(I);
+        Repeat
             Read(MyFile, Counter);
-        End;
+            If (Counter <> #$D) And (Counter <> #$1A) Then
+                Str[I] := Str[I] + Counter
+            Else
+                Read(MyFile, Counter);
+        Until (Counter = #$A) Or (Counter = #$1A);
     End;
 End;
 
@@ -159,6 +155,8 @@ Var
     BufferChar: Char;
 Begin
     Read(MyFile, BufferInt);
+    Read(MyFile, BufferChar);
+    Read(MyFile, BufferChar);
 End;
 
 Function CheckEndOfFile(Var MyFile: TextFile): Boolean;
@@ -168,11 +166,10 @@ Begin
     If Not SeekEOF(MyFile) Then
     Begin
         Write('In file should be only 1 number and 2 strings. Try again: ');
-        Res := False;
+        CheckEndOfFile := False;
     End
     Else
-        Res := True;
-    CheckEndOfFile := Res;
+        CheckEndOfFile := True;
 End;
 
 Procedure SysOfInputStringsFromFile(Var MyFile: TextFile; Var Str: TMassive);
@@ -204,6 +201,7 @@ Var
     IsCorrect, IsCorrectInput: Boolean;
 Begin
     K := 0;
+    Write('The position numbers of which occurrence you want to find: ');
     Repeat
         IsCorrectInput := False;
         Try
@@ -224,18 +222,18 @@ Var
     IsCorrect: Boolean;
 Begin
     Str := '';
-    IsCorrect := True;
-    While EOLN And IsCorrect Do
-    Begin
+    Repeat
         Read(Current);
-        Str := Str + Current;
-    End;
+        If Current <> #13 Then
+            Str := Str + Current;
+    Until Current = #13;
+    Read(Current);
     InputStringFromConsole := Str;
 End;
 
 Function IsCorrectInput(Str1, Str2: String; IsItEndOfFile: Boolean): Boolean;
 Begin
-    If (Str1 = '') And (Str2 = '') Then
+    If (Str1 = '') Or (Str2 = '') Then
     Begin
         Write('Bad strings input. Try again: ');
         IsCorrectInput := False;
@@ -351,15 +349,12 @@ Var
     IsItEndOfFile: Boolean;
     MyFile: TextFile;
 Begin
-    IsCorrect := False;
+    IsCorrect := True;
     If K = ERR_VALUE_OF_K Then
-        IsCorrect := True;
+        IsCorrect := False;
 
     If (Path = CONSOLE_KEY) And IsCorrect Then
-    Begin
-        SysOfInputStringsFromConsole(Str);
-        IsCorrect := False;
-    End
+        SysOfInputStringsFromConsole(Str)
     Else
         If IsCorrect Then
         Begin
@@ -383,7 +378,7 @@ End;
 
 Function InputSystem(Var Str: TMassive): Integer;
 Var
-    Path, K: Integer;
+    Path, K, I: Integer;
     IsCorrect: Boolean;
     FileWay: String;
 Begin
@@ -395,9 +390,11 @@ Begin
 
     Repeat
         FileWay := InputFileWay(Path);
+        For I := 0 To STANDARD_NUMBER_OF_STRINGS Do
+            Str[I] := '';
 
         K := KInput(Path, FileWay);
-        IsCorrect := Not IsCorrectStringsInput(Path, FileWay, Str, K);
+        IsCorrect := IsCorrectStringsInput(Path, FileWay, Str, K);
     Until IsCorrect;
 
     InputSystem := K;
@@ -405,10 +402,7 @@ End;
 
 Var
     Str: TMassive;
-    K, Path, Result: Integer;
-    FileWay: String;
-    IsCorrect: Boolean;
-    MyFile: TextFile;
+    K, Result: Integer;
 
 Begin
     ConditionOutput();

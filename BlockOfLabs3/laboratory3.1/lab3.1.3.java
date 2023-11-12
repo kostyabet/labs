@@ -22,7 +22,7 @@ public class Lab1 {
                 If there are no matches, returns -1.
                 """);
     }
-    static void pathConditionOutput()
+    static void workWayConditionOutput()
     {
         System.out.printf("""
                 Where will we work through:
@@ -40,27 +40,29 @@ public class Lab1 {
                 Write way to your file:\s""");
     }
     // choice of direction
-    static int choosingAPath()
+    static int choosingWorkWay()
     {
-        pathConditionOutput();
+        workWayConditionOutput();
 
         int path = 0;
         boolean isIncorrect = true;
+        System.out.print("Please write were we should work: ");
         do
         {
-            System.out.print("Please write were we should work: ");
+            boolean isCorrect = false;
             try {
                 path = Integer.parseInt(in.nextLine());
+                isCorrect = true;
             } catch (Exception error) {
-                System.err.println("Error. You should write a number. Try again.");
+                System.err.print("Error. You should write a natural number. Try again: ");
             }
-            if (path == CONSOLE_KEY || path == FILE_KEY)
+            if ((path == CONSOLE_KEY || path == FILE_KEY))
             {
                 isIncorrect = false;
             }
-            else
+            else if (isCorrect)
             {
-                System.err.println("Error method. Try again.");
+                System.err.print("Error method. Try again: ");
             }
         } while (isIncorrect);
 
@@ -290,7 +292,7 @@ public class Lab1 {
     static void resultOutput(int result)
     {
         System.out.println("You need to choose where to write information from.");
-        int path = choosingAPath();
+        int path = choosingWorkWay();
         if (path == CONSOLE_KEY)
         {
             outputFromConsole(result);
@@ -299,7 +301,7 @@ public class Lab1 {
             outputFromFile(result);
         }
     }
-    /// block of distributive functions
+    // block of distributive functions
     static String inputFileWay(int path)
     {
         return path == CONSOLE_KEY ? "" : inputPathToTheFile();
@@ -335,7 +337,7 @@ public class Lab1 {
     static int inputSystem(String[] str)
     {
         System.out.println("You need to choose where to read information from.");
-        int path = choosingAPath();
+        int path = choosingWorkWay();
 
         if (path == FILE_KEY)
         {
@@ -347,7 +349,8 @@ public class Lab1 {
         do
         {
             String fileWay = inputFileWay(path);
-
+            for (int i = 0; i < STANDARD_NUMBER_OF_STRINGS; i++)
+                str[i] = "";
             k = kInput(path, fileWay);
             isIncorrect = !isCorrectStringsInput(path, fileWay, str, k);
         } while (isIncorrect);
