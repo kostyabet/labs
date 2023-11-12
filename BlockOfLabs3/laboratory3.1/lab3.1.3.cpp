@@ -175,7 +175,6 @@ void sysOfInputStringsFromFile(ifstream& file, string*& str)
 /// input from console
 bool checkKCondition(int k)
 {
-	bool isIncorrect = true;
 	if (cin.fail() || cin.get() != '\n')
 	{
 		cerr << "First string is natural number. Try again: ";
@@ -188,16 +187,16 @@ bool checkKCondition(int k)
 	}
 	else
 	{
-		isIncorrect = false;
+		return false;
 	}
 
-	return isIncorrect;
+	return true;
 }
 int inputKFromConsole()
 {
 	int k;
 	cout << "The position numbers of which occurrence you want to find: ";
-	bool isIncorrect = true;
+	bool isIncorrect;
 	do
 	{
 		cin >> k;
@@ -240,6 +239,17 @@ void sysOfInputStringsFromConsole(string*& str) {
 	str[1] = inputStringFromConsole();
 }
 /// search for result 
+bool isStringsEqual(string str1, string str2, int i) {
+	for (int j = 1; j < str1.size(); j++)
+	{
+		if (str2[i + j] != str1[j])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
 int calculationOfTheResult(int k, string str1, string str2)
 {
 	if (str2.size() < str1.size())
@@ -251,21 +261,10 @@ int calculationOfTheResult(int k, string str1, string str2)
 	{
 		if (str2[i] == str1[0])
 		{
-			bool isCorrect = true;
-			for (int j = 1; j < str1.size(); j++)
+			bool isCorrect = isStringsEqual(str1, str2, i);
+			if (--k == 0 && isCorrect)
 			{
-				if ((str2[i + j] != str1[j]) && isCorrect)
-				{
-					isCorrect = false;
-				}
-			}
-			if (isCorrect)
-			{
-				k--;
-				if (!k)
-				{
-					return i + 1;
-				}
+				return i + 1;
 			}
 		}
 	}
@@ -346,7 +345,7 @@ int inputSystem(string*& str)
 	}
 
 	int k;
-	bool isIncorrect = true;
+	bool isIncorrect;
 	do
 	{
 		string fileWay = inputFileWay(path);

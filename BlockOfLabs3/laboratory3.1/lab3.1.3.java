@@ -9,6 +9,7 @@ public class Lab1 {
     static final int MIN_K = 1;
     static final int ERR_VALUE_OF_K = -1;
     static final int VALUE_OF_DEFAULT_RESULT = -1;
+    static final int STANDARD_NUMBER_OF_STRINGS = 2;
     static final int MIN_FILE_WAY_SIZE = 5;
     static final int FILE_KEY = 1;
     static final int CONSOLE_KEY = 2;
@@ -146,12 +147,11 @@ public class Lab1 {
     }
     static void settingTheCursor(Scanner fileScanner)
     {
-        int bufferInt;
-        bufferInt = fileScanner.nextInt();
+        fileScanner.nextLine();
     }
     static boolean checkEndOfFile(Scanner fileScanner)
     {
-        if (fileScanner.hasNext()) {
+        if (fileScanner.hasNextLine()) {
             System.err.print("In file should be only 1 number and 2 strings. Try again: ");
             return false;
         }
@@ -164,31 +164,37 @@ public class Lab1 {
         inputStringFromFile(fileScanner, str);
     }
     /// input from console
-    static boolean checkKCondition(int k)
+    static boolean checkKCondition(int k, boolean isCorrect)
     {
-        boolean isIncorrect = true;
+        if (!isCorrect)
+            return true;
 
-        //    cerr << "First string is natural number. Try again: ";
         if (k < MIN_K)
         {
             System.err.printf("Min position number is %d. Try again: ", MIN_K);
         }
         else
         {
-            isIncorrect = false;
+            return false;
         }
 
-        return isIncorrect;
+        return true;
     }
     static int inputKFromConsole()
     {
         int k = 0;
         System.out.print("The position numbers of which occurrence you want to find: ");
-        boolean isIncorrect = true;
+        boolean isIncorrect;
         do
         {
-            k = Integer.parseInt(in.nextLine());
-            isIncorrect = checkKCondition(k);
+            boolean isCorrect = false;
+            try {
+                k = Integer.parseInt(in.nextLine());
+                isCorrect = true;
+            } catch(Exception error){
+                System.err.print("First string is natural number. Try again: ");
+            }
+            isIncorrect = checkKCondition(k, isCorrect);
         } while (isIncorrect);
 
         return k;
@@ -198,7 +204,7 @@ public class Lab1 {
     }
     static boolean isCorrectInput(String str1, String str2, boolean isItEndOfFile)
     {
-        if (str1 == null || str2 == null)
+        if (str1.isEmpty() || str2.isEmpty())
         {
             System.err.print("Bad strings input. Try again: ");
             return false;
@@ -213,6 +219,17 @@ public class Lab1 {
         str[1] = inputStringFromConsole();
     }
     /// search for result
+    static boolean isStringsEqual(String str1, String str2, int i) {
+        for (int j = 1; j < str1.length(); j++)
+        {
+            if (str2.charAt(i + j) != str1.charAt(j))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
     static int calculationOfTheResult(int k, String str1, String str2)
     {
         if (str2.length() < str1.length())
@@ -224,21 +241,10 @@ public class Lab1 {
         {
             if (str1.charAt(0) == str2.charAt(i))
             {
-                boolean isCorrect = true;
-                for (int j = 1; j < str1.length(); j++)
+                boolean isCorrect = isStringsEqual(str1, str2, i);
+                if (--k == 0 && isCorrect)
                 {
-                    if ((str2.charAt(i + j) != str1.charAt(j)) && isCorrect)
-                    {
-                        isCorrect = false;
-                    }
-                }
-                if (isCorrect)
-                {
-                    k--;
-                    if (k == 0)
-                    {
-                        return i + 1;
-                    }
+                    return i + 1;
                 }
             }
         }
@@ -328,7 +334,7 @@ public class Lab1 {
     // input distributive
     static int inputSystem(String[] str)
     {
-        System.out.println("\nYou need to choose where to read information from.");
+        System.out.println("You need to choose where to read information from.");
         int path = choosingAPath();
 
         if (path == FILE_KEY)
@@ -337,7 +343,7 @@ public class Lab1 {
         }
 
         int k;
-        boolean isIncorrect = true;
+        boolean isIncorrect;
         do
         {
             String fileWay = inputFileWay(path);
@@ -353,7 +359,7 @@ public class Lab1 {
     {
         conditionOutput();
 
-        String[] str = {null, null};
+        String[] str = new String[STANDARD_NUMBER_OF_STRINGS];
         int k = inputSystem(str);
 
         int result = calculationOfTheResult(k, str[0], str[1]);
