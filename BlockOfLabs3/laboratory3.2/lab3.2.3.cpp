@@ -1,24 +1,61 @@
-﻿// 2.	Дана непустая последовательность символов, требуется построить и напечатать множество, 
-// элементами которого являются встречающиеся в последовательности знаки арифметических операций и числа. 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <set>
+﻿#include <iostream>
+#include <fstream> // for work with .txt file
+#include <string> // for file way reading
+#include <set> // for making the result
 using namespace std;
-const int FILE_KEY = 1;
-const int CONSOLE_KEY = 2;
 const int MIN_FILE_WAY_SIZE = 5;
 const int MIN_SIZE = 1;
-const int ERR_VALUE_OF_SIZE = 0;
-void taskOutput() {
-	cout << "...\n\n";
+const int GOOD_SIZE = 1;
+const int BAD_SIZE = 2;
+const int FILE_KEY = 1;
+const int CONSOLE_KEY = 2;
+// block of work with errors
+enum IOError
+{
+	INVALID_PATH,
+	METHOD_ERROR,
+	SHORT_PATH_ERROR,
+	TXT_ERROR,
+	OPEN_FILE_ERROR,
+	MIN_SIZE_ERROR,
+	FIRST_STR_ERROR,
+	EL_ERROR,
+	TRY_AGAIN
+};
+const string ERRORS[]
+{
+	"Error. You should write a natural number.",
+	"Error method.",
+	"The path is too short.",
+	"Write .txt file.",
+	"Can't open a file.",
+	"Min number of elements is " + to_string(MIN_SIZE) + ".",
+	"First string is natural number.",
+	"Enter a specific number of characters.",
+	" Try again: "
+};
+void printError(string IOErrorMethod)
+{
+	cerr << IOErrorMethod << ERRORS[(int)IOError::TRY_AGAIN];
 }
-void workWayConditionOutput() {
-	cout << "Where will we work through: \n\tFile: " <<
-		FILE_KEY << " Console: " << CONSOLE_KEY << endl << endl;
+// block of text output
+void taskOutput()
+{
+	cout << "the program builds and prints a set, the elements\n"
+		"of which are the signs of arithmetic operations and\n"
+		"numbers occurring in the sequence.\n\n";
 }
-void sizeConditionOutput() {
-	cout << "How much ellements do you write: ";
+void workWayConditionOutput()
+{
+	cout << "Where will we work through: \n\tFile: " << FILE_KEY <<
+		"\n\tConsole: " << CONSOLE_KEY << endl << endl;
+}
+void fileRestriction()
+{
+	cout << "\n1.  The first line in the file is a natural number -\n"
+		"N characters of the second line;\n"
+		"2.  The second line is N characters entered by the user.\n"
+		"Write way to your file: ";
 }
 // choice of direction
 int choosingWorkWay()
@@ -33,7 +70,7 @@ int choosingWorkWay()
 		cin >> path;
 		if (cin.fail() || cin.get() != '\n')
 		{
-			cerr << "Error. You should write a natural number. Try again: ";
+			printError(ERRORS[(int)IOError::INVALID_PATH]);
 			cin.clear();
 			while (cin.get() != '\n');
 		}
@@ -45,7 +82,7 @@ int choosingWorkWay()
 			}
 			else
 			{
-				cerr << "Error method. Try again: ";
+				printError(ERRORS[(int)IOError::METHOD_ERROR]);
 			}
 		}
 	} while (isIncorrect);
@@ -57,13 +94,13 @@ bool pathCondition(string way)
 {
 	if (way.size() < MIN_FILE_WAY_SIZE)
 	{
-		cerr << "The path is too short. Try again: ";
+		printError(ERRORS[(int)IOError::SHORT_PATH_ERROR]);
 		return false;
 	}
 	string bufstr = way.substr(way.size() - 4);
 	if (bufstr != ".txt")
 	{
-		cerr << "Write .txt file. Try again: ";
+		printError(ERRORS[(int)IOError::TXT_ERROR]);
 		return false;
 	}
 	return true;
@@ -97,7 +134,7 @@ string inputPathToTheFile()
 		fileWay = inputPath();
 		if (!isCanOpenFile(fileWay, ios::in))
 		{
-			cerr << "Can't open a file. Try write another way: ";
+			printError(ERRORS[(int)IOError::OPEN_FILE_ERROR]);
 		}
 		else
 		{
@@ -107,29 +144,18 @@ string inputPathToTheFile()
 
 	return fileWay;
 }
-set<char> inputSetSystem(int size) {
-	set<char> setOfElements;
-	char currentEllement;
-	cout << "Write your simbols: ";
-	for (int i = 0; i < size; i++) {
-		cin >> currentEllement;
-		setOfElements.insert(currentEllement);
-	}
-	return setOfElements;
-}
-
 /// input from console
 bool checkSizeCondition(int size)
 {
 	if (cin.fail() || cin.get() != '\n')
 	{
-		cerr << "First string is natural number. Try again: ";
+		printError(ERRORS[(int)IOError::INVALID_PATH]);
 		cin.clear();
 		while (cin.get() != '\n');
 	}
 	else if (size < MIN_SIZE)
 	{
-		cerr << "Min position number is " << MIN_SIZE << ". Try again: ";
+		printError(ERRORS[(int)IOError::MIN_SIZE_ERROR]);
 	}
 	else
 	{
@@ -141,8 +167,9 @@ bool checkSizeCondition(int size)
 int inputSizeFromConsole()
 {
 	int size;
-	cout << "The position numbers of which occurrence you want to find: ";
 	bool isIncorrect;
+
+	cout << "How many characters do you want to enter: ";
 	do
 	{
 		cin >> size;
@@ -151,58 +178,76 @@ int inputSizeFromConsole()
 
 	return size;
 }
-//
-int inputSizeFromFile(string fileWay)
+bool isCorrectElementsInputFromConsole()
 {
-	int size;
-	ifstream file(fileWay, ios::in);
-	file >> size;
+	if (cin.peek() != '\n')
+	{
+		printError(ERRORS[(int)IOError::EL_ERROR]);
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	}
+	else
+	{
+		return false;
+	}
+
+	return true;
+}
+char* inputStringFromConsole(int*& arrSize)
+{
+	bool isIncorrect;
+	int size = inputSizeFromConsole();
+	char* arrOfElements = new char[size];
+	arrSize[0] = size;
+
+	cout << "Write your " << size << " elements: ";
+	do
+	{
+		for (int i = 0; i < size; i++)
+		{
+			cin >> arrOfElements[i];
+		}
+		isIncorrect = isCorrectElementsInputFromConsole();
+	} while (isIncorrect);
+
+	return arrOfElements;
+}
+// input from file
+int checkSizeInputFromFile(ifstream& file, int size)
+{
 	if (file.fail())
 	{
-		cerr << "First string is natural number. Try again: ";
-		size = ERR_VALUE_OF_SIZE;
+		printError(ERRORS[(int)IOError::FIRST_STR_ERROR]);
+		return BAD_SIZE;
 	}
 	else if (size < MIN_SIZE)
 	{
-		cerr << "Min position number is " << MIN_SIZE << ". Try again: ";
-		size = ERR_VALUE_OF_SIZE;
+		printError(ERRORS[(int)IOError::MIN_SIZE_ERROR]);
+		return BAD_SIZE;
 	}
-	file.close();
+
+	return GOOD_SIZE;
+}
+int inputSizeFromFile(ifstream& file, int& arrSize)
+{
+	int size;
+	file >> size;
+	arrSize = checkSizeInputFromFile(file, size);
 
 	return size;
 }
-// 
-char* inputSetFromConsole(int*& arrSize) {
-	int size = inputSizeFromConsole();
-	char* arrOfElements = new char[size];
-	cout << "Write your " << size << " elements: ";
-	arrSize[0] = size;
-	bool isIncorrect = true;
-	do {
-		for (int i = 0; i < size; i++) {
-			cin >> arrOfElements[i];
-		}
-		if (cin.peek() != '\n')
-		{
-			cout << "Error. More than " << size << " elements. Try again: ";
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-		}
-		else
-		{
-			isIncorrect = false;
-		}
-	} while (isIncorrect);
-	return arrOfElements;
-}
-bool inputSetFromFile(char*& arrOfElements, int size, ifstream& file) {
-	if (size == ERR_VALUE_OF_SIZE) {
+bool isCorrectElInputFromFile(int i, int size)
+{
+	if (i != size)
+	{
+		printError(ERRORS[(int)IOError::EL_ERROR]);
 		return true;
 	}
 
-	int bufferint;
-	file >> bufferint;
-
+	return false;
+}
+bool inputSetFromFile(char*& arrOfElements, int size, ifstream& file)
+{
 	char counter;
 	int i = 0;
 	while (file.get(counter))
@@ -217,58 +262,66 @@ bool inputSetFromFile(char*& arrOfElements, int size, ifstream& file) {
 		}
 	}
 
-	if (i != size) {
-		cout << "You should write " << size << " elements in this file. Try again: ";
-		return true;
-	}
-
-	if (!file.eof()) {
-		cout << "More than " << size << " elements. Try again: ";
-		return true;
-	}
-
-	return false;
+	return isCorrectElInputFromFile(i, size);
 }
-bool isCorrectSetInput(char*& arrOfElements, int size, string fileWay) {
-	ifstream file(fileWay, ios::in);
-	bool isIncorrect = inputSetFromFile(arrOfElements, size, file);
-	file.close();
-
-	return isIncorrect;
-}
-char* inputStringFromFile(int*& arrSize) {
-	cout << "Write way to your file: ";
+char* inputStringFromFile(int*& arrSize)
+{
+	fileRestriction();
 	char* arrOfElements = new char[0];
-	bool isIncorrect;
-	do {
+	bool isIncorrect = true;
+	do
+	{
 		string fileWay = inputPathToTheFile();
-		int size = inputSizeFromFile(fileWay);
-		char* arrOfElements = new char[size];
-		arrSize[0] = size;
-		isIncorrect = isCorrectSetInput(arrOfElements, size, fileWay);
-		if (!isIncorrect)
-			return arrOfElements;
+		ifstream file(fileWay, ios::in);
+		arrSize[0] = inputSizeFromFile(file, arrSize[1]);
+		if (arrSize[1]) {
+			arrOfElements = new char[arrSize[0]];
+			isIncorrect = inputSetFromFile(arrOfElements, arrSize[0], file);
+		}
+		file.close();
 	} while (isIncorrect);
+
+	return arrOfElements;
 }
-void renderingSet(char* arrOfElements, int size, set<char>& resultSet) {
-	for (int i = 0; i <= size; i++) {
+// making the set
+void renderingSet(char* arrOfElements, int size, set<char>& resultSet)
+{
+	for (int i = 0; i < size; i++)
+	{
 		if ((arrOfElements[i] >= '0' && arrOfElements[i] <= '9') ||
-			(arrOfElements[i] >= '*' && arrOfElements[i] <= '+') ||
+			(arrOfElements[i] == '*') || (arrOfElements[i] == '+') ||
 			(arrOfElements[i] == '-') || (arrOfElements[i] == '/'))
 		{
 			resultSet.insert(arrOfElements[i]);
 		}
 	}
 }
-void inputResInFile(set<char> resultSet, ofstream& file) {
-	file << "The result is: { ";
-	for (auto currentEllement : resultSet)
+// output from file
+void outputSetInFile(set<char> resultSet, ofstream& file)
+{
+	for (auto currentElement : resultSet)
 	{
-		file << currentEllement << " ";
+		file << " '" << currentElement << "';";
 	}
-	file << "}";
 }
-void outputFromFile(set<char> resultSet) {
+void outputResInFile(set<char> resultSet, string fileWay)
+{
+	ofstream file(fileWay, ios::out);
+
+	file << "The result is:";
+	if (resultSet.empty())
+	{
+		file << " empty set.";
+	}
+	else
+	{
+		outputSetInFile(resultSet, file);
+	}
+
+	file.close();
+}
+void outputFromFile(set<char> resultSet)
+{
 	bool isIncorrect = true;
 	cout << "Write way to your file: ";
 	do
@@ -276,54 +329,76 @@ void outputFromFile(set<char> resultSet) {
 		string fileWay = inputPathToTheFile();
 		if (isCanOpenFile(fileWay, ios::out))
 		{
-			ofstream file(fileWay, ios::out);
-			inputResInFile(resultSet, file);
-			file.close();
-
+			outputResInFile(resultSet, fileWay);
 			cout << "Check your file.";
 			isIncorrect = false;
 		}
 		else
 		{
-			cerr << "Can't open a file. Try write another way: ";
+			printError(ERRORS[(int)IOError::OPEN_FILE_ERROR]);
 		}
 	} while (isIncorrect);
 }
-void outputFromConsole(set<char> resultSet) {
-	cout << "The result is: { ";
-	for (auto currentEllement : resultSet)
+// output from console
+void outputSetFromConsole(set<char> resultSet)
+{
+	for (auto currentElement : resultSet)
 	{
-		cout << currentEllement << " ";
+		cout << " '" << currentElement << "';";
 	}
-	cout << "}";
 }
-void resultOutputSystem(set<char> resultSet) {
+void outputFromConsole(set<char> resultSet)
+{
+	cout << "The result is:";
+	if (resultSet.empty())
+	{
+		cout << " empty set.";
+	}
+	else
+	{
+		outputSetFromConsole(resultSet);
+	}
+}
+// distributive output
+void resultOutputSystem(set<char> resultSet)
+{
 	cout << "\nYou need to choose where to write information from.\n";
 	int path = choosingWorkWay();
-	path == CONSOLE_KEY ? outputFromConsole(resultSet) : outputFromFile(resultSet);
+	path == CONSOLE_KEY ? outputFromConsole(resultSet)
+		: outputFromFile(resultSet);
 
 }
-char* inputSystem(int*& arrSize) {
+// main distributive func
+char* inputSystem(int*& arrSize)
+{
 	int path = choosingWorkWay();
-	return path == CONSOLE_KEY ? inputSetFromConsole(arrSize)
+	return path == CONSOLE_KEY ? inputStringFromConsole(arrSize)
 		: inputStringFromFile(arrSize);
 }
-void clearMemory(int*& arrSize, char*& arrOfElements, set<char> resultSet) {
-	delete[] arrSize;
-	delete[] arrOfElements;
+// cleaning func
+void clearMemory(int*& arrSize, char*& arrOfElements, set<char> resultSet)
+{
 	arrOfElements = nullptr;
+
+	delete[] arrSize;
 	arrSize = nullptr;
+
 	resultSet.clear();
 }
-int main() {
+//main
+int main()
+{
 	taskOutput();
 
-	int* arrSize = new int[1];
+	int* arrSize = new int[2];
 	char* arrOfElements = inputSystem(arrSize);
 
 	set<char> resultSet;
 	renderingSet(arrOfElements, arrSize[0], resultSet);
+
 	resultOutputSystem(resultSet);
+
 	clearMemory(arrSize, arrOfElements, resultSet);
+
 	return 0;
 }
