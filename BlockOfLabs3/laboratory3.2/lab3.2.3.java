@@ -209,7 +209,6 @@ public class Lab2 {
             String str = in.nextLine();
             for (int i = 0; i < size && size == str.length(); i++)
             {
-                System.out.print(str.charAt(i) + " ");
                 arrOfElements[i] = str.charAt(i);
             }
             isIncorrect = isCorrectElementsInputFromConsole(size, str);
@@ -258,7 +257,6 @@ public class Lab2 {
             return true;
         }
 
-        char counter;
         String str = fileScanner.nextLine();
         for (int i = 0; i < size && size == str.length(); i++){
             arrOfElements[i] = str.charAt(i);
@@ -301,7 +299,7 @@ public class Lab2 {
         }
     }
     // output from file
-    static String inputSetInFile(Set<Character> resultSet)
+    static String outputSetInFile(Set<Character> resultSet)
     {
         StringBuilder res = new StringBuilder();
         for (char currentElement : resultSet)
@@ -311,7 +309,7 @@ public class Lab2 {
 
         return res.toString();
     }
-    static String inputResInFile(Set<Character> resultSet)
+    static String outputResInFile(Set<Character> resultSet)
     {
 
         String res = "The result is:";
@@ -321,7 +319,7 @@ public class Lab2 {
         }
         else
         {
-            res += inputSetInFile(resultSet);
+            res += outputSetInFile(resultSet);
         }
 
         return res;
@@ -341,7 +339,7 @@ public class Lab2 {
                 {
                     FileWriter writer = new FileWriter(fileWay);
                     builder = new StringBuilder();
-                    String result = inputResInFile(resultSet);
+                    String result = outputResInFile(resultSet);
                     builder.append(result);
                     writer.write(builder.toString());
                     writer.close();
