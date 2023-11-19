@@ -9,6 +9,11 @@ const int GOOD_SIZE = 1;
 const int BAD_SIZE = 2;
 const int FILE_KEY = 1;
 const int CONSOLE_KEY = 2;
+const set<char> Entitlements =
+{
+	'0', '1', '2', '3', '4', '5', '6',
+	'7', '8', '9', '+', '-', '=', '/'
+};
 // block of work with errors
 enum IOError
 {
@@ -288,11 +293,12 @@ void renderingSet(char* arrOfElements, int size, set<char>& resultSet)
 {
 	for (int i = 0; i < size; i++)
 	{
-		if ((arrOfElements[i] >= '0' && arrOfElements[i] <= '9') ||
-			(arrOfElements[i] == '*') || (arrOfElements[i] == '+') ||
-			(arrOfElements[i] == '-') || (arrOfElements[i] == '/'))
+		for (char current : Entitlements)
 		{
-			resultSet.insert(arrOfElements[i]);
+			if (arrOfElements[i] == current)
+			{
+				resultSet.insert(arrOfElements[i]);
+			}
 		}
 	}
 }

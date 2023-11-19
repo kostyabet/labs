@@ -19,7 +19,10 @@ Type
         TRY_AGAIN);
     TArrSize = Array Of Integer;
     TArrOfElements = Array Of Char;
-    TResultSet = Set Of Char;
+    TAnsiChar = Set Of AnsiChar;
+
+Const
+    Entitlements: TAnsiChar = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '*', '/'];
 
 Const
     ERRORS: Array [TIOError] Of String = ('Error. You should write a natural number.', 'Error method.', 'The path is too short.',
@@ -59,9 +62,9 @@ Begin
 
     Path := 0;
     IsCorrect := False;
-    IsCorrectInput := False;
     Write('Please write were we should work: ');
     Repeat
+        IsCorrectInput := False;
         Try
             Readln(Path);
             IsCorrectInput := True;
@@ -189,8 +192,8 @@ Begin
     Repeat
         Readln(Str);
         If Str.Length = Size Then
-            For I := 0 To High(ArrOfElements) Do
-                Read(ArrOfElements[I])
+            For I := 1 To Size Do
+                ArrOfElements[I - 1] := Str[I]
         Else
             PrintError(ERRORS[EL_ERROR]);
         IsCorrect := IsCorrectElementsInputFromConsole(Size, Str);
@@ -244,7 +247,6 @@ Var
     Str: String;
     I: Integer;
 Begin
-    I := 0;
     Str := '';
     Repeat
         Read(MyFile, Counter);
@@ -259,10 +261,10 @@ Begin
     Until (Counter = #$A) Or (Counter = #$1A);
 
     If Str.Length = Size Then
-        For I := 0 To High(ArrOfElements) Do
-            ArrOfElements[I] := Str[I];
+        For I := 1 To Size Do
+            ArrOfElements[I - 1] := Str[I];
 
-    InputSetFromFile := IsCorrectElInputFromFile(Str, High(ArrOfElements));
+    InputSetFromFile := IsCorrectElInputFromFile(Str, Size);
 End;
 
 Function InputStringFromFile(Var ArrSize: TArrSize): TArrOfElements;
@@ -294,34 +296,36 @@ Begin
             Write('Bad strings input from file. Try again: ');
         End;
     Until IsCorrect;
+
+    InputStringFromFile := ArrOfElements;
 End;
 
 //making the set
-Procedure RenderingSet(ArrOfElements: TArrOfElements; Var ResultSet: TResultSet);
+Procedure RenderingSet(ArrOfElements: TArrOfElements; Var ResultSet: TAnsiChar);
 Var
     I: Integer;
-    Simbol: Char;
+    Current: Char;
 Begin
     For I := 0 To High(ArrOfElements) Do
-        If (((ArrOfElements[I] >= '0') And (ArrOfElements[I] <= '9')) Or (ArrOfElements[I] = '*') Or (ArrOfElements[I] = '+') Or
-            (ArrOfElements[I] = '-') Or (ArrOfElements[I] = '/')) Then
-            Include(ResultSet, AnsiChar(ArrOfElements[I]));
+        For Current In Entitlements Do
+            If (Current = ArrOfElements[I]) Then
+                Include(ResultSet, AnsiChar(ArrOfElements[I]));
 End;
 
 //output from file
-Function OutputSetInFile(ResultSet: TResultSet): String;
+Function OutputSetInFile(ResultSet: TAnsiChar): String;
 Var
     Str: String;
     Current: Char;
 Begin
     Str := '';
     For Current In ResultSet Do
-        Str := '''' + Current + '''';
+        Str := '''' + Current + ''';';
 
     OutputSetInFile := Str;
 End;
 
-Function OutputResInFile(ResultSet: TResultSet): String;
+Function OutputResInFile(ResultSet: TAnsiChar): String;
 Var
     Res: String;
 Begin
@@ -334,7 +338,7 @@ Begin
     OutputResInFile := Res;
 End;
 
-Procedure OutputFromFile(ResultSet: TResultSet);
+Procedure OutputFromFile(ResultSet: TAnsiChar);
 Var
     IsCorrect: Boolean;
     FileWay, Result: String;
@@ -363,16 +367,16 @@ Begin
 End;
 
 //output from console
-Procedure OutputSetFromConsole(Var ResultSet: TResultSet);
+Procedure OutputSetFromConsole(Var ResultSet: TAnsiChar);
 Var
     Current: AnsiChar;
 Begin
     For Current In ResultSet Do
-        Write('''', Current, '''');
+        Write('''', Current, ''';');
 
 End;
 
-Procedure OutputFromConsole(Var ResultSet: TResultSet);
+Procedure OutputFromConsole(Var ResultSet: TAnsiChar);
 Begin
     Write('The result is: ');
     If ResultSet = [] Then
@@ -382,7 +386,7 @@ Begin
 End;
 
 //distributive output
-Procedure ResultOutputSystem(ResultSet: TResultSet);
+Procedure ResultOutputSystem(ResultSet: TAnsiChar);
 Var
     Path: Integer;
 Begin
@@ -416,12 +420,14 @@ End;
 Var
     ArrSize: TArrSize;
     ArrOfElements: TArrOfElements;
-    ResultSet: TResultSet;
+    ResultSet: TAnsiChar;
 
 Begin
     TaskOutput();
 
     SetLength(ArrSize, 2);
+    SetLength(ArrOfElements, 0);
+
     ArrOfElements := InputSystem(ArrSize);
 
     RenderingSet(ArrOfElements, ResultSet);
@@ -429,5 +435,7 @@ Begin
     ResultOutputSystem(ResultSet);
 
     ClearMemory(ArrSize, ArrOfElements);
+
+    Readln;
 
 End.

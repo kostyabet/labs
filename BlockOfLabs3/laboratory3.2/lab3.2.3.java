@@ -2,9 +2,7 @@ package lab3;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 public class Lab2 {
     static Scanner in = new Scanner(System.in);
@@ -14,6 +12,7 @@ public class Lab2 {
     static final int BAD_SIZE = 2;
     static final int FILE_KEY = 1;
     static final int CONSOLE_KEY = 2;
+
     // block of work with errors
     public enum IOError
     {
@@ -286,15 +285,20 @@ public class Lab2 {
         return arrOfElements;
     }
     // making the set
-    static void renderingSet(char[] arrOfElements, int size, Set<Character> resultSet)
+    static void addEntitlements(Set<Character> Entitlements){
+        Collection<Character> AddList = Arrays.asList('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '/', '*');
+        Entitlements. addAll(AddList);
+    }
+    static void renderingSet(char[] arrOfElements, int size, Set<Character> resultSet, Set<Character> Entitlements)
     {
         for (int i = 0; i < size; i++)
         {
-            if ((arrOfElements[i] >= '0' && arrOfElements[i] <= '9') ||
-                    (arrOfElements[i] == '*') || (arrOfElements[i] == '+') ||
-                    (arrOfElements[i] == '-') || (arrOfElements[i] == '/'))
+            for (char current : Entitlements)
             {
-                resultSet.add(arrOfElements[i]);
+                if (arrOfElements[i] == current)
+                {
+                    resultSet.add(arrOfElements[i]);
+                }
             }
         }
     }
@@ -404,7 +408,9 @@ public class Lab2 {
         char[] arrOfElements = inputSystem(arrSize);
 
         Set<Character> resultSet = new HashSet<>();
-        renderingSet(arrOfElements, arrSize[0], resultSet);
+        Set<Character> Entitlements = new HashSet<>();
+        addEntitlements(Entitlements);
+        renderingSet(arrOfElements, arrSize[0], resultSet, Entitlements);
 
         resultOutputSystem(resultSet);
 
