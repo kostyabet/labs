@@ -20,9 +20,9 @@ Type
     TArrSize = Array Of Integer;
     TArrOfElements = Array Of Char;
     TAnsiChar = Set Of AnsiChar;
-
-Const
-    Entitlements: TAnsiChar = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-', '*', '/'];
+const
+    Entitlements: TAnsiChar = ['0', '1', '2', '3', '4', '5', '6', 
+                               '7', '8', '9', '+', '-', '*', '/'];
 
 Const
     ERRORS: Array [TIOError] Of String = ('Error. You should write a natural number.', 'Error method.', 'The path is too short.',
@@ -184,7 +184,7 @@ Var
     ArrOfElements: TArrOfElements;
     Str: String;
 Begin
-    Size := InputSizeFromConsole;
+    Size := InputSizeFromConsole();
     ArrSize[0] := Size;
     SetLength(ArrOfElements, Size);
 
@@ -251,13 +251,9 @@ Begin
     Repeat
         Read(MyFile, Counter);
         If (Counter <> #$D) And (Counter <> #$1A) Then
-        Begin
-            Str := Str + Counter;
-        End
+            Str := Str + Counter
         Else
-        Begin
             Read(MyFile, Counter);
-        End;
     Until (Counter = #$A) Or (Counter = #$1A);
 
     If Str.Length = Size Then
@@ -293,7 +289,7 @@ Begin
                 Close(MyFile);
             End;
         Except
-            Write('Bad strings input from file. Try again: ');
+            PrintError('Bad strings input from file.');
         End;
     Until IsCorrect;
 
@@ -304,11 +300,11 @@ End;
 Procedure RenderingSet(ArrOfElements: TArrOfElements; Var ResultSet: TAnsiChar);
 Var
     I: Integer;
-    Current: Char;
+    Current : Char;
 Begin
     For I := 0 To High(ArrOfElements) Do
-        For Current In Entitlements Do
-            If (Current = ArrOfElements[I]) Then
+        for Current in Entitlements do
+            If (Current = ArrOfElements[i]) Then
                 Include(ResultSet, AnsiChar(ArrOfElements[I]));
 End;
 
@@ -316,11 +312,11 @@ End;
 Function OutputSetInFile(ResultSet: TAnsiChar): String;
 Var
     Str: String;
-    Current: Char;
+    Current: AnsiChar;
 Begin
     Str := '';
     For Current In ResultSet Do
-        Str := '''' + Current + ''';';
+        Str := Str +  '''' + Current + ''';';
 
     OutputSetInFile := Str;
 End;
@@ -361,7 +357,7 @@ Begin
                 Close(MyFile);
             End;
         Except
-            Write('Bad output file. Try again: ');
+            PrintError('Bad output file. Try again: ');
         End;
     Until IsCorrect;
 End;
@@ -424,18 +420,11 @@ Var
 
 Begin
     TaskOutput();
-
     SetLength(ArrSize, 2);
     SetLength(ArrOfElements, 0);
-
     ArrOfElements := InputSystem(ArrSize);
-
     RenderingSet(ArrOfElements, ResultSet);
-
     ResultOutputSystem(ResultSet);
-
     ClearMemory(ArrSize, ArrOfElements);
-
     Readln;
-
 End.
