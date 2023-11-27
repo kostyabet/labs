@@ -12,7 +12,7 @@ const int CONSOLE_KEY = 2;
 const set<char> Entitlements =
 {
 	'0', '1', '2', '3', '4', '5', '6',
-	'7', '8', '9', '+', '-', '=', '/'
+	'7', '8', '9', '+', '-', '*', '/'
 };
 // block of work with errors
 enum IOError
