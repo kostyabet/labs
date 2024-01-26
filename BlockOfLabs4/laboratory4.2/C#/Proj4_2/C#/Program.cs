@@ -165,16 +165,16 @@ class Proj4_2
             Vector[i] = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_INT_NUM, MAX_INT_NUM);
     }
 
-    static bool ProcesOfFileInput(ref int A, ref int[] B_Vector, ref int[] C_Vector, string filePath)
+    static bool ProcesOfFileInput(ref int A, ref int[] B_Vector, ref int[] C_Vector, string filePath, ref int N)
     {
         bool isCorrectInput = true;
 
         using (StreamReader inputReader = new StreamReader(filePath))
         {
             A = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_INT_NUM, MAX_INT_NUM);
-            int N_Size = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_N, MAX_N);
-            B_Vector = new int[N_Size];
-            C_Vector = new int[N_Size];
+            N = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_N, MAX_N);
+            B_Vector = new int[N];
+            C_Vector = new int[N];
 
             inputVectorFromFile(inputReader, ref B_Vector, ref isCorrectInput);
             inputVectorFromFile(inputReader, ref C_Vector, ref isCorrectInput);
@@ -186,7 +186,7 @@ class Proj4_2
         return isCorrectInput;
     }
 
-    static void InputFormFile(ref int A, ref int[] B_Vector, ref int[] C_Vector)
+    static void InputFormFile(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N)
     {
         bool isCorrect = true;
         do
@@ -194,7 +194,7 @@ class Proj4_2
             Console.Write("Write way to your file (*.txt): ");
             string filePath = inputPathToTheFile();
 
-            isCorrect = ProcesOfFileInput(ref A, ref B_Vector, ref C_Vector, filePath);
+            isCorrect = ProcesOfFileInput(ref A, ref B_Vector, ref C_Vector, filePath, ref N);
         } while (!isCorrect);
     }
     static int InputNumberFromConsole(int MIN_NUM, int MAX_NUM)
@@ -228,30 +228,33 @@ class Proj4_2
             Vector[i] = InputNumberFromConsole(MIN_INT_NUM, MAX_INT_NUM);
         }
     }
-    static void InputFromConsole(ref int A, ref int[] B_Vector, ref int[] C_Vector)
+    static void InputFromConsole(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N)
     {
         Console.Write("Write A: ");
         A = InputNumberFromConsole(MIN_INT_NUM, MAX_INT_NUM);
         Console.Write("Write N - size of vectors: ");
-        int N_Size = InputNumberFromConsole(MIN_N, MAX_N);
-        B_Vector = new int[N_Size];
-        C_Vector = new int[N_Size];
+        N = InputNumberFromConsole(MIN_N, MAX_N);
+        B_Vector = new int[N];
+        C_Vector = new int[N];
         Console.WriteLine("\nWrite vector B.");
         InputVectorFromConsole(ref B_Vector);
         Console.WriteLine("\nWrite vector C.");
         InputVectorFromConsole(ref C_Vector);
     }
-    static void inputData(ref int A, ref int[] B_Vector, ref int[] C_Vector)
+    static void inputData(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N, ref HashSet<int> I)
     {
         IOChoose path = chooseWayOfInput();
 
         switch (path)
         {
-            case IOChoose.FILE: InputFormFile(ref A, ref B_Vector, ref C_Vector); break;
-            case IOChoose.CONSOLE: InputFromConsole(ref A, ref B_Vector, ref C_Vector); break;
+            case IOChoose.FILE: InputFormFile(ref A, ref B_Vector, ref C_Vector, ref N); break;
+            case IOChoose.CONSOLE: InputFromConsole(ref A, ref B_Vector, ref C_Vector, ref N); break;
         }
+
+        for (int i = 1; !(i > N); i++)
+            I.Add(i);
     }
-    static void treatmentData(ref int A, ref int[] B_Vector, ref int[] C_Vector)
+    static void treatmentData(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N, ref HashSet<int> I)
     {
         
     }
@@ -262,11 +265,13 @@ class Proj4_2
     public static void Main(string[] args)
     {
         int A = 0;
+        int N = 0;
         int[] B_Vector = { };
         int[] C_Vector = { };
-
-        inputData(ref A, ref B_Vector, ref C_Vector);
-        treatmentData(ref A, ref B_Vector, ref C_Vector);
+        HashSet<int> I = new HashSet<int>();
+        
+        inputData(ref A, ref B_Vector, ref C_Vector, ref N, ref I);
+        treatmentData(ref A, ref B_Vector, ref C_Vector, ref N, ref I);
         outputData();
     }
 }
