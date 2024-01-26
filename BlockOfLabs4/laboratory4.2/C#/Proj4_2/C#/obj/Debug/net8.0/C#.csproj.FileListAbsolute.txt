@@ -1,0 +1,15 @@
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\obj\Debug\net8.0\C#.GeneratedMSBuildEditorConfig.editorconfig
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\obj\Debug\net8.0\C#.AssemblyInfoInputs.cache
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\obj\Debug\net8.0\C#.AssemblyInfo.cs
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\obj\Debug\net8.0\C#.csproj.CoreCompileInputs.cache
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\obj\Debug\net8.0\C#.sourcelink.json
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\bin\Debug\net8.0\C#.exe
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\bin\Debug\net8.0\C#.deps.json
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\bin\Debug\net8.0\C#.runtimeconfig.json
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\bin\Debug\net8.0\C#.dll
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\bin\Debug\net8.0\C#.pdb
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\obj\Debug\net8.0\C#.dll
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\obj\Debug\net8.0\refint\C#.dll
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\obj\Debug\net8.0\C#.pdb
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\obj\Debug\net8.0\C#.genruntimeconfig.cache
+E:\GitHub\labs\BlockOfLabs4\laboratory4.2\C#\Proj4_2\C#\obj\Debug\net8.0\ref\C#.dll
