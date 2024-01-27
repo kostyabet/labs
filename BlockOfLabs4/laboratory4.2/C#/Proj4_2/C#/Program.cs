@@ -49,7 +49,7 @@ class Proj4_2
                 case 1: result = IOChoose.CONSOLE; break;
                 default: isCorrect = false; break;
             }
-            
+
             if (!isCorrect) Console.Write($"You should write one natural number({CONSOLE_VALUE}|{FILE_VALUE}): ");
             else Console.WriteLine();
         } while (!isCorrect);
@@ -101,7 +101,7 @@ class Proj4_2
         {
             using (StreamWriter writer = new StreamWriter(filePath))
                 writer.WriteLine(string.Empty);
-           
+
             return true;
         }
         catch
@@ -127,7 +127,7 @@ class Proj4_2
     {
         bool resultModifier = true;
 
-        switch (accessModifier){
+        switch (accessModifier) {
             case "input": resultModifier = isCanRead(filePath); break;
             case "output": resultModifier = isCanWrite(filePath); break;
         }
@@ -151,7 +151,7 @@ class Proj4_2
 
             if (!isCorrect)
                 Console.Write("Can't open a file. Try write another way: ");
-            
+
         } while (!isCorrect);
 
         return filePath;
@@ -176,7 +176,7 @@ class Proj4_2
 
             if (num > MAX_NUM)
                 isCorrect = false;
-            
+
             bufChar = character;
         }
 
@@ -251,7 +251,7 @@ class Proj4_2
     {
         for (int i = 0; i < Vector.Length; ++i)
         {
-            Console.Write($"Write your {i+1} coordinate: ");
+            Console.Write($"Write your {i + 1} coordinate: ");
             Vector[i] = InputNumberFromConsole(MIN_INT_NUM, MAX_INT_NUM);
         }
     }
@@ -278,9 +278,128 @@ class Proj4_2
             case IOChoose.CONSOLE: InputFromConsole(ref A, ref B_Vector, ref C_Vector, ref N); break;
         }
     }
+    static void checkingForVectorC(List<int> currentPath, int[] C_Vector, int A, ref List<List<int>> results)
+    {
+        int curentSum = 0;
+        foreach(int i in currentPath)
+            curentSum += C_Vector[i];
+        
+        if (curentSum <= A)
+            results.Add(new List<int>(currentPath));
+    }
+    static List<List<int>> CalculateSums(int[] arr, int[] C_Vector, int A)
+    {
+        List<List<int>> results = new List<List<int>>();
+
+        void Helper(int[] subArray, List<int> currentPath)
+        {
+            if (subArray.Length == 0)
+            {
+                checkingForVectorC(currentPath, C_Vector, A, ref results);
+            }
+            else
+            {
+                Helper(subArray[1..], new List<int>(currentPath) { Array.IndexOf(arr, subArray[0]) });
+                Helper(subArray[1..], new List<int>(currentPath));
+            }
+        }
+
+        Helper(arr, new List<int>());
+        return results;
+    }
+
+    static List<List<int>> CalculateSums(int[] arr)
+    {
+        List<List<int>> results = new List<List<int>>();
+
+        void Helper(int[] subArray, List<int> currentPath)
+        {
+            if (subArray.Length == 0) results.Add(new List<int>(currentPath));
+            else
+            {
+                Helper(subArray[1..], new List<int>(currentPath) { Array.IndexOf(arr, subArray[0]) });
+                Helper(subArray[1..], new List<int>(currentPath));
+            }
+        }
+
+        Helper(arr, new List<int>());
+        return results;
+    }
+
+    static void Swap(int[][] array, int i, int j)
+    {
+        int temp0 = array[i][0];
+        int temp1 = array[i][1];
+        array[i][0] = array[j][0];
+        array[i][1] = array[j][1];
+        array[j][0] = temp0;
+        array[j][1] = temp1;
+    }
+    static int Partition(int[][] array, int left, int right)
+    {
+        int pivot = array[left][0];
+        int i = left + 1;
+
+        for (int j = left + 1; j <= right; j++)
+        {
+            if (array[j][0] > pivot) // Изменено условие сравнения
+            {
+                Swap(array, i, j);
+                i++;
+            }
+        }
+
+        Swap(array, left, i - 1);
+        return i - 1;
+    }
+
+    static void QuickSort(int[][] array, int left, int right)
+    {
+        if (left < right)
+        {
+            int pivotIndex = Partition(array, left, right);
+            QuickSort(array, left, pivotIndex - 1);
+            QuickSort(array, pivotIndex + 1, right);
+        }
+    }
+
     static void treatmentData(int A, int[] B_Vector, int[] C_Vector, int N, ref HashSet<int> I)
     {
-        
+        List<List<int>> sums = CalculateSums(B_Vector, C_Vector, A);
+
+        int[][] sumsBVector = new int[sums.Count][];
+        int i = 0;
+        foreach (List<int> sum in sums)
+        {
+            sumsBVector[i] = new int[N + 1];
+            int curentSum = 0;
+            int j = 1;
+            foreach (int curentCoord in sum)
+            {
+                curentSum += B_Vector[curentCoord];
+                sumsBVector[i][j] = curentCoord + 1;
+                j++;
+            }
+            sumsBVector[i][0] = curentSum;
+            i++;
+        }
+
+        QuickSort(sumsBVector, 0, sumsBVector.GetLength(0) - 1);
+
+        for (int m = 1; sumsBVector.Length != 0 && m < sumsBVector[0].Length; m++)
+        {
+            if (sumsBVector[0][m] != 0)
+                I.Add(sumsBVector[0][m]);
+        }
+
+        for (int m = 0; m < sumsBVector.Length; m++)
+        {
+            for (int k = 0; k < sumsBVector[m].Length; k++)
+            {
+                Console.Write(sumsBVector[m][k] + " ");
+            }
+            Console.WriteLine();
+        }
     }
     static string createStringWithVector(int[] Vector)
     {
@@ -297,7 +416,7 @@ class Proj4_2
 
         string setStr = string.Empty;
         foreach (int i in I)
-            setStr += i + " ";
+            setStr += $" '{i}'";
 
         return setStr;
     }
@@ -308,7 +427,7 @@ class Proj4_2
         resultStr += createStringWithVector(B_Vector);
         resultStr += "\nvector C: ";
         resultStr += createStringWithVector(C_Vector);
-        resultStr += "\nresult set I: ";
+        resultStr += "\nresult set I:";
         resultStr += createStringWithSet(I);
         return resultStr;
     }
@@ -341,7 +460,7 @@ class Proj4_2
     }
     static void OutputFromConsole(string resultStr)
     {
-        Console.WriteLine("\nresultStr");
+        Console.WriteLine($"\n{resultStr}");
     }
     static void outputData(int A, int[] B_Vector, int[] C_Vector, int N, HashSet<int> I)
     {
