@@ -15,17 +15,32 @@ class Proj4_2
 
     static void taskInfoOutput()
     {
-        Console.WriteLine($@"The program determines a subset(I) of expenses {{1..N}}. 
-Where N is the number of coordinate vectors B and C.
+        string outputString = $"""
+            The program determines a subset(I) of expenses {"{1..N}"}.
+            Where N is the number of coordinate vectors B and C.
 
-");
+            The sum of the elements of vector B with numbers from 
+            subset I is maximum, provided that the sum of the 
+            elements from set C with the same numbers is not greater 
+            than the integer A.
+
+            Restrictions:
+                1. A belongs to the interval [{MIN_INT_NUM}; {MAX_INT_NUM}];
+                2. N belongs to the interval [{MIN_N}; {MAX_N}];
+                3. Vector coordinates are in the interval [{MIN_INT_NUM}; {MAX_INT_NUM}];
+                                
+            """;
+        Console.WriteLine(outputString);
     }
 
     static void outputTextAboutIOSelection(string IOTextInfo)
     {
-        Console.Write($@"Select how you will {IOTextInfo} data:
-      {IOChoose.FILE}: {FILE_VALUE}    {IOChoose.CONSOLE}: {CONSOLE_VALUE}
-Your option: ");
+        string outputString = $"""
+            Select how you will {IOTextInfo} data:
+                  {IOChoose.FILE}: {FILE_VALUE}    {IOChoose.CONSOLE}: {CONSOLE_VALUE}
+            Your option: 
+            """;
+        Console.Write(outputString);
     }
     
     /// <summary>
@@ -172,13 +187,15 @@ Your option: ");
 
         while (isCorrect && isCorrectInput && (character = inputReader.Read()) != -1)
         {
-            if (!(character == ' ' || character == 13 || character == 10 || !(character > '9' && character < '0')))
+            bool isServiceSymbol = character == ' ' || character == '\r' || character == '\n';
+            
+            if (!(isServiceSymbol || !(character > '9' && character < '0')))
                 isCorrectInput = false;
 
-            if (character != ' ' && character != 13 && character != 10 && isCorrectInput)
-                num = num * 10 + character - 48;
+            if (!isServiceSymbol && isCorrectInput)
+                num = num * 10 + character - (int)char.GetNumericValue('0'); ;
 
-            if (bufChar != 0 && isCorrectInput && (character == ' ' || character == 13 || character == 10))
+            if (bufChar != 0 && isCorrectInput && isServiceSymbol)
                 isCorrect = false;
 
             if (num > MAX_NUM)
@@ -199,19 +216,19 @@ Your option: ");
             Vector[i] = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_INT_NUM, MAX_INT_NUM);
     }
 
-    static bool isProcesOfFileInputCorrect(ref int A, ref int[] B_Vector, ref int[] C_Vector, string filePath, ref int N)
+    static bool isProcesOfFileInputCorrect(ref int ACount, ref int[] BVector, ref int[] CVector, string filePath, ref int NSize)
     {
         bool isCorrectInput = true;
 
         using (StreamReader inputReader = new StreamReader(filePath))
         {
-            A = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_INT_NUM, MAX_INT_NUM);
-            N = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_N, MAX_N);
-            B_Vector = new int[N];
-            C_Vector = new int[N];
+            ACount = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_INT_NUM, MAX_INT_NUM);
+            NSize = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_N, MAX_N);
+            BVector = new int[NSize];
+            CVector = new int[NSize];
 
-            inputVectorFromFile(inputReader, ref B_Vector, ref isCorrectInput);
-            inputVectorFromFile(inputReader, ref C_Vector, ref isCorrectInput);
+            inputVectorFromFile(inputReader, ref BVector, ref isCorrectInput);
+            inputVectorFromFile(inputReader, ref CVector, ref isCorrectInput);
 
             isCorrectInput = isCorrectInput && inputReader.EndOfStream ? true : false;
             if (!isCorrectInput) Console.WriteLine("Error in reading. Try again.");
@@ -220,16 +237,15 @@ Your option: ");
         return isCorrectInput;
     }
 
-    static void InputFormFile(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N)
+    static void InputFormFile(ref int ACount, ref int[] BVector, ref int[] CVector, ref int NSize)
     {
-        bool isCorrect = true;
+        string filePath = string.Empty;
+
         do
         {
             Console.Write("Write way to your file (*.txt): ");
-            string filePath = inputPathToTheFile("input");
-
-            isCorrect = isProcesOfFileInputCorrect(ref A, ref B_Vector, ref C_Vector, filePath, ref N);
-        } while (!isCorrect);
+            filePath = inputPathToTheFile("input");
+        } while (!isProcesOfFileInputCorrect(ref ACount, ref BVector, ref CVector, filePath, ref NSize));
     }
 
     static int InputNumberFromConsole(int MIN_NUM, int MAX_NUM)
@@ -264,64 +280,64 @@ Your option: ");
         }
     }
 
-    static void InputFromConsole(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N)
+    static void InputFromConsole(ref int ACount, ref int[] BVector, ref int[] CVector, ref int NSize)
     {
         Console.Write("Write A: ");
-        A = InputNumberFromConsole(MIN_INT_NUM, MAX_INT_NUM);
+        ACount = InputNumberFromConsole(MIN_INT_NUM, MAX_INT_NUM);
 
         Console.Write("Write N - size of vectors: ");
-        N = InputNumberFromConsole(MIN_N, MAX_N);
+        NSize = InputNumberFromConsole(MIN_N, MAX_N);
         
-        B_Vector = new int[N];
+        BVector = new int[NSize];
         Console.WriteLine("\nWrite vector B.");
-        InputVectorFromConsole(ref B_Vector);
+        InputVectorFromConsole(ref BVector);
         
-        C_Vector = new int[N];
+        CVector = new int[NSize];
         Console.WriteLine("\nWrite vector C.");
-        InputVectorFromConsole(ref C_Vector);
+        InputVectorFromConsole(ref CVector);
         Console.WriteLine();
     }
 
-    static void inputData(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N)
+    static void inputData(ref int ACount, ref int[] BVector, ref int[] CVector, ref int NSize)
     {
         IOChoose path = chooseIOWay("input");
 
         switch (path)
         {
-            case IOChoose.FILE: InputFormFile(ref A, ref B_Vector, ref C_Vector, ref N); break;
-            case IOChoose.CONSOLE: InputFromConsole(ref A, ref B_Vector, ref C_Vector, ref N); break;
+            case IOChoose.FILE: InputFormFile(ref ACount, ref BVector, ref CVector, ref NSize); break;
+            case IOChoose.CONSOLE: InputFromConsole(ref ACount, ref BVector, ref CVector, ref NSize); break;
         }
     }
 
-    static void checkingForVectorC(List<int> currentPath, int[] C_Vector, int A, ref List<List<int>> results)
+    static void checkingCVectorCondition(List<int> currentPath, int[] CVector, int ACount, ref List<List<int>> results)
     {
         int curentSum = 0;
         foreach(int i in currentPath)
-            curentSum += C_Vector[i];
+            curentSum += CVector[i];
         
-        if (curentSum <= A)
+        if (curentSum <= ACount)
             results.Add(new List<int>(currentPath));
     }
 
-    static List<List<int>> CalculateSums(int[] arr, int[] C_Vector, int A)
+    static List<List<int>> calculateSums(int[] arr, int[] CVector, int ACount)
     {
         List<List<int>> results = new List<List<int>>();
 
-        void Helper(int[] subArray, List<int> currentPath)
+        void searchSuitableAmo(int[] subArray, List<int> currentPath)
         {
-            if (subArray.Length == 0) checkingForVectorC(currentPath, C_Vector, A, ref results);
+            if (subArray.Length == 0) checkingCVectorCondition(currentPath, CVector, ACount, ref results);
             else
             {
-                Helper(subArray[1..], new List<int>(currentPath) { Array.IndexOf(arr, subArray[0]) });
-                Helper(subArray[1..], new List<int>(currentPath));
+                searchSuitableAmo(subArray[1..], new List<int>(currentPath) { Array.IndexOf(arr, subArray[0]) });
+                searchSuitableAmo(subArray[1..], new List<int>(currentPath));
             }
         }
 
-        Helper(arr, new List<int>());
+        searchSuitableAmo(arr, new List<int>());
         return results;
     }
 
-    static void Swap(int[][] array, int i, int j)
+    static void swap(int[][] array, int i, int j)
     {
         int temp0 = array[i][0];
         int temp1 = array[i][1];
@@ -331,60 +347,68 @@ Your option: ");
         array[j][1] = temp1;
     }
 
-    static int Partition(int[][] array, int left, int right)
+    static int partition(int[][] array, int left, int right)
     {
         int pivot = array[left][0];
         int i = left + 1;
 
         for (int j = left + 1; j <= right; j++)
         {
-            if (array[j][0] > pivot) // Изменено условие сравнения
+            if (array[j][0] > pivot)
             {
-                Swap(array, i, j);
+                swap(array, i, j);
                 i++;
             }
         }
 
-        Swap(array, left, i - 1);
+        swap(array, left, i - 1);
         return i - 1;
     }
 
-    static void QuickSort(int[][] array, int left, int right)
+    static void quickSort(int[][] array, int left, int right)
     {
         if (left < right)
         {
-            int pivotIndex = Partition(array, left, right);
-            QuickSort(array, left, pivotIndex - 1);
-            QuickSort(array, pivotIndex + 1, right);
+            int pivotIndex = partition(array, left, right);
+            quickSort(array, left, pivotIndex - 1);
+            quickSort(array, pivotIndex + 1, right);
         }
     }
-
-    static void treatmentData(int A, int[] B_Vector, int[] C_Vector, int N, ref HashSet<int> I)
+    static int[][] creatingSumMatrix(List<List<int>> sums, int NSize, int[] BVector)
     {
-        List<List<int>> sums = CalculateSums(B_Vector, C_Vector, A);
-
-        int[][] sumsBVector = new int[sums.Count][];
+        int[][] vectorSums = new int[sums.Count][];
         int i = 0;
         foreach (List<int> sum in sums)
         {
-            sumsBVector[i] = new int[N + 1];
+            vectorSums[i] = new int[NSize + 1];
             int curentSum = 0;
             int j = 1;
             foreach (int curentCoord in sum)
             {
-                curentSum += B_Vector[curentCoord];
-                sumsBVector[i][j] = curentCoord + 1;
+                curentSum += BVector[curentCoord];
+                vectorSums[i][j] = curentCoord + 1;
                 j++;
             }
-            sumsBVector[i][0] = curentSum;
+            vectorSums[i][0] = curentSum;
             i++;
         }
 
-        QuickSort(sumsBVector, 0, sumsBVector.GetLength(0) - 1);
+        return vectorSums;
+    }
 
-        for (int m = 1; sumsBVector.Length != 0 && m < sumsBVector[0].Length; m++)
-            if (sumsBVector[0][m] != 0)
-                I.Add(sumsBVector[0][m]);
+    static void addResToSubset(int[][] vectorSums, ref HashSet<int> ISubset)
+    {
+        for (int i = 1; vectorSums.Length != 0 && i < vectorSums[0].Length; i++)
+            if (vectorSums[0][i] != 0)
+                ISubset.Add(vectorSums[0][i]);
+    }
+
+    static void treatmentData(int ACount, int[] BVector, int[] CVector, int NSize, ref HashSet<int> ISubset)
+    {
+        List<List<int>> sums = calculateSums(BVector, CVector, ACount);
+        int[][] vectorSums = creatingSumMatrix(sums, NSize, BVector);
+        quickSort(vectorSums, 0, vectorSums.GetLength(0) - 1);
+        addResToSubset(vectorSums, ref ISubset);
     }
 
     static string createStringWithVector(int[] Vector)
@@ -396,27 +420,27 @@ Your option: ");
         return vectorStr;
     }
 
-    static string createStringWithSet(HashSet<int> I)
+    static string createStringWithSet(HashSet<int> ISubset)
     {
-        if (I.Count == 0)
+        if (ISubset.Count == 0)
             return " empty set...";
 
         string setStr = string.Empty;
-        foreach (int i in I)
+        foreach (int i in ISubset)
             setStr += " " + i;
 
         return setStr;
     }
 
-    static string createResultString(int A, int[] B_Vector, int[] C_Vector, int N, HashSet<int> I)
+    static string createResultString(int ACount, int[] BVector, int[] CVector, int NSize, HashSet<int> ISubset)
     {
-        string resultStr = string.Empty;
-        resultStr += $"A: {A};\nN: {N};\nvector B: ";
-        resultStr += createStringWithVector(B_Vector);
-        resultStr += "\nvector C: ";
-        resultStr += createStringWithVector(C_Vector);
-        resultStr += "\nresult set I:";
-        resultStr += createStringWithSet(I);
+        string resultStr = $"""
+            A: {ACount};
+            N: {NSize};
+            vector B: {createStringWithVector(BVector)}
+            vector C: {createStringWithVector(CVector)}
+            result set I: {createStringWithSet(ISubset)}
+            """;
         return resultStr;
     }
 
@@ -439,14 +463,13 @@ Your option: ");
 
     static void OutputFormFile(string resultStr)
     {
-        bool isCorrect = true;
+        string filePath = string.Empty;
+
         do
         {
             Console.Write("Write way to your file (*.txt): ");
-            string filePath = inputPathToTheFile("output");
-
-            isCorrect = isProcesOfFileOutputCorrect(filePath, resultStr);
-        } while (!isCorrect);
+            filePath = inputPathToTheFile("output");
+        } while (!isProcesOfFileOutputCorrect(filePath, resultStr));
     }
 
     static void OutputFromConsole(string resultStr)
@@ -454,9 +477,9 @@ Your option: ");
         Console.WriteLine($"{resultStr}");
     }
 
-    static void outputData(int A, int[] B_Vector, int[] C_Vector, int N, HashSet<int> I)
+    static void outputData(int ACount, int[] BVector, int[] CVector, int NSize, HashSet<int> ISubset)
     {
-        string resultStr = createResultString(A, B_Vector, C_Vector, N, I);
+        string resultStr = createResultString(ACount, BVector, CVector, NSize, ISubset);
         IOChoose path = chooseIOWay("output");
 
         switch (path)
@@ -468,15 +491,15 @@ Your option: ");
 
     public static void Main(string[] args)
     {
-        int A = 0;
-        int N = 0;
-        int[] B_Vector = { };
-        int[] C_Vector = { };
-        HashSet<int> I = new HashSet<int>();
+        int ACount = 0;
+        int NSize = 0;
+        int[] BVector = { };
+        int[] CVector = { };
+        HashSet<int> ISubset = new HashSet<int>();
 
         taskInfoOutput();
-        inputData(ref A, ref B_Vector, ref C_Vector, ref N);
-        treatmentData(A, B_Vector, C_Vector, N, ref I);
-        outputData(A, B_Vector, C_Vector, N, I);
+        inputData(ref ACount, ref BVector, ref CVector, ref NSize);
+        treatmentData(ACount, BVector, CVector, NSize, ref ISubset);
+        outputData(ACount, BVector, CVector, NSize, ISubset);
     }
 }
