@@ -79,14 +79,10 @@ class Proj4_2
 
     static string inputFilePath()
     {
-        string filePath = string.Empty;
-        bool isCorrect = true;
+        string filePath = Console.ReadLine() ?? string.Empty;
 
-        do
-        {
+        while (!pathCondition(filePath))
             filePath = Console.ReadLine() ?? string.Empty;
-            isCorrect = pathCondition(filePath);
-        } while (!isCorrect);
 
         return filePath;
     }
