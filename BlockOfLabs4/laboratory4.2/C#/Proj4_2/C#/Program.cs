@@ -12,12 +12,14 @@ class Proj4_2
     const int MIN_N = 1;
     const int MAX_N = 20;
     const int MIN_FILE_WAY_SIZE = 4;
+
     static void outputTextAboutIOSelection(string IOTextInfo)
     {
         Console.WriteLine($"Select how you will {IOTextInfo} data:");
         Console.WriteLine($"    {IOChoose.FILE}: {FILE_VALUE}    {IOChoose.CONSOLE}: {CONSOLE_VALUE}");
         Console.Write("Your option: ");
     }
+    
     /// <summary>
     /// Here you can write a file for what purposes you are using (input|output)
     /// </summary>
@@ -56,6 +58,7 @@ class Proj4_2
 
         return result;
     }
+
     static bool pathCondition(string filePath)
     {
         if (filePath.Length < MIN_FILE_WAY_SIZE)
@@ -73,7 +76,6 @@ class Proj4_2
 
         return true;
     }
-
 
     static string inputFilePath()
     {
@@ -134,6 +136,7 @@ class Proj4_2
 
         return resultModifier;
     }
+
     /// <summary>
     /// Write "input" if you want to get the file path for input.
     /// Write "output" if you want to get the path to the output file.
@@ -224,6 +227,7 @@ class Proj4_2
             isCorrect = isProcesOfFileInputCorrect(ref A, ref B_Vector, ref C_Vector, filePath, ref N);
         } while (!isCorrect);
     }
+
     static int InputNumberFromConsole(int MIN_NUM, int MAX_NUM)
     {
         int num = 0;
@@ -255,19 +259,24 @@ class Proj4_2
             Vector[i] = InputNumberFromConsole(MIN_INT_NUM, MAX_INT_NUM);
         }
     }
+
     static void InputFromConsole(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N)
     {
         Console.Write("Write A: ");
         A = InputNumberFromConsole(MIN_INT_NUM, MAX_INT_NUM);
+
         Console.Write("Write N - size of vectors: ");
         N = InputNumberFromConsole(MIN_N, MAX_N);
+        
         B_Vector = new int[N];
-        C_Vector = new int[N];
         Console.WriteLine("\nWrite vector B.");
         InputVectorFromConsole(ref B_Vector);
+        
+        C_Vector = new int[N];
         Console.WriteLine("\nWrite vector C.");
         InputVectorFromConsole(ref C_Vector);
     }
+
     static void inputData(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N)
     {
         IOChoose path = chooseIOWay("input");
@@ -278,6 +287,7 @@ class Proj4_2
             case IOChoose.CONSOLE: InputFromConsole(ref A, ref B_Vector, ref C_Vector, ref N); break;
         }
     }
+
     static void checkingForVectorC(List<int> currentPath, int[] C_Vector, int A, ref List<List<int>> results)
     {
         int curentSum = 0;
@@ -287,34 +297,14 @@ class Proj4_2
         if (curentSum <= A)
             results.Add(new List<int>(currentPath));
     }
+
     static List<List<int>> CalculateSums(int[] arr, int[] C_Vector, int A)
     {
         List<List<int>> results = new List<List<int>>();
 
         void Helper(int[] subArray, List<int> currentPath)
         {
-            if (subArray.Length == 0)
-            {
-                checkingForVectorC(currentPath, C_Vector, A, ref results);
-            }
-            else
-            {
-                Helper(subArray[1..], new List<int>(currentPath) { Array.IndexOf(arr, subArray[0]) });
-                Helper(subArray[1..], new List<int>(currentPath));
-            }
-        }
-
-        Helper(arr, new List<int>());
-        return results;
-    }
-
-    static List<List<int>> CalculateSums(int[] arr)
-    {
-        List<List<int>> results = new List<List<int>>();
-
-        void Helper(int[] subArray, List<int> currentPath)
-        {
-            if (subArray.Length == 0) results.Add(new List<int>(currentPath));
+            if (subArray.Length == 0) checkingForVectorC(currentPath, C_Vector, A, ref results);
             else
             {
                 Helper(subArray[1..], new List<int>(currentPath) { Array.IndexOf(arr, subArray[0]) });
@@ -335,6 +325,7 @@ class Proj4_2
         array[j][0] = temp0;
         array[j][1] = temp1;
     }
+
     static int Partition(int[][] array, int left, int right)
     {
         int pivot = array[left][0];
@@ -387,20 +378,10 @@ class Proj4_2
         QuickSort(sumsBVector, 0, sumsBVector.GetLength(0) - 1);
 
         for (int m = 1; sumsBVector.Length != 0 && m < sumsBVector[0].Length; m++)
-        {
             if (sumsBVector[0][m] != 0)
                 I.Add(sumsBVector[0][m]);
-        }
-
-        for (int m = 0; m < sumsBVector.Length; m++)
-        {
-            for (int k = 0; k < sumsBVector[m].Length; k++)
-            {
-                Console.Write(sumsBVector[m][k] + " ");
-            }
-            Console.WriteLine();
-        }
     }
+
     static string createStringWithVector(int[] Vector)
     {
         string vectorStr = string.Empty;
@@ -409,17 +390,19 @@ class Proj4_2
 
         return vectorStr;
     }
+
     static string createStringWithSet(HashSet<int> I)
     {
         if (I.Count == 0)
-            return "empty set...";
+            return " empty set...";
 
         string setStr = string.Empty;
         foreach (int i in I)
-            setStr += $" '{i}'";
+            setStr += " " + i;
 
         return setStr;
     }
+
     static string createResultString(int A, int[] B_Vector, int[] C_Vector, int N, HashSet<int> I)
     {
         string resultStr = string.Empty;
@@ -431,6 +414,7 @@ class Proj4_2
         resultStr += createStringWithSet(I);
         return resultStr;
     }
+
     static bool isProcesOfFileOutputCorrect(string filePath, string resultStr)
     {
         try
@@ -447,6 +431,7 @@ class Proj4_2
             return false;
         }
     }
+
     static void OutputFormFile(string resultStr)
     {
         bool isCorrect = true;
@@ -458,10 +443,12 @@ class Proj4_2
             isCorrect = isProcesOfFileOutputCorrect(filePath, resultStr);
         } while (!isCorrect);
     }
+
     static void OutputFromConsole(string resultStr)
     {
         Console.WriteLine($"\n{resultStr}");
     }
+
     static void outputData(int A, int[] B_Vector, int[] C_Vector, int N, HashSet<int> I)
     {
         string resultStr = createResultString(A, B_Vector, C_Vector, N, I);
@@ -473,6 +460,7 @@ class Proj4_2
             case IOChoose.CONSOLE: OutputFromConsole(resultStr); break;
         }
     }
+
     public static void Main(string[] args)
     {
         int A = 0;
