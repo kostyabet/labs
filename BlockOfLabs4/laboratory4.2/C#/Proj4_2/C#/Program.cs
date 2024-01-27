@@ -1,11 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.IO;
-using System.Numerics;
-using System.Reflection.PortableExecutable;
-using System.Text;
-
-enum IOChoose : Int32
+﻿enum IOChoose : Int32
 {
     FILE,
     CONSOLE
@@ -25,9 +18,14 @@ class Proj4_2
         Console.WriteLine($"    {IOChoose.FILE}: {FILE_VALUE}    {IOChoose.CONSOLE}: {CONSOLE_VALUE}");
         Console.Write("Your option: ");
     }
-    static IOChoose chooseWayOfInput()
+    /// <summary>
+    /// Here you can write a file for what purposes you are using (input|output)
+    /// </summary>
+    /// <param name="IOTextInfo"></param>
+    /// <returns></returns>
+    static IOChoose chooseIOWay(string IOTextInfo)
     {
-        outputTextAboutIOSelection("input");
+        outputTextAboutIOSelection(IOTextInfo);
 
         IOChoose result = 0;
         int ChosenPath = 0;
@@ -97,6 +95,21 @@ class Proj4_2
         return fileInfo.Exists;
     }
 
+    static bool isCanWrite(string filePath)
+    {
+        try
+        {
+            using (StreamWriter writer = new StreamWriter(filePath))
+                writer.WriteLine(string.Empty);
+           
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     static bool isCanRead(string filePath)
     {
         try
@@ -110,21 +123,35 @@ class Proj4_2
         }
     }
 
-    static string inputPathToTheFile()
+    static bool accessModifierControl(string accessModifier, string filePath)
     {
-        string filePath;
-        bool isCorrect = true;
+        bool resultModifier = true;
 
+        switch (accessModifier){
+            case "input": resultModifier = isCanRead(filePath); break;
+            case "output": resultModifier = isCanWrite(filePath); break;
+        }
+
+        return resultModifier;
+    }
+    /// <summary>
+    /// Write "input" if you want to get the file path for input.
+    /// Write "output" if you want to get the path to the output file.
+    /// </summary>
+    /// <param name="accessModifier"></param>
+    /// <returns></returns>
+    static string inputPathToTheFile(string accessModifier)
+    {
+        string filePath = string.Empty;
+        bool isCorrect = true;
         do
         {
-            isCorrect = true;
             filePath = inputFilePath();
+            isCorrect = accessModifierControl(accessModifier, filePath) && isCanOpenFile(filePath);
 
-            if (!isCanOpenFile(filePath) && !isCanRead(filePath))
-            {
+            if (!isCorrect)
                 Console.Write("Can't open a file. Try write another way: ");
-                isCorrect = false;
-            }
+            
         } while (!isCorrect);
 
         return filePath;
@@ -165,7 +192,7 @@ class Proj4_2
             Vector[i] = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_INT_NUM, MAX_INT_NUM);
     }
 
-    static bool ProcesOfFileInput(ref int A, ref int[] B_Vector, ref int[] C_Vector, string filePath, ref int N)
+    static bool isProcesOfFileInputCorrect(ref int A, ref int[] B_Vector, ref int[] C_Vector, string filePath, ref int N)
     {
         bool isCorrectInput = true;
 
@@ -192,9 +219,9 @@ class Proj4_2
         do
         {
             Console.Write("Write way to your file (*.txt): ");
-            string filePath = inputPathToTheFile();
+            string filePath = inputPathToTheFile("input");
 
-            isCorrect = ProcesOfFileInput(ref A, ref B_Vector, ref C_Vector, filePath, ref N);
+            isCorrect = isProcesOfFileInputCorrect(ref A, ref B_Vector, ref C_Vector, filePath, ref N);
         } while (!isCorrect);
     }
     static int InputNumberFromConsole(int MIN_NUM, int MAX_NUM)
@@ -241,26 +268,91 @@ class Proj4_2
         Console.WriteLine("\nWrite vector C.");
         InputVectorFromConsole(ref C_Vector);
     }
-    static void inputData(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N, ref HashSet<int> I)
+    static void inputData(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N)
     {
-        IOChoose path = chooseWayOfInput();
+        IOChoose path = chooseIOWay("input");
 
         switch (path)
         {
             case IOChoose.FILE: InputFormFile(ref A, ref B_Vector, ref C_Vector, ref N); break;
             case IOChoose.CONSOLE: InputFromConsole(ref A, ref B_Vector, ref C_Vector, ref N); break;
         }
-
-        for (int i = 1; !(i > N); i++)
-            I.Add(i);
     }
-    static void treatmentData(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N, ref HashSet<int> I)
+    static void treatmentData(int A, int[] B_Vector, int[] C_Vector, int N, ref HashSet<int> I)
     {
         
     }
-    static void outputData()
+    static string createStringWithVector(int[] Vector)
     {
+        string vectorStr = string.Empty;
+        for (int i = 0; i < Vector.Length; i++)
+            vectorStr += Vector[i] + " ";
 
+        return vectorStr;
+    }
+    static string createStringWithSet(HashSet<int> I)
+    {
+        if (I.Count == 0)
+            return "empty set...";
+
+        string setStr = string.Empty;
+        foreach (int i in I)
+            setStr += i + " ";
+
+        return setStr;
+    }
+    static string createResultString(int A, int[] B_Vector, int[] C_Vector, int N, HashSet<int> I)
+    {
+        string resultStr = string.Empty;
+        resultStr += $"A: {A};\nN: {N};\nvector B: ";
+        resultStr += createStringWithVector(B_Vector);
+        resultStr += "\nvector C: ";
+        resultStr += createStringWithVector(C_Vector);
+        resultStr += "\nresult set I: ";
+        resultStr += createStringWithSet(I);
+        return resultStr;
+    }
+    static bool isProcesOfFileOutputCorrect(string filePath, string resultStr)
+    {
+        try
+        {
+            using (StreamWriter writerOutput = new StreamWriter(filePath))
+                writerOutput.WriteLine(resultStr);
+
+            Console.WriteLine("Data successfully written to file.");
+            return true;
+        }
+        catch
+        {
+            Console.WriteLine("Error in writing. Try again.");
+            return false;
+        }
+    }
+    static void OutputFormFile(string resultStr)
+    {
+        bool isCorrect = true;
+        do
+        {
+            Console.Write("Write way to your file (*.txt): ");
+            string filePath = inputPathToTheFile("output");
+
+            isCorrect = isProcesOfFileOutputCorrect(filePath, resultStr);
+        } while (!isCorrect);
+    }
+    static void OutputFromConsole(string resultStr)
+    {
+        Console.WriteLine("\nresultStr");
+    }
+    static void outputData(int A, int[] B_Vector, int[] C_Vector, int N, HashSet<int> I)
+    {
+        string resultStr = createResultString(A, B_Vector, C_Vector, N, I);
+        IOChoose path = chooseIOWay("output");
+
+        switch (path)
+        {
+            case IOChoose.FILE: OutputFormFile(resultStr); break;
+            case IOChoose.CONSOLE: OutputFromConsole(resultStr); break;
+        }
     }
     public static void Main(string[] args)
     {
@@ -270,8 +362,8 @@ class Proj4_2
         int[] C_Vector = { };
         HashSet<int> I = new HashSet<int>();
         
-        inputData(ref A, ref B_Vector, ref C_Vector, ref N, ref I);
-        treatmentData(ref A, ref B_Vector, ref C_Vector, ref N, ref I);
-        outputData();
+        inputData(ref A, ref B_Vector, ref C_Vector, ref N);
+        treatmentData(A, B_Vector, C_Vector, N, ref I);
+        outputData(A, B_Vector, C_Vector, N, I);
     }
 }
