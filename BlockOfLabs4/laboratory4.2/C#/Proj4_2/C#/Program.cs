@@ -13,11 +13,19 @@ class Proj4_2
     const int MAX_N = 20;
     const int MIN_FILE_WAY_SIZE = 4;
 
+    static void taskInfoOutput()
+    {
+        Console.WriteLine($@"The program determines a subset(I) of expenses {{1..N}}. 
+Where N is the number of coordinate vectors B and C.
+
+");
+    }
+
     static void outputTextAboutIOSelection(string IOTextInfo)
     {
-        Console.WriteLine($"Select how you will {IOTextInfo} data:");
-        Console.WriteLine($"    {IOChoose.FILE}: {FILE_VALUE}    {IOChoose.CONSOLE}: {CONSOLE_VALUE}");
-        Console.Write("Your option: ");
+        Console.Write($@"Select how you will {IOTextInfo} data:
+      {IOChoose.FILE}: {FILE_VALUE}    {IOChoose.CONSOLE}: {CONSOLE_VALUE}
+Your option: ");
     }
     
     /// <summary>
@@ -271,6 +279,7 @@ class Proj4_2
         C_Vector = new int[N];
         Console.WriteLine("\nWrite vector C.");
         InputVectorFromConsole(ref C_Vector);
+        Console.WriteLine();
     }
 
     static void inputData(ref int A, ref int[] B_Vector, ref int[] C_Vector, ref int N)
@@ -442,7 +451,7 @@ class Proj4_2
 
     static void OutputFromConsole(string resultStr)
     {
-        Console.WriteLine($"\n{resultStr}");
+        Console.WriteLine($"{resultStr}");
     }
 
     static void outputData(int A, int[] B_Vector, int[] C_Vector, int N, HashSet<int> I)
@@ -464,7 +473,8 @@ class Proj4_2
         int[] B_Vector = { };
         int[] C_Vector = { };
         HashSet<int> I = new HashSet<int>();
-        
+
+        taskInfoOutput();
         inputData(ref A, ref B_Vector, ref C_Vector, ref N);
         treatmentData(A, B_Vector, C_Vector, N, ref I);
         outputData(A, B_Vector, C_Vector, N, I);
