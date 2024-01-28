@@ -54,10 +54,24 @@ object MainForm: TMainForm
     Height = 15
     Caption = #1042#1074#1077#1076#1080#1090#1077' N:'
   end
+  object BVectorLabel: TLabel
+    Left = 16
+    Top = 128
+    Width = 96
+    Height = 15
+    Caption = #1042#1074#1077#1076#1080#1090#1077' '#1074#1077#1082#1090#1086#1088' B:'
+  end
+  object CVectorLabel: TLabel
+    Left = 16
+    Top = 200
+    Width = 97
+    Height = 15
+    Caption = #1042#1074#1077#1076#1080#1090#1077' '#1074#1077#1082#1090#1086#1088' C:'
+  end
   object ALabeledEdit: TLabeledEdit
     Left = 79
     Top = 96
-    Width = 121
+    Width = 114
     Height = 23
     EditLabel.Width = 69
     EditLabel.Height = 15
@@ -74,7 +88,7 @@ object MainForm: TMainForm
   object NLabeledEdit: TLabeledEdit
     Left = 303
     Top = 96
-    Width = 121
+    Width = 74
     Height = 23
     EditLabel.Width = 70
     EditLabel.Height = 15
@@ -85,6 +99,16 @@ object MainForm: TMainForm
     Text = ''
     TextHint = 'N'
     OnContextPopup = NLabeledEditContextPopup
+    OnKeyDown = NLabeledEditKeyDown
+    OnKeyPress = NLabeledEditKeyPress
+  end
+  object ResultButton: TButton
+    Left = 16
+    Top = 280
+    Width = 75
+    Height = 25
+    Caption = #1056#1072#1089#1089#1095#1080#1090#1072#1090#1100
+    TabOrder = 2
   end
   object OpenDialog: TOpenDialog
     DefaultExt = '.txt'

@@ -9,12 +9,15 @@ Uses
 
 Function TryToAdd(Key: Char; Str: String; SelPos: Integer; Const MaxPoint, MinPoint: Integer): Boolean;
 Function TryToDelete(Key: Word; Str: String; SelPos: Integer; LabeledEdit: TLabeledEdit): Word;
-Function CheckMinusOrZero(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
+Function CheckMinus(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
+Function CheckZero(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
 
 Implementation
 
 Uses
     MainUnit;
+
+////////////////////////////////////////////////////////////////////////////////
 
 Function TryToAdd(Key: Char; Str: String; SelPos: Integer; Const MaxPoint, MinPoint: Integer): Boolean;
 Begin
@@ -52,11 +55,10 @@ Begin
     TryToDelete := 0;
 End;
 
-Function CheckMinusOrZero(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
+Function CheckMinus(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
 Const
     GOOD_VALUES: Set Of Char = ['0' .. '9'];
 Begin
-    //entering a minus
     If Not((Key In GOOD_VALUES) Or (Key = '-')) Then
         Key := NULL_POINT;
 
@@ -66,14 +68,20 @@ Begin
     If Not((Key In GOOD_VALUES) Or (Key = '-')) Then
         Key := NULL_POINT;
 
-    //leading zeros
+    CheckMinus := Key;
+End;
+
+Function CheckZero(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
+Const
+    GOOD_VALUES: Set Of Char = ['0' .. '9'];
+Begin
     If (Key = '0') And (LabeledEdit.SelStart = 0) Then
         Key := NULL_POINT;
 
     If (Key = '0') And (LabeledEdit.SelStart = 1) And (LabeledEdit.Text[1] = '-') Then
         Key := NULL_POINT;
 
-    CheckMinusOrZero := Key;
+    CheckZero := Key;
 End;
 
 End.
