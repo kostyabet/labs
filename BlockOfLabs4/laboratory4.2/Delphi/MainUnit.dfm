@@ -68,6 +68,8 @@ object MainForm: TMainForm
     Text = ''
     TextHint = 'A'
     OnContextPopup = ALabeledEditContextPopup
+    OnKeyDown = ALabeledEditKeyDown
+    OnKeyPress = ALabeledEditKeyPress
   end
   object NLabeledEdit: TLabeledEdit
     Left = 303
