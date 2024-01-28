@@ -4,7 +4,8 @@ uses
   Vcl.Forms,
   MainUnit in 'MainUnit.pas' {MainForm},
   AboutEditorUnit in 'AboutEditorUnit.pas' {AboutEditor},
-  InstractionUnit in 'InstractionUnit.pas' {Instraction};
+  InstractionUnit in 'InstractionUnit.pas' {Instraction},
+  BackendUnit in 'BackendUnit.pas';
 
 {$R *.res}
 

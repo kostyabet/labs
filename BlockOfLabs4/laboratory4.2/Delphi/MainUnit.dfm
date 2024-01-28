@@ -41,21 +41,21 @@ object MainForm: TMainForm
     WordWrap = True
   end
   object ALabel: TLabel
-    Left = 8
+    Left = 16
     Top = 99
     Width = 57
     Height = 15
     Caption = #1042#1074#1077#1076#1080#1090#1077' '#1040':'
   end
   object NLabel: TLabel
-    Left = 232
+    Left = 240
     Top = 99
     Width = 58
     Height = 15
     Caption = #1042#1074#1077#1076#1080#1090#1077' N:'
   end
   object ALabeledEdit: TLabeledEdit
-    Left = 71
+    Left = 79
     Top = 96
     Width = 121
     Height = 23
@@ -67,9 +67,10 @@ object MainForm: TMainForm
     TabOrder = 0
     Text = ''
     TextHint = 'A'
+    OnContextPopup = ALabeledEditContextPopup
   end
   object NLabeledEdit: TLabeledEdit
-    Left = 295
+    Left = 303
     Top = 96
     Width = 121
     Height = 23
@@ -81,23 +82,24 @@ object MainForm: TMainForm
     TabOrder = 1
     Text = ''
     TextHint = 'N'
+    OnContextPopup = NLabeledEditContextPopup
   end
   object OpenDialog: TOpenDialog
     DefaultExt = '.txt'
     Filter = '|*.txt'
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    Left = 168
-    Top = 240
+    Left = 320
+    Top = 280
   end
   object SaveDialog: TSaveDialog
     DefaultExt = '.txt'
     Filter = '|*.txt'
-    Left = 104
-    Top = 240
+    Left = 256
+    Top = 280
   end
   object MainMenu: TMainMenu
-    Left = 232
-    Top = 240
+    Left = 384
+    Top = 280
     object FileButton: TMenuItem
       Caption = #1060#1072#1081#1083
       object OpenButton: TMenuItem

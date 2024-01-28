@@ -36,6 +36,10 @@ Type
         Procedure InstractionButtonClick(Sender: TObject);
         Procedure FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
+    procedure ALabeledEditContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
+    procedure NLabeledEditContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
     Private
         { Private declarations }
     Public
@@ -57,7 +61,13 @@ Implementation
 
 Uses
     AboutEditorUnit,
-    InstractionUnit;
+    InstractionUnit, BackendUnit;
+
+procedure TMainForm.ALabeledEditContextPopup(Sender: TObject; MousePos: TPoint;
+  var Handled: Boolean);
+begin
+    Handled := False;
+end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
@@ -77,6 +87,12 @@ Procedure TMainForm.InstractionButtonClick(Sender: TObject);
 Begin
     Instraction.ShowModal;
 End;
+
+procedure TMainForm.NLabeledEditContextPopup(Sender: TObject; MousePos: TPoint;
+  var Handled: Boolean);
+begin
+    Handled := False;
+end;
 
 Procedure TMainForm.AboutEditorButtonClick(Sender: TObject);
 Begin
