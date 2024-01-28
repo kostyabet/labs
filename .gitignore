@@ -586,11 +586,6 @@ replay_pid*
 *.a
 *.lib
 
-# Executables
-*.exe
-*.out
-*.app
-
 ### Delphi ###
 # Uncomment these types if you want even more clean repository. But be careful.
 # It can make harm to an existing project source. Read explanations below.
@@ -615,7 +610,6 @@ replay_pid*
 #*.obj
 
 # Delphi compiler-generated binaries (safe to delete)
-*.exe
 *.dll
 *.bpl
 *.bpi
