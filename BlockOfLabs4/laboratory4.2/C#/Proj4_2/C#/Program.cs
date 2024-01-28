@@ -7,8 +7,8 @@ class Proj4_2
 {
     const int FILE_VALUE = (int)IOChoose.FILE;
     const int CONSOLE_VALUE = (int)IOChoose.CONSOLE;
-    const int MIN_INT_NUM = -2_000_000;
-    const int MAX_INT_NUM = +2_000_000;
+    const int MIN_INT_NUM = -200_000_000;
+    const int MAX_INT_NUM = +200_000_000;
     const int MIN_N = 1;
     const int MAX_N = 20;
     const int MIN_FILE_WAY_SIZE = 4;
