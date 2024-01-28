@@ -13,7 +13,7 @@ Uses
     Vcl.Forms,
     Vcl.Dialogs,
     Vcl.Menus,
-    Vcl.StdCtrls;
+    Vcl.StdCtrls, Vcl.Mask, Vcl.ExtCtrls;
 
 Type
     TMainForm = Class(TForm)
@@ -21,15 +21,21 @@ Type
         SaveDialog: TSaveDialog;
         MainMenu: TMainMenu;
         TaskLabel: TLabel;
-        N1: TMenuItem;
-        N2: TMenuItem;
-        N3: TMenuItem;
-        N4: TMenuItem;
-        N5: TMenuItem;
-        N6: TMenuItem;
-        N7: TMenuItem;
-        Procedure N7Click(Sender: TObject);
-        Procedure N6Click(Sender: TObject);
+    FileButton: TMenuItem;
+    OpenButton: TMenuItem;
+    SaveButton: TMenuItem;
+    ExitButton: TMenuItem;
+    InstractionButton: TMenuItem;
+    AboutEditorButton: TMenuItem;
+    DemarcationLine: TMenuItem;
+    ALabeledEdit: TLabeledEdit;
+    NLabeledEdit: TLabeledEdit;
+    ALabel: TLabel;
+    NLabel: TLabel;
+        Procedure AboutEditorButtonClick(Sender: TObject);
+        Procedure InstractionButtonClick(Sender: TObject);
+        Procedure FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+    procedure FormCreate(Sender: TObject);
     Private
         { Private declarations }
     Public
@@ -53,12 +59,26 @@ Uses
     AboutEditorUnit,
     InstractionUnit;
 
-Procedure TMainForm.N6Click(Sender: TObject);
+procedure TMainForm.FormCreate(Sender: TObject);
+begin
+    ALabeledEdit.EditLabel.Caption := '';
+    ALabeledEdit.Hint := '[' + IntToStr(MIN_INT_NUM) + '; ' + IntToStr(MAX_INT_NUM) + ']';
+    NLabeledEdit.EditLabel.Caption := '';
+    NLabeledEdit.Hint := '[' + IntToStr(MIN_N) + '; ' + IntToStr(MAX_N) + ']';
+end;
+
+Procedure TMainForm.FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Begin
+    If Key = VK_F1 Then
+        Instraction.ShowModal;
+End;
+
+Procedure TMainForm.InstractionButtonClick(Sender: TObject);
 Begin
     Instraction.ShowModal;
 End;
 
-Procedure TMainForm.N7Click(Sender: TObject);
+Procedure TMainForm.AboutEditorButtonClick(Sender: TObject);
 Begin
     AboutEditor.ShowModal;
 End;

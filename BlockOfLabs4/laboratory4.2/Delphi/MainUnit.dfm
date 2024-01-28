@@ -13,8 +13,11 @@ object MainForm: TMainForm
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  KeyPreview = True
   Menu = MainMenu
   Position = poScreenCenter
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   TextHeight = 15
   object TaskLabel: TLabel
     Left = 8
@@ -37,46 +40,88 @@ object MainForm: TMainForm
     ParentFont = False
     WordWrap = True
   end
+  object ALabel: TLabel
+    Left = 8
+    Top = 99
+    Width = 57
+    Height = 15
+    Caption = #1042#1074#1077#1076#1080#1090#1077' '#1040':'
+  end
+  object NLabel: TLabel
+    Left = 232
+    Top = 99
+    Width = 58
+    Height = 15
+    Caption = #1042#1074#1077#1076#1080#1090#1077' N:'
+  end
+  object ALabeledEdit: TLabeledEdit
+    Left = 71
+    Top = 96
+    Width = 121
+    Height = 23
+    EditLabel.Width = 69
+    EditLabel.Height = 15
+    EditLabel.Caption = 'ALabeledEdit'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 0
+    Text = ''
+    TextHint = 'A'
+  end
+  object NLabeledEdit: TLabeledEdit
+    Left = 295
+    Top = 96
+    Width = 121
+    Height = 23
+    EditLabel.Width = 70
+    EditLabel.Height = 15
+    EditLabel.Caption = 'NLabeledEdit'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 1
+    Text = ''
+    TextHint = 'N'
+  end
   object OpenDialog: TOpenDialog
     DefaultExt = '.txt'
     Filter = '|*.txt'
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    Left = 320
-    Top = 96
+    Left = 168
+    Top = 240
   end
   object SaveDialog: TSaveDialog
     DefaultExt = '.txt'
     Filter = '|*.txt'
-    Left = 256
-    Top = 96
+    Left = 104
+    Top = 240
   end
   object MainMenu: TMainMenu
-    Left = 384
-    Top = 96
-    object N1: TMenuItem
+    Left = 232
+    Top = 240
+    object FileButton: TMenuItem
       Caption = #1060#1072#1081#1083
-      object N2: TMenuItem
+      object OpenButton: TMenuItem
         Caption = #1054#1090#1082#1088#1099#1090#1100
         ShortCut = 16463
       end
-      object N3: TMenuItem
+      object SaveButton: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
         ShortCut = 16467
       end
-      object N4: TMenuItem
+      object DemarcationLine: TMenuItem
         Caption = '-'
       end
-      object N5: TMenuItem
+      object ExitButton: TMenuItem
         Caption = #1042#1099#1081#1090#1080
       end
     end
-    object N6: TMenuItem
+    object InstractionButton: TMenuItem
       Caption = #1048#1085#1089#1090#1088#1091#1082#1094#1080#1103
-      OnClick = N6Click
+      OnClick = InstractionButtonClick
     end
-    object N7: TMenuItem
+    object AboutEditorButton: TMenuItem
       Caption = #1054' '#1088#1072#1079#1088#1072#1073#1086#1090#1095#1080#1082#1077
-      OnClick = N7Click
+      OnClick = AboutEditorButtonClick
     end
   end
 end
