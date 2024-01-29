@@ -84,7 +84,10 @@ Function CheckZero(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit)
 Const
     GOOD_VALUES: Set Of Char = ['0' .. '9'];
 Begin
-    If (Key = '0') And (LabeledEdit.SelStart = 0) Then
+    If (Length(LabeledEdit.Text) <> 0) And (LabeledEdit.Text[1] = '0') And (Key = '0') Then
+        Key := NULL_POINT;
+
+    If (Key = '0') And (LabeledEdit.SelStart = 0) And (Length(LabeledEdit.Text) <> 0) Then
         Key := NULL_POINT;
 
     If (Key = '0') And (LabeledEdit.SelStart = 1) And (LabeledEdit.Text[1] = '-') Then
@@ -174,7 +177,8 @@ Var
 Begin
     MinCount := 0;
 
-    If (VectorStringGrid.Cells[Col, Row] = '') And (Key = '0') Then
+    If (VectorStringGrid.Cells[Col, Row] <> '') And (VectorStringGrid.Cells[Col, Row] <> '-') And
+        (StrToInt(VectorStringGrid.Cells[Col, Row]) = 0) And (Key = '0') Then
         Key := NULL_POINT;
 
     If (Key = '-') And (VectorStringGrid.Cells[Col, Row] <> '') Then
