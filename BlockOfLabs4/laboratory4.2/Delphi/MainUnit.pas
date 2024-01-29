@@ -57,6 +57,8 @@ Type
         Procedure BVectorStringGridKeyPress(Sender: TObject; Var Key: Char);
         Procedure CVectorStringGridKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
         Procedure CVectorStringGridKeyPress(Sender: TObject; Var Key: Char);
+        Procedure OpenButtonClick(Sender: TObject);
+        Procedure SaveButtonClick(Sender: TObject);
     Private
         { Private declarations }
     Public
@@ -76,6 +78,7 @@ Const
 
 Var
     MainForm: TMainForm;
+    IfDataSavedInFile: Boolean = False;
 
 Implementation
 
@@ -196,6 +199,9 @@ Begin
     NLabeledEdit.EditLabel.Caption := '';
     NLabeledEdit.Hint := '[' + IntToStr(MIN_N) + '; ' + IntToStr(MAX_N) + ']';
 
+    BVectorStringGrid.Hint := '[' + IntToStr(MIN_INT_NUM) + '; ' + IntToStr(MAX_INT_NUM) + ']';
+    CVectorStringGrid.Hint := '[' + IntToStr(MIN_INT_NUM) + '; ' + IntToStr(MAX_INT_NUM) + ']';
+
     ResultLabel.Caption := '';
 End;
 
@@ -253,6 +259,40 @@ Begin
     Else
         If Not(Length(NLabeledEdit.Text) < MAX_A_LENGTH + MinCount) Then
             Key := NULL_POINT;
+End;
+
+Procedure TMainForm.OpenButtonClick(Sender: TObject);
+Var
+    IsCorrect: Boolean;
+Begin
+    Repeat
+        If OpenDialog.Execute() Then
+        Begin
+            IsCorrect := IsReadable(OpenDialog.FileName);
+            ReadFromFile(IsCorrect, OpenDialog.FileName);
+            If Not IsCorrect Then
+                MessageBox(0, 'Невозможен ввод из файл!', 'Ошибка', MB_ICONERROR);
+        End
+        Else
+            IsCorrect := True;
+    Until IsCorrect;
+End;
+
+Procedure TMainForm.SaveButtonClick(Sender: TObject);
+Var
+    IsCorrect: Boolean;
+Begin
+    Repeat
+        If SaveDialog.Execute Then
+        Begin
+            IsCorrect := IsWriteable(SaveDialog.FileName);
+            InputInFile(IsCorrect, SaveDialog.FileName);
+            If Not IsCorrect Then
+                MessageBox(0, 'Невозможна запись в файл!', 'Ошибка', MB_ICONERROR);
+        End
+        Else
+            IsCorrect := True;
+    Until IsCorrect;
 End;
 
 Procedure TMainForm.AboutEditorButtonClick(Sender: TObject);

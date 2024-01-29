@@ -122,11 +122,24 @@ object MainForm: TMainForm
     DefaultColWidth = 76
     DefaultRowHeight = 25
     RowCount = 2
+    ParentShowHint = False
     ScrollBars = ssHorizontal
+    ShowHint = True
     TabOrder = 2
     Visible = False
     OnKeyDown = BVectorStringGridKeyDown
     OnKeyPress = BVectorStringGridKeyPress
+    ColWidths = (
+      76
+      76
+      76
+      76
+      76
+      76
+      76
+      76
+      76
+      76)
   end
   object CVectorStringGrid: TStringGrid
     Left = 24
@@ -137,7 +150,9 @@ object MainForm: TMainForm
     DefaultColWidth = 76
     DefaultRowHeight = 25
     RowCount = 2
+    ParentShowHint = False
     ScrollBars = ssHorizontal
+    ShowHint = True
     TabOrder = 3
     Visible = False
     OnKeyDown = CVectorStringGridKeyDown
@@ -174,11 +189,13 @@ object MainForm: TMainForm
       object OpenButton: TMenuItem
         Caption = #1054#1090#1082#1088#1099#1090#1100
         ShortCut = 16463
+        OnClick = OpenButtonClick
       end
       object SaveButton: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
         Enabled = False
         ShortCut = 16467
+        OnClick = SaveButtonClick
       end
       object DemarcationLine: TMenuItem
         Caption = '-'
