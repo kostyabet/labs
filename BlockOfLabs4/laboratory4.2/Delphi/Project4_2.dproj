@@ -111,6 +111,8 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="BackendUnit.pas"/>
+        <DCCReference Include="FrontendUnit.pas"/>
+        <None Include="Project4_2.todo"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

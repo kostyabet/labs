@@ -5,7 +5,8 @@ uses
   MainUnit in 'MainUnit.pas' {MainForm},
   AboutEditorUnit in 'AboutEditorUnit.pas' {AboutEditor},
   InstractionUnit in 'InstractionUnit.pas' {Instraction},
-  BackendUnit in 'BackendUnit.pas';
+  BackendUnit in 'BackendUnit.pas',
+  FrontendUnit in 'FrontendUnit.pas';
 
 {$R *.res}
 

@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1041#1077#1090#1077#1085#1103' '#1050'.'#1057'. 351005 '#1083#1072#1073'. 4.2'
-  ClientHeight = 336
+  ClientHeight = 397
   ClientWidth = 437
   Color = clBtnFace
   Constraints.MaxWidth = 496
@@ -41,36 +41,45 @@ object MainForm: TMainForm
     WordWrap = True
   end
   object ALabel: TLabel
-    Left = 16
-    Top = 99
+    Left = 24
+    Top = 102
     Width = 57
     Height = 15
     Caption = #1042#1074#1077#1076#1080#1090#1077' '#1040':'
   end
   object NLabel: TLabel
     Left = 240
-    Top = 99
+    Top = 102
     Width = 58
     Height = 15
     Caption = #1042#1074#1077#1076#1080#1090#1077' N:'
   end
   object BVectorLabel: TLabel
-    Left = 16
+    Left = 24
     Top = 128
     Width = 96
     Height = 15
     Caption = #1042#1074#1077#1076#1080#1090#1077' '#1074#1077#1082#1090#1086#1088' B:'
+    Visible = False
   end
   object CVectorLabel: TLabel
-    Left = 16
-    Top = 200
+    Left = 24
+    Top = 226
     Width = 97
     Height = 15
     Caption = #1042#1074#1077#1076#1080#1090#1077' '#1074#1077#1082#1090#1086#1088' C:'
+    Visible = False
+  end
+  object ResultLabel: TLabel
+    Left = 24
+    Top = 363
+    Width = 60
+    Height = 15
+    Caption = 'ResultLabel'
   end
   object ALabeledEdit: TLabeledEdit
-    Left = 79
-    Top = 96
+    Left = 87
+    Top = 99
     Width = 114
     Height = 23
     EditLabel.Width = 69
@@ -81,13 +90,14 @@ object MainForm: TMainForm
     TabOrder = 0
     Text = ''
     TextHint = 'A'
+    OnChange = ALabeledEditChange
     OnContextPopup = ALabeledEditContextPopup
     OnKeyDown = ALabeledEditKeyDown
     OnKeyPress = ALabeledEditKeyPress
   end
   object NLabeledEdit: TLabeledEdit
     Left = 303
-    Top = 96
+    Top = 99
     Width = 74
     Height = 23
     EditLabel.Width = 70
@@ -98,34 +108,67 @@ object MainForm: TMainForm
     TabOrder = 1
     Text = ''
     TextHint = 'N'
+    OnChange = NLabeledEditChange
     OnContextPopup = NLabeledEditContextPopup
     OnKeyDown = NLabeledEditKeyDown
     OnKeyPress = NLabeledEditKeyPress
   end
+  object BVectorStringGrid: TStringGrid
+    Left = 24
+    Top = 149
+    Width = 392
+    Height = 71
+    ColCount = 10
+    DefaultColWidth = 76
+    DefaultRowHeight = 25
+    RowCount = 2
+    ScrollBars = ssHorizontal
+    TabOrder = 2
+    Visible = False
+    OnKeyDown = BVectorStringGridKeyDown
+    OnKeyPress = BVectorStringGridKeyPress
+  end
+  object CVectorStringGrid: TStringGrid
+    Left = 24
+    Top = 247
+    Width = 392
+    Height = 71
+    ColCount = 10
+    DefaultColWidth = 76
+    DefaultRowHeight = 25
+    RowCount = 2
+    ScrollBars = ssHorizontal
+    TabOrder = 3
+    Visible = False
+    OnKeyDown = CVectorStringGridKeyDown
+    OnKeyPress = CVectorStringGridKeyPress
+  end
   object ResultButton: TButton
-    Left = 16
-    Top = 280
-    Width = 75
+    Left = 24
+    Top = 324
+    Width = 129
     Height = 25
     Caption = #1056#1072#1089#1089#1095#1080#1090#1072#1090#1100
-    TabOrder = 2
+    Enabled = False
+    TabOrder = 4
+    Visible = False
   end
   object OpenDialog: TOpenDialog
     DefaultExt = '.txt'
     Filter = '|*.txt'
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    Left = 320
-    Top = 280
+    Left = 304
+    Top = 336
   end
   object SaveDialog: TSaveDialog
     DefaultExt = '.txt'
     Filter = '|*.txt'
-    Left = 256
-    Top = 280
+    Left = 240
+    Top = 336
   end
   object MainMenu: TMainMenu
-    Left = 384
-    Top = 280
+    Left = 368
+    Top = 336
     object FileButton: TMenuItem
       Caption = #1060#1072#1081#1083
       object OpenButton: TMenuItem
@@ -134,6 +177,7 @@ object MainForm: TMainForm
       end
       object SaveButton: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+        Enabled = False
         ShortCut = 16467
       end
       object DemarcationLine: TMenuItem

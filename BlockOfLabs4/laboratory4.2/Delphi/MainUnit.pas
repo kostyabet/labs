@@ -1,4 +1,4 @@
-Unit MainUnit;
+﻿Unit MainUnit;
 
 Interface
 
@@ -15,7 +15,8 @@ Uses
     Vcl.Menus,
     Vcl.StdCtrls,
     Vcl.Mask,
-    Vcl.ExtCtrls;
+    Vcl.ExtCtrls,
+    Vcl.Grids;
 
 Type
     TMainForm = Class(TForm)
@@ -34,9 +35,12 @@ Type
         NLabeledEdit: TLabeledEdit;
         ALabel: TLabel;
         NLabel: TLabel;
-    BVectorLabel: TLabel;
-    CVectorLabel: TLabel;
-    ResultButton: TButton;
+        BVectorLabel: TLabel;
+        CVectorLabel: TLabel;
+        BVectorStringGrid: TStringGrid;
+        CVectorStringGrid: TStringGrid;
+        ResultButton: TButton;
+        ResultLabel: TLabel;
         Procedure AboutEditorButtonClick(Sender: TObject);
         Procedure InstractionButtonClick(Sender: TObject);
         Procedure FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
@@ -47,6 +51,12 @@ Type
         Procedure ALabeledEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
         Procedure NLabeledEditKeyPress(Sender: TObject; Var Key: Char);
         Procedure NLabeledEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+        Procedure ALabeledEditChange(Sender: TObject);
+        Procedure NLabeledEditChange(Sender: TObject);
+        Procedure BVectorStringGridKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+        Procedure BVectorStringGridKeyPress(Sender: TObject; Var Key: Char);
+        Procedure CVectorStringGridKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+        Procedure CVectorStringGridKeyPress(Sender: TObject; Var Key: Char);
     Private
         { Private declarations }
     Public
@@ -58,6 +68,11 @@ Const
     MAX_INT_NUM = +200_000_000;
     MIN_N = 1;
     MAX_N = 20;
+    GOOD_VALUES: Set Of Char = ['0' .. '9'];
+    MAX_N_LENGTH: Integer = 2;
+    MAX_A_LENGTH: Integer = 9;
+    MAX_COORD_LENGTH: Integer = 9;
+    NULL_POINT: Char = #0;
 
 Var
     MainForm: TMainForm;
@@ -69,7 +84,13 @@ Implementation
 Uses
     AboutEditorUnit,
     InstractionUnit,
-    BackendUnit;
+    BackendUnit,
+    FrontendUnit;
+
+Procedure TMainForm.ALabeledEditChange(Sender: TObject);
+Begin
+    LabelEditChange(ALabeledEdit, NLabeledEdit, BVectorStringGrid, CVectorStringGrid);
+End;
 
 Procedure TMainForm.ALabeledEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
 Begin
@@ -91,10 +112,6 @@ Begin
 End;
 
 Procedure TMainForm.ALabeledEditKeyPress(Sender: TObject; Var Key: Char);
-Const
-    GOOD_VALUES: Set Of Char = ['0' .. '9'];
-    MAX_A_LENGTH: Integer = 9;
-    NULL_POINT: Char = #0;
 Var
     MinCount: Integer;
 Begin
@@ -116,12 +133,70 @@ Begin
             Key := NULL_POINT;
 End;
 
+Procedure TMainForm.BVectorStringGridKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Begin
+    StringGridVkBack(Key, BVectorStringGrid);
+
+    If (Key = VK_DOWN) Or (Key = VK_RETURN) Then
+        SelectNext(ActiveControl, True, True);
+
+    If Key = VK_UP Then
+        SelectNext(ActiveControl, False, True);
+
+    ResultsVisible(VectorStringGridChange(StrToInt(NLabeledEdit.Text)));
+End;
+
+Procedure TMainForm.BVectorStringGridKeyPress(Sender: TObject; Var Key: Char);
+Var
+    Col, Row: Integer;
+Begin
+    Col := BVectorStringGrid.Col;
+    Row := BVectorStringGrid.Row;
+    Key := StringGridKeyPress(BVectorStringGrid, Key, Col, Row);
+
+    If (Key <> NULL_POINT) Then
+    Begin
+        BVectorStringGrid.Cells[Col, Row] := BVectorStringGrid.Cells[Col, Row] + Key;
+        ResultsVisible(VectorStringGridChange(StrToInt(NLabeledEdit.Text)));
+    End;
+End;
+
+Procedure TMainForm.CVectorStringGridKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Begin
+    StringGridVkBack(Key, CVectorStringGrid);
+
+    If (Key = VK_DOWN) Or (Key = VK_RETURN) Then
+        SelectNext(ActiveControl, True, True);
+
+    If Key = VK_UP Then
+        SelectNext(ActiveControl, False, True);
+
+    ResultsVisible(VectorStringGridChange(StrToInt(NLabeledEdit.Text)));
+End;
+
+Procedure TMainForm.CVectorStringGridKeyPress(Sender: TObject; Var Key: Char);
+Var
+    Col, Row: Integer;
+Begin
+    Col := CVectorStringGrid.Col;
+    Row := CVectorStringGrid.Row;
+    Key := StringGridKeyPress(CVectorStringGrid, Key, Col, Row);
+
+    If (Key <> NULL_POINT) Then
+    Begin
+        CVectorStringGrid.Cells[Col, Row] := CVectorStringGrid.Cells[Col, Row] + Key;
+        ResultsVisible(VectorStringGridChange(StrToInt(NLabeledEdit.Text)));
+    End;
+End;
+
 Procedure TMainForm.FormCreate(Sender: TObject);
 Begin
     ALabeledEdit.EditLabel.Caption := '';
     ALabeledEdit.Hint := '[' + IntToStr(MIN_INT_NUM) + '; ' + IntToStr(MAX_INT_NUM) + ']';
     NLabeledEdit.EditLabel.Caption := '';
     NLabeledEdit.Hint := '[' + IntToStr(MIN_N) + '; ' + IntToStr(MAX_N) + ']';
+
+    ResultLabel.Caption := '';
 End;
 
 Procedure TMainForm.FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
@@ -133,6 +208,11 @@ End;
 Procedure TMainForm.InstractionButtonClick(Sender: TObject);
 Begin
     Instraction.ShowModal;
+End;
+
+Procedure TMainForm.NLabeledEditChange(Sender: TObject);
+Begin
+    LabelEditChange(ALabeledEdit, NLabeledEdit, BVectorStringGrid, CVectorStringGrid);
 End;
 
 Procedure TMainForm.NLabeledEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
@@ -155,10 +235,6 @@ Begin
 End;
 
 Procedure TMainForm.NLabeledEditKeyPress(Sender: TObject; Var Key: Char);
-Const
-    GOOD_VALUES: Set Of Char = ['0' .. '9'];
-    MAX_A_LENGTH: Integer = 2;
-    NULL_POINT: Char = #0;
 Var
     MinCount: Integer;
 Begin
