@@ -312,7 +312,9 @@ End;
 
 Procedure TMainForm.ResultButtonClick(Sender: TObject);
 Begin
-    //ResultLabel.Caption := CreateResultMessage();
+    ResultLabel.Caption := 'asfdfasd';
+    ResultLabel.Visible := True;
+    SaveButton.Enabled := True;
 End;
 
 Procedure TMainForm.SaveButtonClick(Sender: TObject);

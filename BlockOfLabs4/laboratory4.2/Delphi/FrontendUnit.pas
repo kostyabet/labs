@@ -157,8 +157,11 @@ Begin
     MainForm.CVectorStringGrid.Visible := Appearance;
     MainForm.CVectorLabel.Visible := Appearance;
     MainForm.ResultButton.Visible := Appearance;
-    MainForm.ResultLabel.Visible := Appearance;
-    MainForm.SaveButton.Visible := Appearance;
+
+    MainForm.ResultButton.Enabled := False;
+    MainForm.ResultLabel.Visible := False;
+    MainForm.SaveButton.Enabled := False;
+    IfDataSavedInFile := False;
 End;
 
 Procedure ResultsVisible(Appearance: Boolean);
@@ -169,6 +172,7 @@ Begin
     Begin
         MainForm.ResultLabel.Visible := Appearance;
         MainForm.SaveButton.Enabled := Appearance;
+        IfDataSavedInFile := False;
     End;
 End;
 
