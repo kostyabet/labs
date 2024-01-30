@@ -116,7 +116,7 @@ object MainForm: TMainForm
   object BVectorStringGrid: TStringGrid
     Left = 24
     Top = 149
-    Width = 392
+    Width = 388
     Height = 71
     ColCount = 10
     DefaultColWidth = 76
@@ -144,7 +144,7 @@ object MainForm: TMainForm
   object CVectorStringGrid: TStringGrid
     Left = 24
     Top = 247
-    Width = 392
+    Width = 388
     Height = 71
     ColCount = 10
     DefaultColWidth = 76
@@ -167,6 +167,7 @@ object MainForm: TMainForm
     Enabled = False
     TabOrder = 4
     Visible = False
+    OnClick = ResultButtonClick
   end
   object OpenDialog: TOpenDialog
     DefaultExt = '.txt'

@@ -16,7 +16,8 @@ Uses
     Vcl.StdCtrls,
     Vcl.Mask,
     Vcl.ExtCtrls,
-    Vcl.Grids;
+    Vcl.Grids,
+    Clipbrd;
 
 Type
     TMainForm = Class(TForm)
@@ -59,6 +60,7 @@ Type
         Procedure CVectorStringGridKeyPress(Sender: TObject; Var Key: Char);
         Procedure OpenButtonClick(Sender: TObject);
         Procedure SaveButtonClick(Sender: TObject);
+    procedure ResultButtonClick(Sender: TObject);
     Private
         { Private declarations }
     Public
@@ -120,10 +122,17 @@ Var
 Begin
     MinCount := 0;
 
+    If (ALabeledEdit.Text = '0') And (ALabeledEdit.SelText = '') And (ALabeledEdit.SelStart = 1) Then
+        Key := NULL_POINT;
+
+    If (ALabeledEdit.SelText <> '') And Not(CheckSelText(ALabeledEdit, Key, MAX_INT_NUM, MIN_INT_NUM)) Then
+        Key := NULL_POINT;
+
     If ((Length(ALabeledEdit.Text) <> 0) And (ALabeledEdit.Text[1] = '-')) Or (Key = '-') Then
         MinCount := 1;
 
-    If (Length(ALabeledEdit.Text) > 1) And Not(TryToAdd(Key, ALabeledEdit.Text, ALabeledEdit.SelStart, MAX_INT_NUM, MIN_INT_NUM)) Then
+    If (Length(ALabeledEdit.Text) > 1) And (ALabeledEdit.SelText = '') And
+        Not(TryToAdd(Key, ALabeledEdit.Text, ALabeledEdit.SelStart, MAX_INT_NUM, MIN_INT_NUM)) Then
         Key := NULL_POINT;
 
     Key := CheckMinus(Key, NULL_POINT, ALabeledEdit);
@@ -241,15 +250,11 @@ Begin
 End;
 
 Procedure TMainForm.NLabeledEditKeyPress(Sender: TObject; Var Key: Char);
-Var
-    MinCount: Integer;
 Begin
-    MinCount := 0;
+    If (NLabeledEdit.SelText <> '') And Not(CheckSelText(NLabeledEdit, Key, MAX_N, MIN_N)) Then
+        Key := NULL_POINT;
 
-    If ((Length(NLabeledEdit.Text) <> 0) And (NLabeledEdit.Text[1] = '-')) Or (Key = '-') Then
-        MinCount := 1;
-
-    If Not(TryToAdd(Key, NLabeledEdit.Text, NLabeledEdit.SelStart, MAX_N, MIN_N)) Then
+    If (ALabeledEdit.SelText = '') And Not(TryToAdd(Key, NLabeledEdit.Text, NLabeledEdit.SelStart, MAX_N, MIN_N)) Then
         Key := NULL_POINT;
 
     Key := CheckZero(Key, NULL_POINT, NLabeledEdit);
@@ -257,7 +262,7 @@ Begin
     If (NLabeledEdit.SelText <> '') And (Key <> NULL_POINT) Then
         NLabeledEdit.ClearSelection
     Else
-        If Not(Length(NLabeledEdit.Text) < MAX_A_LENGTH + MinCount) Then
+        If Not(Length(NLabeledEdit.Text) < MAX_A_LENGTH) Then
             Key := NULL_POINT;
 End;
 
@@ -277,6 +282,11 @@ Begin
             IsCorrect := True;
     Until IsCorrect;
 End;
+
+procedure TMainForm.ResultButtonClick(Sender: TObject);
+begin
+    //ResultLabel.Caption := CreateResultMessage();
+end;
 
 Procedure TMainForm.SaveButtonClick(Sender: TObject);
 Var

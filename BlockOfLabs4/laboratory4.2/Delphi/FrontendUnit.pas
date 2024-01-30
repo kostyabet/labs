@@ -4,8 +4,8 @@ Interface
 
 Uses
     Winapi.Windows,
+    Winapi.Messages,
     System.SysUtils,
-    Vcl.StdCtrls,
     Vcl.ExtCtrls,
     Vcl.Grids;
 
@@ -13,6 +13,7 @@ Function TryToAdd(Key: Char; Str: String; SelPos: Integer; Const MaxPoint, MinPo
 Function TryToDelete(Key: Word; Str: String; SelPos: Integer; LabeledEdit: TLabeledEdit): Word;
 Function CheckMinus(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
 Function CheckZero(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
+Function CheckSelText(LabeledEdit: TLabeledEdit; Key: Char; Const MAX_NUM, MIN_NUM: Integer): Boolean;
 Procedure VectorGridPrepearing(ArrayGrid: TStringGrid; NumOfCols: Integer);
 Procedure ResettingArray(ArrayGrid: TStringGrid; NumOfCols: Integer);
 Procedure VectorsVisible(Appearance: Boolean);
@@ -38,17 +39,26 @@ Begin
         Else
             TryToAdd := True;
     Except
-        TryToAdd := False
+        TryToAdd := False;
     End;
 End;
 
 Function TryToDelete(Key: Word; Str: String; SelPos: Integer; LabeledEdit: TLabeledEdit): Word;
 Begin
-    If Length(Str) > 0 Then
-        Delete(Str, SelPos + Ord(Key = VK_DELETE), 1);
+    If (LabeledEdit.SelText = '') And (Length(Str) > 0) Then
+        Delete(Str, SelPos + Ord(Key = VK_DELETE), 1)
+    Else
+        If (Length(Str) > 0) Then
+        Begin
+            Delete(Str, SelPos + 1, Length(LabeledEdit.SelText));
+            Inc(SelPos);
+        End;
 
     Try
-        If Not((Str[1] = '0') Or ((Str[1] = '-') And (Str[2] = '0'))) Then
+        If (Str <> '0') And (LabeledEdit.Text = MainForm.NLabeledEdit.Text) Then
+            LabeledEdit.Text := Str;
+
+        If Not((Str[1] = '0') And (Length(Str) > 1)) And (Str <> '-0') And (LabeledEdit.Text = MainForm.ALabeledEdit.Text) Then
             LabeledEdit.Text := Str;
     Except
         LabeledEdit.Text := LabeledEdit.Text;
@@ -96,6 +106,29 @@ Begin
     CheckZero := Key;
 End;
 
+Function CheckSelText(LabeledEdit: TLabeledEdit; Key: Char; Const MAX_NUM, MIN_NUM: Integer): Boolean;
+Var
+    PastStr: String;
+    PastSelStart: Integer;
+    IsCorrect: Boolean;
+Begin
+    PastStr := LabeledEdit.Text;
+    PastSelStart := LabeledEdit.SelStart;
+    LabeledEdit.ClearSelection;
+
+    IsCorrect := TryToAdd(Key, LabeledEdit.Text, LabeledEdit.SelStart, MAX_NUM, MIN_NUM);
+    Key := CheckMinus(Key, NULL_POINT, LabeledEdit);
+    Key := CheckZero(Key, NULL_POINT, LabeledEdit);
+
+    If Not(IsCorrect) Or (Key = NULL_POINT) Then
+    Begin
+        LabeledEdit.Text := PastStr;
+        LabeledEdit.SelStart := PastSelStart;
+    End;
+
+    CheckSelText := IsCorrect;
+End;
+
 Procedure VectorGridPrepearing(ArrayGrid: TStringGrid; NumOfCols: Integer);
 Var
     I: Integer;
@@ -131,8 +164,12 @@ End;
 Procedure ResultsVisible(Appearance: Boolean);
 Begin
     MainForm.ResultButton.Enabled := Appearance;
-    MainForm.ResultLabel.Visible := Appearance;
-    MainForm.SaveButton.Visible := Appearance;
+
+    If Not Appearance Then
+    Begin
+        MainForm.ResultLabel.Visible := Appearance;
+        MainForm.SaveButton.Enabled := Appearance;
+    End;
 End;
 
 Function CheckСhanges(IntLabEdit: TLabeledEdit): Boolean;

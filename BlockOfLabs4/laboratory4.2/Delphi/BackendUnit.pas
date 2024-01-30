@@ -14,36 +14,15 @@ Procedure InputInFile(Var IsCorrect: Boolean; FilePath: String);
 Implementation
 
 Uses
-    MainUnit;
+    MainUnit,
+    FrontendUnit;
 
 Function TryRead(Var TestFile: TextFile): Boolean;
 Var
     ReadStatus: Boolean;
     BufA, BufN, BufCoord, I: Integer;
 Begin
-    Try
-        Read(TestFile, BufA);
-        If (BufA > MAX_INT_NUM) Or (BufA < MIN_INT_NUM) Then
-            Raise Exception.Create('A out of range');
-
-        Read(TestFile, BufN);
-        If (BufN > MAX_N) Or (BufN < MIN_N) Then
-            Raise Exception.Create('N out of range');
-
-        For I := 1 To 2 * BufN Do
-        Begin
-            Read(TestFile, BufCoord);
-
-            If (BufCoord > MAX_INT_NUM) Or (BufCoord < MIN_INT_NUM) Then
-                Raise Exception.Create('Coordinates out of range');
-        End;
-
-        ReadStatus := True;
-    Except
-        ReadStatus := False;
-    End;
-
-    ReadStatus := ReadStatus And SeekEOF(TestFile);
+    BufA := ;
 
     TryRead := ReadStatus;
 End;
@@ -65,17 +44,46 @@ Begin
     End;
 End;
 
+Procedure ReadingProcess(Var IsCorrect: Boolean; Var MyFile: TextFile);
+Var
+    I, A, N, Coord: Integer;
+Begin
+    Try
+        Read(MyFile, A);
+        MainForm.ALabeledEdit.Text := IntToStr(A);
+        Read(MyFile, N);
+        MainForm.NLabeledEdit.Text := IntToStr(N);
+        VectorsVisible(True);
+
+        For I := 1 To N Do
+        Begin
+            Read(MyFile, Coord);
+            MainForm.BVectorStringGrid.Cells[I, 1] := IntToStr(Coord);
+        End;
+        For I := 1 To N Do
+        Begin
+            Read(MyFile, Coord);
+            MainForm.CVectorStringGrid.Cells[I, 1] := IntToStr(Coord);
+        End;
+
+        IsCorrect := True;
+    Except
+        IsCorrect := False;
+    End;
+    ResultsVisible(VectorStringGridChange(StrToInt(MainForm.NLabeledEdit.Text)));
+
+    IsCorrect := IsCorrect And SeekEOF(MyFile);
+End;
+
 Procedure ReadFromFile(Var IsCorrect: Boolean; FilePath: String);
 Var
     MyFile: TextFile;
-    BufferInt: Integer;
-    BufferStr: String;
 Begin
     AssignFile(MyFile, FilePath);
     Try
         Reset(MyFile);
         Try
-
+            ReadingProcess(IsCorrect, MyFile);
         Finally
             Close(MyFile);
         End;

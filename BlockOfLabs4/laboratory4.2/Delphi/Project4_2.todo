@@ -1,5 +1,7 @@
-{TODO 1 -oKostya -cFrontend : 0 can be write}
+{DONE : sel text 20 problem}
+{TODO 2 -oKostya -cFrontend : Savebutton and resulttext vidible need control}
+{DONE 1 -oKostya -cFrontend : 0 can be write}
 {TODO 3 -oKostya -cFrontend : Clipboard for string grid add}
 {TODO 2 -oKostya -cFrontend : Clipboard from oun class add}
-{TODO 1 -oKostya -cFrontend : SelText Enter}
+{DONE 1 -oKostya -cFrontend : SelText Enter}
 
