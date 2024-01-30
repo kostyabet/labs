@@ -17,12 +17,80 @@ Uses
     MainUnit,
     FrontendUnit;
 
+Function TryReadNum(Var TestFile: TextFile; Var ReadStatus: Boolean; MAX_NUM: Integer): Integer;
+Const
+    SPACE_LIMIT: Integer = 4;
+Var
+    EndOfNum: Boolean;
+    Character, BufChar: Char;
+    SpaceCounter, Num: Integer;
+Begin
+    Num := 0;
+    EndOfNum := False;
+    SpaceCounter := 0;
+    Character := #0;
+    BufChar := Character;
+    While ReadStatus And Not(EndOfNum) And Not(EOF(TestFile)) Do
+    Begin
+        BufChar := Character;
+        Read(TestFile, Character);
+
+        If (Character <> ' ') And Not((Character > Pred('0')) And (Character < Succ('9'))) And (Character <> #13) And
+            (Character <> #10) Then
+            ReadStatus := False;
+
+        If (Character = ' ') Then
+            Inc(SpaceCounter)
+        Else
+            SpaceCounter := 0;
+
+        If SpaceCounter = SPACE_LIMIT Then
+            ReadStatus := False;
+
+        If (Character > Pred('0')) And (Character < Succ('9')) Then
+            Num := Num * 10 + Ord(Character) - 48;
+
+        If (Character = ' ') And ((BufChar > Pred('0')) And (BufChar < Succ('9'))) Then
+            EndOfNum := True;
+
+        If (Num > MAX_NUM) Then
+            ReadStatus := False;
+    End;
+
+    TryReadNum := Num;
+End;
+
+Function CheckNum(ReadStatus: Boolean; Num, Max, Min: Integer): Boolean;
+Begin
+    If (Num > MAX) Or (Num < MIN) Then
+        ReadStatus := False;
+
+    CheckNum := ReadStatus;
+End;
+
 Function TryRead(Var TestFile: TextFile): Boolean;
 Var
-    ReadStatus: Boolean;
     BufA, BufN, BufCoord, I: Integer;
+    ReadStatus: Boolean;
 Begin
-    BufA := ;
+    BufA := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM);
+    ReadStatus := CheckNum(ReadStatus, BufA, MAX_INT_NUM, MIN_INT_NUM);
+    BufN := TryReadNum(TestFile, ReadStatus, MAX_N);
+    ReadStatus := CheckNum(ReadStatus, BufN, MAX_N, MIN_N);
+
+    For I := 1 To BufN Do
+    Begin
+        BufCoord := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM);
+        ReadStatus := CheckNum(ReadStatus, BufCoord, MAX_INT_NUM, MIN_INT_NUM);
+    End;
+
+    For I := 1 To BufN Do
+    Begin
+        BufCoord := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM);
+        ReadStatus := CheckNum(ReadStatus, BufCoord, MAX_INT_NUM, MIN_INT_NUM);
+    End;
+
+    ReadStatus := ReadStatus And SeekEOF(TestFile);
 
     TryRead := ReadStatus;
 End;

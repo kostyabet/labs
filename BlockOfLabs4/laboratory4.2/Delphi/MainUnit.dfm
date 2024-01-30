@@ -71,8 +71,8 @@ object MainForm: TMainForm
     Visible = False
   end
   object ResultLabel: TLabel
-    Left = 24
-    Top = 363
+    Left = 8
+    Top = 355
     Width = 60
     Height = 15
     Caption = 'ResultLabel'
