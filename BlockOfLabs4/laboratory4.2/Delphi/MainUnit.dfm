@@ -16,6 +16,7 @@ object MainForm: TMainForm
   KeyPreview = True
   Menu = MainMenu
   Position = poScreenCenter
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
   TextHeight = 15
@@ -76,6 +77,7 @@ object MainForm: TMainForm
     Width = 60
     Height = 15
     Caption = 'ResultLabel'
+    Visible = False
   end
   object ALabeledEdit: TLabeledEdit
     Left = 87
@@ -203,6 +205,7 @@ object MainForm: TMainForm
       end
       object ExitButton: TMenuItem
         Caption = #1042#1099#1081#1090#1080
+        OnClick = ExitButtonClick
       end
     end
     object InstractionButton: TMenuItem

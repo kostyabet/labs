@@ -60,7 +60,9 @@ Type
         Procedure CVectorStringGridKeyPress(Sender: TObject; Var Key: Char);
         Procedure OpenButtonClick(Sender: TObject);
         Procedure SaveButtonClick(Sender: TObject);
-    procedure ResultButtonClick(Sender: TObject);
+        Procedure ResultButtonClick(Sender: TObject);
+        Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+        Procedure ExitButtonClick(Sender: TObject);
     Private
         { Private declarations }
     Public
@@ -201,6 +203,31 @@ Begin
     End;
 End;
 
+Procedure TMainForm.ExitButtonClick(Sender: TObject);
+Begin
+    MainForm.Close;
+End;
+
+Procedure TMainForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+Var
+    ResultKey: Integer;
+Begin
+    ResultKey := Application.Messagebox('Вы уверены, что хотите закрыть оконное приложение?', 'Выход',
+        MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
+
+    If ResultKey = ID_NO Then
+        CanClose := False;
+
+    If ResultLabel.Visible And (ResultKey = ID_YES) And Not IfDataSavedInFile Then
+    Begin
+        ResultKey := Application.Messagebox('Вы не сохранили результат. Хотите сделать это?', 'Сохранение',
+            MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
+
+        If ResultKey = ID_YES Then
+            SaveButtonClick(Sender);
+    End;
+End;
+
 Procedure TMainForm.FormCreate(Sender: TObject);
 Begin
     ALabeledEdit.EditLabel.Caption := '';
@@ -283,10 +310,10 @@ Begin
     Until IsCorrect;
 End;
 
-procedure TMainForm.ResultButtonClick(Sender: TObject);
-begin
+Procedure TMainForm.ResultButtonClick(Sender: TObject);
+Begin
     //ResultLabel.Caption := CreateResultMessage();
-end;
+End;
 
 Procedure TMainForm.SaveButtonClick(Sender: TObject);
 Var

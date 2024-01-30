@@ -5,6 +5,8 @@ Interface
 Uses
     System.SysUtils;
 
+Function TryReadNum(Var TestFile: TextFile; Var ReadStatus: Boolean; MAX_NUM: Integer): Integer;
+Function CheckNum(ReadStatus: Boolean; Num, Max, Min: Integer): Boolean;
 Function TryRead(Var TestFile: TextFile): Boolean;
 Function IsReadable(FilePath: String): Boolean;
 Procedure ReadFromFile(Var IsCorrect: Boolean; FilePath: String);
