@@ -308,32 +308,53 @@ class Proj4_2
             case IOChoose.CONSOLE: InputFromConsole(ref ACount, ref BVector, ref CVector, ref NSize); break;
         }
     }
-
-    static void checkingCVectorCondition(List<int> currentPath, int[] CVector, int ACount, ref List<List<int>> results)
+    
+    static int[][] AddToArray(int[][] array, int[] item, int NSize, int curentSum)
     {
-        int curentSum = 0;
-        foreach(int i in currentPath)
-            curentSum += CVector[i];
-        
-        if (curentSum <= ACount)
-            results.Add(new List<int>(currentPath));
+        int[] newItem = new int[NSize + 1];
+        for (int i = 0; i < item.Length; ++i)
+            newItem[i + 1] = item[i] + 1;
+        newItem[0] = curentSum;
+
+        int[][] newArray = new int[array.Length + 1][];
+        Array.Copy(array, newArray, array.Length);
+        newArray[array.Length] = newItem;
+
+        return newArray;
     }
 
-    static List<List<int>> calculateSums(int[] arr, int[] CVector, int ACount)
+    static void checkingCVectorCondition(int[] currentPath, int[] CVector, int ACount, ref int[][] results, int NSize)
     {
-        List<List<int>> results = new List<List<int>>();
+        int curentSum = 0;
+        foreach (int i in currentPath)
+            curentSum += CVector[i];
 
-        void searchSuitableAmo(int[] subArray, List<int> currentPath)
+        if (curentSum <= ACount)
+            results = AddToArray(results, currentPath, NSize, curentSum);
+    }
+
+    static int[][] calculateSums(int[] arr, int[] CVector, int ACount, int NSize)
+    {
+        int[][] results = new int[0][];
+
+        void searchSuitableAmo(int[] subArray, int[] currentPath)
         {
-            if (subArray.Length == 0) checkingCVectorCondition(currentPath, CVector, ACount, ref results);
+            if (subArray.Length == 0)
+                checkingCVectorCondition(currentPath, CVector, ACount, ref results, NSize);
             else
             {
-                searchSuitableAmo(subArray[1..], new List<int>(currentPath) { Array.IndexOf(arr, subArray[0]) });
-                searchSuitableAmo(subArray[1..], new List<int>(currentPath));
+                int[] newPath1 = new int[currentPath.Length + 1];
+                Array.Copy(currentPath, newPath1, currentPath.Length);
+                newPath1[currentPath.Length] = Array.IndexOf(arr, subArray[0]);
+                searchSuitableAmo(subArray[1..], newPath1);
+
+                int[] newPath2 = new int[currentPath.Length];
+                Array.Copy(currentPath, newPath2, currentPath.Length);
+                searchSuitableAmo(subArray[1..], newPath2);
             }
         }
 
-        searchSuitableAmo(arr, new List<int>());
+        searchSuitableAmo(arr, new int[0]);
         return results;
     }
 
@@ -374,16 +395,16 @@ class Proj4_2
             quickSort(array, pivotIndex + 1, right);
         }
     }
-    static int[][] creatingSumMatrix(List<List<int>> sums, int NSize, int[] BVector)
+    static int[][] creatingSumMatrix(int[][] sums, int NSize, int[] BVector)
     {
-        int[][] vectorSums = new int[sums.Count][];
+        int[][] vectorSums = new int[sums.Length][];
         int i = 0;
-        foreach (List<int> sum in sums)
+        for (int sum = 0; sum < sums.Length; sum++)
         {
             vectorSums[i] = new int[NSize + 1];
             int curentSum = 0;
             int j = 1;
-            foreach (int curentCoord in sum)
+            for (int curentCoord = 0; curentCoord < sums[sum].Length; curentCoord++)
             {
                 curentSum += BVector[curentCoord];
                 vectorSums[i][j] = curentCoord + 1;
@@ -396,19 +417,18 @@ class Proj4_2
         return vectorSums;
     }
 
-    static void addResToSubset(int[][] vectorSums, ref HashSet<int> ISubset)
+    static void addResToSubset(int[][] sums, ref HashSet<int> ISubset)
     {
-        for (int i = 1; vectorSums.Length != 0 && i < vectorSums[0].Length; i++)
-            if (vectorSums[0][i] != 0)
-                ISubset.Add(vectorSums[0][i]);
+        for (int i = 1; sums.Length != 0 && i < sums[0].Length; i++)
+            if (sums[0][i] != 0)
+                ISubset.Add(sums[0][i]);
     }
 
     static void treatmentData(int ACount, int[] BVector, int[] CVector, int NSize, ref HashSet<int> ISubset)
     {
-        List<List<int>> sums = calculateSums(BVector, CVector, ACount);
-        int[][] vectorSums = creatingSumMatrix(sums, NSize, BVector);
-        quickSort(vectorSums, 0, vectorSums.GetLength(0) - 1);
-        addResToSubset(vectorSums, ref ISubset);
+        int[][] sums = calculateSums(BVector, CVector, ACount, NSize);
+        quickSort(sums, 0, sums.GetLength(0) - 1);
+        addResToSubset(sums, ref ISubset);
     }
 
     static string createStringWithVector(int[] Vector)
@@ -439,7 +459,7 @@ class Proj4_2
             N: {NSize};
             vector B: {createStringWithVector(BVector)}
             vector C: {createStringWithVector(CVector)}
-            result set I: {createStringWithSet(ISubset)}
+            result set I:{createStringWithSet(ISubset)}
             """;
         return resultStr;
     }
