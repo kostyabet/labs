@@ -333,7 +333,7 @@ class Proj4_2
             results = AddToArray(results, currentPath, NSize, curentSum);
     }
 
-    static int[][] calculateSums(int[] arr, int[] CVector, int ACount, int NSize)
+    static int[][] calculateSums(int[] BVector, int[] CVector, int ACount, int NSize)
     {
         int[][] results = new int[0][];
 
@@ -345,7 +345,7 @@ class Proj4_2
             {
                 int[] newPath1 = new int[currentPath.Length + 1];
                 Array.Copy(currentPath, newPath1, currentPath.Length);
-                newPath1[currentPath.Length] = Array.IndexOf(arr, subArray[0]);
+                newPath1[currentPath.Length] = Array.IndexOf(BVector, subArray[0]);
                 searchSuitableAmo(subArray[1..], newPath1);
 
                 int[] newPath2 = new int[currentPath.Length];
@@ -354,7 +354,7 @@ class Proj4_2
             }
         }
 
-        searchSuitableAmo(arr, new int[0]);
+        searchSuitableAmo(BVector, new int[0]);
         return results;
     }
 
@@ -395,27 +395,6 @@ class Proj4_2
             quickSort(array, pivotIndex + 1, right);
         }
     }
-    static int[][] creatingSumMatrix(int[][] sums, int NSize, int[] BVector)
-    {
-        int[][] vectorSums = new int[sums.Length][];
-        int i = 0;
-        for (int sum = 0; sum < sums.Length; sum++)
-        {
-            vectorSums[i] = new int[NSize + 1];
-            int curentSum = 0;
-            int j = 1;
-            for (int curentCoord = 0; curentCoord < sums[sum].Length; curentCoord++)
-            {
-                curentSum += BVector[curentCoord];
-                vectorSums[i][j] = curentCoord + 1;
-                j++;
-            }
-            vectorSums[i][0] = curentSum;
-            i++;
-        }
-
-        return vectorSums;
-    }
 
     static void addResToSubset(int[][] sums, ref HashSet<int> ISubset)
     {
@@ -427,7 +406,7 @@ class Proj4_2
     static void treatmentData(int ACount, int[] BVector, int[] CVector, int NSize, ref HashSet<int> ISubset)
     {
         int[][] sums = calculateSums(BVector, CVector, ACount, NSize);
-        quickSort(sums, 0, sums.GetLength(0) - 1);
+        quickSort(sums, 0, sums.Length - 1);
         addResToSubset(sums, ref ISubset);
     }
 
@@ -457,9 +436,9 @@ class Proj4_2
         string resultStr = $"""
             A: {ACount};
             N: {NSize};
-            vector B: {createStringWithVector(BVector)}
-            vector C: {createStringWithVector(CVector)}
-            result set I:{createStringWithSet(ISubset)}
+            Vector B: {createStringWithVector(BVector)}
+            Vector C: {createStringWithVector(CVector)}
+            Result set I:{createStringWithSet(ISubset)}
             """;
         return resultStr;
     }

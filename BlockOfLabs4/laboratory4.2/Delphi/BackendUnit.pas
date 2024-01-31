@@ -3,7 +3,13 @@
 Interface
 
 Uses
+    Vcl.Grids,
     System.SysUtils;
+
+Type
+    TMassive = Array Of Integer;
+    TMatrix = Array Of Array Of Integer;
+    TByteSet = Set Of Byte;
 
 Function TryReadNum(Var TestFile: TextFile; Var ReadStatus: Boolean; MAX_NUM: Integer): Integer;
 Function CheckNum(ReadStatus: Boolean; Num, Max, Min: Integer): Boolean;
@@ -12,6 +18,19 @@ Function IsReadable(FilePath: String): Boolean;
 Procedure ReadFromFile(Var IsCorrect: Boolean; FilePath: String);
 Function IsWriteable(FilePath: String): Boolean;
 Procedure InputInFile(Var IsCorrect: Boolean; FilePath: String);
+Procedure InputVectorFromGrid(Var Vector: TMassive; StringGrid: TStringGrid; N: Integer);
+Procedure AddToArray(Var Results: TMatrix; CurrentPath: TMassive; NSize, CurentSum: Integer);
+Procedure CheckingCVectorCondition(CurrentPath, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix);
+Function IndexOf(BVector: TMassive; Count: Integer): Integer;
+Procedure SearchSuitableAmo(SubArray, BVector, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix; CurrentPath: Tmassive = 0);
+Procedure Swap(Var Matrix: TMatrix; I, J: Integer);
+Function Partition(Var Matrix: TMatrix; Left, Right: Integer): Integer;
+Procedure QuickSort(Var Matrix: TMatrix; Left, Right: Integer);
+Procedure AddResToSubset(Sums: TMatrix; Var ISubset: TByteSet);
+Procedure TreatmentData(BVector, CVector: TMassive; ACount, NSize: Integer; Var Sums: TMatrix; Var ISubset: TByteSet);
+Function CreateStringWithVector(Vector: TMassive): String;
+Function CreateStringWithSet(ISubset: TByteSet): String;
+Function CreateResultString(ACount, NSize: Integer; BVector, CVector: TMassive; ISubset: TByteSet): String;
 
 Implementation
 
@@ -191,7 +210,7 @@ Begin
         Try
             ReWrite(MyFile);
             Try
-                Writeln(MyFile, MainForm.ResultLabel.Caption);
+                Writeln(MyFile, ResultString);
             Finally
                 Close(MyFile);
             End;
@@ -202,5 +221,177 @@ Begin
 
     End;
 End;
+
+Procedure InputVectorFromGrid(Var Vector: TMassive; StringGrid: TStringGrid; N: Integer);
+Var
+    I: Integer;
+Begin
+    SetLength(Vector, N);
+
+    For I := 1 To N Do
+        Vector[I - 1] := StrToInt(StringGrid.Cells[I, 1]);
+End;
+
+Procedure AddToArray(Var Results: TMatrix; CurrentPath: TMassive; NSize, CurentSum: Integer);
+Var
+    NewItem: TMassive;
+    I: Integer;
+Begin
+    SetLength(Results, Length(Results) + 1, NSize + 1);
+
+    For I := 0 To High(CurrentPath) Do
+        Results[High(Results)][I + 1] := CurrentPath[I] + 1;
+    Results[High(Results)][0] := CurentSum;
+End;
+
+Procedure CheckingCVectorCondition(CurrentPath, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix);
+Var
+    CurentSum, I: Integer;
+Begin
+    CurentSum := 0;
+    For I := 0 To High(CurrentPath) Do
+        CurentSum := CurentSum + CVector[CurrentPath[I]];
+
+    If (CurentSum <= ACount) Then
+        AddToArray(Results, CurrentPath, NSize, CurentSum);
+End;
+
+Function IndexOf(BVector: TMassive; Count: Integer): Integer;
+Var
+    I, IndexNum: Integer;
+Begin
+    IndexNum := -1;
+    For I := Low(BVector) To High(BVector) Do
+        If (BVector[I] = Count) And (IndexNum = -1) Then
+            IndexNum := I;
+
+    IndexOf := IndexNum;
+End;
+
+Procedure SearchSuitableAmo(SubArray, BVector, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix; CurrentPath: Tmassive = 0);
+Var
+    CurrentPath2, CurrentPath1: TMassive;
+    I: Integer;
+Begin
+    If (Length(SubArray) = 0) Then
+        CheckingCVectorCondition(CurrentPath, CVector, ACount, NSize, Results)
+    Else
+    Begin
+        SetLength(CurrentPath1, Length(CurrentPath) + 1);
+        For I := 0 To High(CurrentPath) Do
+            CurrentPath1[I] := CurrentPath[I];
+        CurrentPath1[Length(CurrentPath)] := IndexOf(BVector, SubArray[0]);
+        SearchSuitableAmo(Copy(SubArray, 1, Length(SubArray) - 1), BVector, CVector, ACount, NSize, Results, CurrentPath1);
+
+        SetLength(CurrentPath2, Length(CurrentPath));
+        For I := 0 To High(CurrentPath) Do
+            CurrentPath2[I] := CurrentPath[I];
+        SearchSuitableAmo(Copy(SubArray, 1, Length(SubArray) - 1), BVector, CVector, ACount, NSize, Results, CurrentPath2);
+    End;
+End;
+
+Procedure Swap(Var Matrix: TMatrix; I, J: Integer);
+Var
+    Temp0, Temp1: Integer;
+Begin
+    Temp0 := Matrix[I][0];
+    Temp1 := Matrix[I][1];
+    Matrix[I][0] := Matrix[J][0];
+    Matrix[I][1] := Matrix[J][1];
+    Matrix[J][0] := Temp0;
+    Matrix[J][1] := Temp1;
+End;
+
+Function Partition(Var Matrix: TMatrix; Left, Right: Integer): Integer;
+Var
+    I, J, Pivot: Integer;
+Begin
+    Pivot := Matrix[Left][0];
+    I := Left + 1;
+
+    For J := Left + 1 To Right Do
+        If (Matrix[J][0] > Pivot) Then
+        Begin
+            Swap(Matrix, I, J);
+            Inc(I);
+        End;
+
+    Swap(Matrix, Left, I - 1);
+    Partition := I - 1;
+End;
+
+Procedure QuickSort(Var Matrix: TMatrix; Left, Right: Integer);
+Var
+    PivotIndex: Integer;
+Begin
+    If Left < Right Then
+    Begin
+        PivotIndex := Partition(Matrix, Left, Right);
+        QuickSort(Matrix, Left, PivotIndex - 1);
+        QuickSort(Matrix, PivotIndex + 1, Right);
+    End;
+End;
+
+Procedure AddResToSubset(Sums: TMatrix; Var ISubset: TByteSet);
+Var
+    I: Integer;
+Begin
+    For I := 1 To High(Sums[0]) Do
+        If Sums[0][I] <> 0 Then
+            Include(ISubset, Sums[0][I]);
+End;
+
+Procedure TreatmentData(BVector, CVector: TMassive; ACount, NSize: Integer; Var Sums: TMatrix; Var ISubset: TByteSet);
+Begin
+    SearchSuitableAmo(BVector, BVector, CVector, ACount, NSize, Sums);
+    QuickSort(Sums, 0, Length(Sums) - 1);
+    AddResToSubset(Sums, ISubset);
+End;
+
+Function CreateStringWithVector(Vector: TMassive): String;
+Var
+    VectorStr: String;
+    I: Integer;
+Begin
+    VectorStr := '';
+    For I := 0 To High(Vector) Do
+        VectorStr := VectorStr + IntToStr(Vector[I]) + ' ';
+
+    CreateStringWithVector := VectorStr;
+End;
+
+Function CreateStringWithSet(ISubset: TByteSet): String;
+Var
+    SetStr: String;
+    Curent: Byte;
+Begin
+    SetStr := 'Result Set I:';
+    If ISubset = [] Then
+        SetStr := ' empty set...'
+    Else
+    Begin
+        For Curent In ISubset Do
+            SetStr := SetStr + ' ' + IntToStr(Curent);
+    End;
+    CreateStringWithSet := SetStr;
+End;
+
+Function CreateResultString(ACount, NSize: Integer; BVector, CVector: TMassive; ISubset: TByteSet): String;
+Var
+    ResultStr: String;
+    OutputStr: String;
+Begin
+    ResultStr := 'A: ' + IntToStr(ACount) + ';'#13#10'N: ' + IntToStr(NSize) + ';'#13#10;
+    ResultStr := ResultStr + 'Vector B: ' + CreateStringWithVector(BVector) + #13#10;
+    ResultStr := ResultStr + 'Vector C: ' + CreateStringWithVector(CVector) + #13#10;
+    OutputStr := CreateStringWithSet(ISubset);
+    ResultStr := ResultStr + OutputStr;
+
+    ResultString := ResultStr;
+
+    CreateResultString := OutputStr;
+End;
+
+
 
 End.
