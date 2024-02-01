@@ -1,7 +1,7 @@
 object Instraction: TInstraction
   Left = 0
   Top = 0
-  BorderIcons = [biSystemMenu, biMinimize]
+  BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1048#1085#1089#1090#1088#1091#1082#1094#1080#1103
   ClientHeight = 285
