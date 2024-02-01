@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1041#1077#1090#1077#1085#1103' '#1050'.'#1057'. 351005 '#1083#1072#1073'. 4.2'
-  ClientHeight = 390
+  ClientHeight = 387
   ClientWidth = 437
   Color = clBtnFace
   Constraints.MaxHeight = 453
@@ -2188,7 +2188,7 @@ object MainForm: TMainForm
     Visible = False
   end
   object ResultLabel: TLabel
-    Left = 14
+    Left = 24
     Top = 355
     Width = 60
     Height = 15
@@ -2275,6 +2275,17 @@ object MainForm: TMainForm
     Visible = False
     OnKeyDown = CVectorStringGridKeyDown
     OnKeyPress = CVectorStringGridKeyPress
+    ColWidths = (
+      76
+      76
+      76
+      76
+      76
+      76
+      76
+      76
+      76
+      76)
   end
   object ResultButton: TButton
     Left = 24
@@ -2291,13 +2302,13 @@ object MainForm: TMainForm
     DefaultExt = '.txt'
     Filter = '|*.txt'
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
-    Left = 304
+    Left = 280
     Top = 328
   end
   object SaveDialog: TSaveDialog
     DefaultExt = '.txt'
     Filter = '|*.txt'
-    Left = 240
+    Left = 192
     Top = 328
   end
   object MainMenu: TMainMenu
@@ -2321,6 +2332,7 @@ object MainForm: TMainForm
       end
       object ExitButton: TMenuItem
         Caption = #1042#1099#1081#1090#1080
+        ShortCut = 16465
         OnClick = ExitButtonClick
       end
     end

@@ -11,7 +11,7 @@ Type
     TMatrix = Array Of Array Of Integer;
     TByteSet = Set Of Byte;
 
-Function TryReadNum(Var TestFile: TextFile; Var ReadStatus: Boolean; MAX_NUM: Integer): Integer;
+Function TryReadNum(Var TestFile: TextFile; Var ReadStatus: Boolean; MAX_NUM: Integer; EndOfNums: Boolean): Integer;
 Function CheckNum(ReadStatus: Boolean; Num, Max, Min: Integer): Boolean;
 Function TryRead(Var TestFile: TextFile): Boolean;
 Function IsReadable(FilePath: String): Boolean;
@@ -38,26 +38,27 @@ Uses
     MainUnit,
     FrontendUnit;
 
-Function TryReadNum(Var TestFile: TextFile; Var ReadStatus: Boolean; MAX_NUM: Integer): Integer;
+Function TryReadNum(Var TestFile: TextFile; Var ReadStatus: Boolean; MAX_NUM: Integer; EndOfNums: Boolean): Integer;
 Const
     SPACE_LIMIT: Integer = 4;
 Var
     EndOfNum: Boolean;
     Character, BufChar: Char;
-    SpaceCounter, Num: Integer;
+    SpaceCounter, Num, MinCount: Integer;
 Begin
     Num := 0;
     EndOfNum := False;
     SpaceCounter := 0;
     Character := #0;
     BufChar := Character;
+    MinCount := 1;
     While ReadStatus And Not(EndOfNum) And Not(EOF(TestFile)) Do
     Begin
         BufChar := Character;
         Read(TestFile, Character);
 
-        If (Character <> ' ') And Not((Character > Pred('0')) And (Character < Succ('9'))) And (Character <> #13) And
-            (Character <> #10) Then
+        If (Character <> ' ') And Not((Character > Pred('0')) And (Character < Succ('9'))) And (Character <> #13) And (Character <> #10) And
+            (Character <> '-') Then
             ReadStatus := False;
 
         If (Character = ' ') Then
@@ -71,12 +72,30 @@ Begin
         If (Character > Pred('0')) And (Character < Succ('9')) Then
             Num := Num * 10 + Ord(Character) - 48;
 
-        If (Character = ' ') And ((BufChar > Pred('0')) And (BufChar < Succ('9'))) Then
+        If (Character = '-') Then
+            MinCount := -1;
+
+        If (Character = '-') And (BufChar <> ' ') And (BufChar <> #0) Then
+            ReadStatus := False;
+
+        If (Character = '-') And (MinCount <> -1) Then
+            ReadStatus := False;
+
+        If ((Character = ' ') Or (Character = #13)) And ((BufChar > Pred('0')) And (BufChar < Succ('9'))) Then
             EndOfNum := True;
+
+        If (BufChar = '0') And (Character > Pred('0')) And (Character < Succ('9')) Then
+            ReadStatus := False;
 
         If (Num > MAX_NUM) Then
             ReadStatus := False;
     End;
+
+    If EOF(TestFile) And Not EndOfNums Then
+        ReadStatus := False;
+
+    If ReadStatus Then
+        Num := MinCount * Num;
 
     TryReadNum := Num;
 End;
@@ -94,20 +113,21 @@ Var
     BufA, BufN, BufCoord, I: Integer;
     ReadStatus: Boolean;
 Begin
-    BufA := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM);
+    ReadStatus := True;
+    BufA := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM, False);
     ReadStatus := CheckNum(ReadStatus, BufA, MAX_INT_NUM, MIN_INT_NUM);
-    BufN := TryReadNum(TestFile, ReadStatus, MAX_N);
+    BufN := TryReadNum(TestFile, ReadStatus, MAX_N, False);
     ReadStatus := CheckNum(ReadStatus, BufN, MAX_N, MIN_N);
 
     For I := 1 To BufN Do
     Begin
-        BufCoord := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM);
+        BufCoord := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM, False);
         ReadStatus := CheckNum(ReadStatus, BufCoord, MAX_INT_NUM, MIN_INT_NUM);
     End;
 
     For I := 1 To BufN Do
     Begin
-        BufCoord := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM);
+        BufCoord := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM, I = BufN);
         ReadStatus := CheckNum(ReadStatus, BufCoord, MAX_INT_NUM, MIN_INT_NUM);
     End;
 
@@ -168,18 +188,19 @@ Procedure ReadFromFile(Var IsCorrect: Boolean; FilePath: String);
 Var
     MyFile: TextFile;
 Begin
-    AssignFile(MyFile, FilePath);
-    Try
-        Reset(MyFile);
+    If IsCorrect Then
+    Begin
+        AssignFile(MyFile, FilePath);
         Try
-            ReadingProcess(IsCorrect, MyFile);
-        Finally
-            Close(MyFile);
+            Reset(MyFile);
+            Try
+                ReadingProcess(IsCorrect, MyFile);
+            Finally
+                Close(MyFile);
+            End;
+        Except
+            IsCorrect := False;
         End;
-
-        IsCorrect := True;
-    Except
-        IsCorrect := False;
     End;
 End;
 
@@ -365,9 +386,9 @@ Var
     SetStr: String;
     Curent: Byte;
 Begin
-    SetStr := 'Result Set I:';
+    SetStr := 'Подмножество I:';
     If ISubset = [] Then
-        SetStr := ' empty set...'
+        SetStr := SetStr + ' пустое множество...'
     Else
     Begin
         For Curent In ISubset Do
@@ -382,8 +403,8 @@ Var
     OutputStr: String;
 Begin
     ResultStr := 'A: ' + IntToStr(ACount) + ';'#13#10'N: ' + IntToStr(NSize) + ';'#13#10;
-    ResultStr := ResultStr + 'Vector B: ' + CreateStringWithVector(BVector) + #13#10;
-    ResultStr := ResultStr + 'Vector C: ' + CreateStringWithVector(CVector) + #13#10;
+    ResultStr := ResultStr + 'Вектор B: ' + CreateStringWithVector(BVector) + #13#10;
+    ResultStr := ResultStr + 'Вектор C: ' + CreateStringWithVector(CVector) + #13#10;
     OutputStr := CreateStringWithSet(ISubset);
     ResultStr := ResultStr + OutputStr;
 
@@ -391,7 +412,5 @@ Begin
 
     CreateResultString := OutputStr;
 End;
-
-
 
 End.

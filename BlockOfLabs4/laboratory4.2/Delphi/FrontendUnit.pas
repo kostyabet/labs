@@ -23,6 +23,8 @@ Procedure LabelEditChange(ALabeledEdit, NLabeledEdit: TLabeledEdit; BVectorStrin
 Procedure StringGridVkBack(Key: Word; Var VectorStringGrid: TStringGrid);
 Function StringGridKeyPress(Var VectorStringGrid: TStringGrid; Key: Char; Col, Row: Integer): Char;
 Function VectorStringGridChange(NSize: Integer): Boolean;
+Procedure TryToAddClipboard(ClipboardText: String; Const MaxPoint, MinPoint: Integer; Var LabeledEdit: TLabeledEdit);
+Procedure StGridAddClipboard(ClipBoardText: String; Var StGrid: TStringGrid; Const Col, Row: Integer);
 
 Implementation
 
@@ -218,6 +220,9 @@ Var
 Begin
     MinCount := 0;
 
+    If (VectorStringGrid.Cells[Col, Row] = '0') Then
+        Key := NULL_POINT;
+
     If (VectorStringGrid.Cells[Col, Row] <> '') And (VectorStringGrid.Cells[Col, Row] <> '-') And
         (StrToInt(VectorStringGrid.Cells[Col, Row]) = 0) And (Key = '0') Then
         Key := NULL_POINT;
@@ -263,6 +268,50 @@ Begin
         VectorStringGridChange := False;
     End;
 
+End;
+
+Procedure TryToAddClipboard(ClipboardText: String; Const MaxPoint, MinPoint: Integer; Var LabeledEdit: TLabeledEdit);
+Var
+    IsCorrect: Boolean;
+Begin
+    IsCorrect := True;
+    Try
+        If (StrToInt(ClipboardText) > MaxPoint) Or (StrToInt(ClipboardText) < MinPoint) Then
+            IsCorrect := False;
+
+        If ClipboardText[1] = ' ' Then
+            IsCorrect := False;
+
+        If ClipboardText[Length(ClipBoardText)] = ' ' Then
+            IsCorrect := False;
+    Except
+        IsCorrect := False;
+    End;
+
+    If IsCorrect Then
+        LabeledEdit.Text := IntToStr(StrToInt(ClipboardText));
+End;
+
+Procedure StGridAddClipboard(ClipBoardText: String; Var StGrid: TStringGrid; Const Col, Row: Integer);
+Var
+    IsCorrect: Boolean;
+Begin
+    IsCorrect := True;
+    Try
+        If (StrToInt(ClipboardText) > MAX_INT_NUM) Or (StrToInt(ClipboardText) < MIN_INT_NUM) Then
+            IsCorrect := False;
+
+        If ClipboardText[1] = ' ' Then
+            IsCorrect := False;
+
+        If ClipboardText[Length(ClipBoardText)] = ' ' Then
+            IsCorrect := False;
+    Except
+        IsCorrect := False;
+    End;
+
+    If IsCorrect Then
+        StGrid.Cells[Col, Row] := IntToStr(StrToInt(ClipboardText));
 End;
 
 End.
