@@ -109,6 +109,12 @@
             <Form>WorkForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="FrontendUnit.pas"/>
+        <DCCReference Include="AddRecordUnit.pas">
+            <Form>AddRecordForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="BackendUnit.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

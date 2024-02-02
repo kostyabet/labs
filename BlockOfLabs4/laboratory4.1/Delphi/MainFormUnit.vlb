@@ -1,13 +1,13 @@
 ﻿[TMLabel]
 Coordinates=75,10,64,58
 
-[SpeedButton1]
-Coordinates=10,78,96,36
-Visible=True
-
 []
 Coordinates=219,78,91,36
 
-[NavigationPanel]
+[NavPanel]
 Coordinates=10,10,55,58
+
+[AddSpButton]
+Coordinates=10,78,96,36
+Visible=True
 
