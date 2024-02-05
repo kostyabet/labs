@@ -3,6 +3,7 @@
 Interface
 
 Uses
+    System.Math,
     Clipbrd,
     Winapi.Windows,
     Winapi.Messages,
@@ -20,26 +21,39 @@ Uses
     Vcl.ExtCtrls;
 
 Type
+    TString = Array [1 .. 20] Of WideChar;
+
     TFootballStats = Record
-        Country: String;
-        Team: String;
-        Coach: String;
+        Country: TString;
+        Team: TString;
+        Coach: TString;
         Points: Integer;
     End;
 
-    TMassive = Array Of Integer;
-    TFootballMassive = Array Of TFootballStats;
+Const
+    TEAMS_COUNT = 48;
 
-Procedure InputDataInMassive(Country, Team, Coach, Points: String; CurentRow: Integer);
+Type
+    TMassive = Array Of Integer;
+    TFootballMassive = Array [0 .. TEAMS_COUNT] Of TFootballStats;
+    TFStatsFile = File Of TFootballStats;
+
+Procedure InputDataInMassive(Country, Team, Coach: TString; Points: Integer; CurentRow: Integer);
 Procedure InputMassiveInTableGrid();
 Procedure InputInfoFromGrid(Var CountryLabeledEdit, TeamNameLabeledEdit, CoachLabeledEdit, PointsLabeledEdit: TLabeledEdit; I: Integer);
 Procedure SortFootballStats();
 Procedure DeleteRow(I: Integer);
-Function IndexRecord(I: Integer; CurentStr: String): Integer;
+Function IndexRecord(I: Integer; CurentStr: TString): Integer;
 Function CreateResultGrid(StrIndex: Integer): String;
+Procedure LoadRecordsInFile();
+Procedure LoadRecordsFromFile();
+Function ConvertStringToWideChar(SourceString: String): TString;
+Function WideCharToStr(SourceWideChar: TString): String;
 
 Var
     FootballTable: TFootballMassive;
+    CurentRecordsCount: Integer = 0;
+    StatsFile: TFStatsFile;
 
 Implementation
 
@@ -47,19 +61,19 @@ Uses
     MainFormUnit,
     FrontendUnit;
 
-Procedure InputDataInMassive(Country, Team, Coach, Points: String; CurentRow: Integer);
+Procedure InputDataInMassive(Country, Team, Coach: TString; Points: Integer; CurentRow: Integer);
 Begin
     FootballTable[CurentRow].Country := Country;
     FootballTable[CurentRow].Team := Team;
     FootballTable[CurentRow].Coach := Coach;
-    FootballTable[CurentRow].Points := StrToInt(Points);
+    FootballTable[CurentRow].Points := Points;
 End;
 
 Procedure InputMassiveInTableGrid();
 Var
     I: Integer;
 Begin
-    MainForm.PointTabelStrGrid.RowCount := High(FootballTable) + 2;
+    MainForm.PointTabelStrGrid.RowCount := CurentRecordsCount + 1;
 
     For I := 1 To High(FootballTable) + 2 Do
         If Not(I - 1 > High(FootballTable)) Then
@@ -81,7 +95,7 @@ End;
 Procedure SortFootballStats();
 Var
     TempP, I, J: Integer;
-    TempT, TempCh, TempCy: String;
+    TempT, TempCh, TempCy: TString;
 Begin
     For I := 1 To High(FootballTable) Do
     Begin
@@ -110,6 +124,7 @@ End;
 
 Procedure DeleteRow(I: Integer);
 Begin
+    Dec(CurentRecordsCount);
     While Not(I > High(FootballTable) - 1) Do
     Begin
         FootballTable[I].Country := FootballTable[I + 1].Country;
@@ -118,11 +133,10 @@ Begin
         FootballTable[I].Points := FootballTable[I + 1].Points;
         Inc(I);
     End;
-    SetLength(FootballTable, Length(FootballTable) - 1);
     InputMassiveInTableGrid();
 End;
 
-Function IndexRecord(I: Integer; CurentStr: String): Integer;
+Function IndexRecord(I: Integer; CurentStr: TString): Integer;
 Var
     J: Integer;
 Begin
@@ -158,7 +172,7 @@ Begin
         3:
             Begin
                 For J := Low(FootballTable) To High(FootballTable) Do
-                    If (IntToStr(FootballTable[J].Points) = CurentStr) Then
+                    If (IntToStr(FootballTable[J].Points) = WideCharToStr(CurentStr)) Then
                     Begin
                         IndexRecord := J;
                         Exit;
@@ -171,12 +185,78 @@ Function CreateResultGrid(StrIndex: Integer): String;
 Var
     ResStr: String;
 Begin
-    ResStr := 'Страна: ' + FootballTable[StrIndex].Country + #13#10;
-    ResStr := ResStr + 'Название команды: ' + FootballTable[StrIndex].Team + #13#10;
-    ResStr := ResStr + 'Гл. Тренер: ' + FootballTable[StrIndex].Coach + #13#10;
+    ResStr := 'Страна: ' + WideCharToStr(FootballTable[StrIndex].Country) + ';'#13#10;
+    ResStr := ResStr + 'Название команды: ' + WideCharToStr(FootballTable[StrIndex].Team) + ';'#13#10;
+    ResStr := ResStr + 'Главный Тренер: ' + WideCharToStr(FootballTable[StrIndex].Coach) + ';'#13#10;
     ResStr := ResStr + 'Итоговый результат:' + IntToStr(FootballTable[StrIndex].Points);
 
     CreateResultGrid := ResStr;
+End;
+
+Procedure LoadRecordsInFile();
+Var
+    FileStream: TFileStream;
+    I: Integer;
+Begin
+    AssignFile(StatsFile, 'myFile.txt');
+
+    Rewrite(StatsFile);
+
+    For I := 0 To CurentRecordsCount - 1 Do
+    Begin
+        Write(StatsFile, FootballTable[I]);
+    End;
+
+    CloseFile(StatsFile);
+End;
+
+Procedure LoadRecordsFromFile();
+Var
+    I: Integer;
+Begin
+    I := 0;
+    AssignFile(StatsFile, 'myFile.txt');
+    Reset(StatsFile);
+    While Not EOF(StatsFile) Do
+    Begin
+        Read(StatsFile, FootballTable[I]);
+        Inc(I);
+    End;
+    CloseFile(StatsFile);
+
+    CurentRecordsCount := I;
+    SortFootballStats();
+    InputMassiveInTableGrid();
+End;
+
+Function ConvertStringToWideChar(SourceString: String): TString;
+Var
+    DestArray: TString;
+    NumCharsToCopy, I: Integer;
+Begin
+    NumCharsToCopy := Min(Length(SourceString), SizeOf(DestArray) Div SizeOf(WideChar) - 1);
+
+    For I := 1 To NumCharsToCopy Do
+        DestArray[I] := WideChar(SourceString[I]);
+    For I := NumCharsToCopy + 1 To High(DestArray) Do
+        DestArray[I] := WideChar(#0);
+
+    ConvertStringToWideChar := DestArray;
+End;
+
+Function WideCharToStr(SourceWideChar: TString): String;
+Var
+    ResStr: String;
+    I: Integer;
+Begin
+    ResStr := '';
+    For I := Low(SourceWideChar) To High(SourceWideChar) Do
+    Begin
+        If SourceWideChar[I] <> #0 Then
+            ResStr := ResStr + String(SourceWideChar[I]);
+    End;
+
+    WideCharToStr := ResStr;
 End;
 
 End.

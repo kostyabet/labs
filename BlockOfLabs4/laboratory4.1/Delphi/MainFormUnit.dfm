@@ -5,7 +5,7 @@ object MainForm: TMainForm
   BorderStyle = bsSingle
   Caption = #1041#1077#1090#1077#1085#1103' '#1050'. '#1057'. 351005 '#1083#1072#1073'. 4.1'
   ClientHeight = 553
-  ClientWidth = 854
+  ClientWidth = 850
   Color = clBtnFace
   Constraints.MaxHeight = 625
   Constraints.MaxWidth = 872
@@ -17249,10 +17249,10 @@ object MainForm: TMainForm
     Height = 553
     Align = alLeft
     TabOrder = 0
-    ExplicitHeight = 541
+    ExplicitHeight = 529
     object AddSpButton: TSpeedButton
       Left = 0
-      Top = 2
+      Top = 0
       Width = 73
       Height = 113
       Hint = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1085#1086#1074#1086#1081' '#1079#1072#1087#1080#1089#1080'.'
@@ -17341,11 +17341,12 @@ object MainForm: TMainForm
     FixedCols = 0
     RowCount = 1
     FixedRows = 0
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSelect, goFixedRowDefAlign]
     ParentShowHint = False
     ScrollBars = ssVertical
     ShowHint = True
     TabOrder = 1
-    OnClick = PointTabelStrGridClick
+    OnKeyUp = PointTabelStrGridKeyUp
     RowHeights = (
       24)
   end
@@ -23975,7 +23976,7 @@ object MainForm: TMainForm
         ImageIndex = 4
         ShortCut = 16467
       end
-      object N1: TMenuItem
+      object Line: TMenuItem
         Caption = '-'
       end
       object CloseButton: TMenuItem

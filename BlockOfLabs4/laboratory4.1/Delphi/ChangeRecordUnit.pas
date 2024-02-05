@@ -72,7 +72,8 @@ Uses
 
 Procedure TChangeRecordForm.ChangeButtonClick(Sender: TObject);
 Begin
-    InputDataInMassive(CountryLabeledEdit.Text, TeamNameLabeledEdit.Text, CoachLabeledEdit.Text, PointsLabeledEdit.Text, CurentRow - 1);
+    InputDataInMassive(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(TeamNameLabeledEdit.Text),
+        ConvertStringToWideChar(CoachLabeledEdit.Text), StrToint(PointsLabeledEdit.Text), CurentRow - 1);
     SortFootballStats();
     InputMassiveInTableGrid();
 
@@ -189,11 +190,11 @@ Begin
         Try
             If (ChangeRecordForm.ActiveControl = ChangeRecordForm.PointsLabeledEdit) And
                 Not IsCorrectPointsClipboard(Clipboard.AsText, ChangeRecordForm.PointsLabeledEdit) Then
-                Raise Exception.Create('Некорректное количество очков!');
+                Raise Exception.Create('Некорректное количество очков!'#13#10'Максимальное кол-во очков 100 :(');
 
             If (ChangeRecordForm.ActiveControl = ChangeRecordForm.CoachLabeledEdit) And
                 Not IsCorrectStrings(Clipboard.AsText, ChangeRecordForm.CoachLabeledEdit) Then
-                Raise Exception.Create('Некорректная фамилия главного тренера!');
+                Raise Exception.Create('Некорректная фамилия главного тренера!'#13#10'Давайте уместимся в 20 символов.');
 
             If (ChangeRecordForm.ActiveControl = ChangeRecordForm.TeamNameLabeledEdit) And
                 Not IsCorrectStrings(Clipboard.AsText, ChangeRecordForm.TeamNameLabeledEdit) Then

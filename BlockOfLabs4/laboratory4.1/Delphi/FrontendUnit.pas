@@ -56,7 +56,6 @@ Begin
         ModalForm.BorderIcons := [BiSystemMenu];
         ModalForm.FormStyle := FsStayOnTop;
         ModalForm.Icon := MainForm.Icon;
-        ModalForm.Scaled := False;
 
         ModalLabel := TLabel.Create(ModalForm);
         ModalLabel.Parent := ModalForm;
@@ -141,7 +140,7 @@ End;
 
 Function CheckInput(Key: Char; PointsLabeledEdit: TLabeledEdit): Char;
 Const
-    GOOD_VALUES: Set Of Char = ['0' .. '9', #08];
+    GOOD_VALUES: Set Of Char = ['0' .. '9', #08, #$16];
 Begin
     If Not(Key In GOOD_VALUES) Then
         Key := #0;

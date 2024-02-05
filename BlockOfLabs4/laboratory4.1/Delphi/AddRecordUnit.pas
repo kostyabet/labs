@@ -16,6 +16,7 @@ Uses
     Vcl.Menus,
     Vcl.StdCtrls,
     Vcl.Mask,
+    System.Math,
     Vcl.ExtCtrls;
 
 Type
@@ -72,9 +73,9 @@ Uses
 
 Procedure TAddRecordForm.AddButtonClick(Sender: TObject);
 Begin
-    SetLength(FootballTable, Length(FootballTable) + 1);
-    InputDataInMassive(CountryLabeledEdit.Text, TeamNameLabeledEdit.Text, CoachLabeledEdit.Text, PointsLabeledEdit.Text,
-        High(FootballTable));
+    Inc(CurentRecordsCount);
+    InputDataInMassive(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(CoachLabeledEdit.Text),
+        ConvertStringToWideChar(TeamNameLabeledEdit.Text), StrToint(PointsLabeledEdit.Text), High(FootballTable));
     SortFootballStats();
     InputMassiveInTableGrid();
 
@@ -159,14 +160,11 @@ Procedure TAddRecordForm.ReferenceButtonClick(Sender: TObject);
 Var
     InstractionTest: String;
 Begin
-    InstractionTest := ' - В первых трёх полях ограничений на ввод нет за исключением' +
-    #13#10 + 'того, что максимальная длина записи 20 символов. Опасайтесь' + 
-    #13#10 + 'пробелов, они не видны в турнирной таблице.' + 
-    #13#10 + ' - У поля итогового рейтинга команды есть ограничения: ' + 
-    #13#10 + 'Там можно писать только натуральные числа в диапазоне от 0' +
-    #13#10 + 'до 100.' +
-    #13#10 + ' - После того как все поля заполнены нажимайте на кнопку' + 
-    #13#10 + '''' + AddButton.Caption + ''';';
+    InstractionTest := ' - В первых трёх полях ограничений на ввод нет за исключением' + #13#10 +
+        'того, что максимальная длина записи 20 символов. Опасайтесь' + #13#10 + 'пробелов, они не видны в турнирной таблице.' + #13#10 +
+        ' - У поля итогового рейтинга команды есть ограничения: ' + #13#10 + 'Там можно писать только натуральные числа в диапазоне от 0' +
+        #13#10 + 'до 100.' + #13#10 + ' - После того как все поля заполнены нажимайте на кнопку' + #13#10 + '''' +
+        AddButton.Caption + ''';';
 
     CreateModalForm('Справка', InstractionTest, 490, 210);
 End;
@@ -197,11 +195,11 @@ Begin
         Try
             If (AddRecordForm.ActiveControl = AddRecordForm.PointsLabeledEdit) And
                 Not IsCorrectPointsClipboard(Clipboard.AsText, AddRecordForm.PointsLabeledEdit) Then
-                Raise Exception.Create('Некорректное количество очков!');
+                Raise Exception.Create('Некорректное количество очков!'#13#10'Максимальное кол-во очков 100 :(');
 
             If (AddRecordForm.ActiveControl = AddRecordForm.CoachLabeledEdit) And
                 Not IsCorrectStrings(Clipboard.AsText, AddRecordForm.CoachLabeledEdit) Then
-                Raise Exception.Create('Некорректная фамилия главного тренера!');
+                Raise Exception.Create('Некорректная фамилия главного тренера!'#13#10'Давайте уместимся в 20 символов.');
 
             If (AddRecordForm.ActiveControl = AddRecordForm.TeamNameLabeledEdit) And
                 Not IsCorrectStrings(Clipboard.AsText, AddRecordForm.TeamNameLabeledEdit) Then

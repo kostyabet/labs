@@ -15,9 +15,15 @@ Uses
     Vcl.Menus,
     Vcl.StdCtrls,
     Vcl.Mask,
-    Vcl.ExtCtrls;
+    Vcl.ExtCtrls,
+    Clipbrd;
 
 Type
+    TLabeledEdit = Class(Vcl.ExtCtrls.TLabeledEdit)
+    Public
+        Procedure WMPaste(Var Msg: TMessage); Message WM_PASTE;
+    End;
+
     TItems = Array [1 .. 4] Of String;
 
     TSearchRecordForm = Class(TForm)
@@ -113,7 +119,7 @@ End;
 
 Procedure TSearchRecordForm.SearchButtonClick(Sender: TObject);
 Begin
-    StrIndex := IndexRecord(CBox.ItemIndex, SearchStrLEdit.Text);
+    StrIndex := IndexRecord(CBox.ItemIndex, ConvertStringToWideChar(SearchStrLEdit.Text));
     If StrIndex <> -1 Then
     Begin
         ResultLabel.Caption := CreateResultGrid(StrIndex);
@@ -148,6 +154,34 @@ Begin
 
     If CBox.ItemIndex = 4 Then
         Key := CheckInput(Key, SearchStrLEdit);
+End;
+
+Procedure TLabeledEdit.WMPaste(Var Msg: TMessage);
+Begin
+    If Clipboard.HasFormat(CF_TEXT) Then
+    Begin
+        Try
+            If (SearchRecordForm.CBox.ItemIndex = 3) And Not IsCorrectPointsClipboard(Clipboard.AsText,
+                SearchRecordForm.SearchStrLEdit) Then
+                Raise Exception.Create('Некорректное количество очков!'#13#10'Максимальное кол-во очков 100 :(');
+
+            If (SearchRecordForm.CBox.ItemIndex = 2) And Not IsCorrectStrings(Clipboard.AsText, SearchRecordForm.SearchStrLEdit) Then
+                Raise Exception.Create('Некорректная фамилия главного тренера!'#13#10'Давайте уместимся в 20 символов.');
+
+            If (SearchRecordForm.CBox.ItemIndex = 1) And Not IsCorrectStrings(Clipboard.AsText, SearchRecordForm.SearchStrLEdit) Then
+                Raise Exception.Create('Некорректное название команды!'#13#10'Нужно более корокое название.');
+
+            If (SearchRecordForm.CBox.ItemIndex = 0) And Not IsCorrectStrings(Clipboard.AsText, SearchRecordForm.SearchStrLEdit) Then
+                Raise Exception.Create('Слишком длинное название страны!'#13#10'Используйте сокращения :)');
+        Except
+            On E: Exception Do
+            Begin
+                MessageBox(0, PWideChar(E.Message), 'Ошибка', MB_ICONERROR);
+                Exit;
+            End;
+        End;
+    End;
+    Inherited;
 End;
 
 End.

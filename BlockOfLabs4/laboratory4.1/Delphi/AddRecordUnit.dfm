@@ -5,8 +5,8 @@ object AddRecordForm: TAddRecordForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1079#1072#1087#1080#1089#1080
-  ClientHeight = 158
-  ClientWidth = 332
+  ClientHeight = 164
+  ClientWidth = 377
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -2166,7 +2166,7 @@ object AddRecordForm: TAddRecordForm
   object CountryLabeledEdit: TLabeledEdit
     Left = 64
     Top = 8
-    Width = 137
+    Width = 193
     Height = 23
     Hint = #1050#1072#1082#1091#1102' '#1089#1090#1088#1072#1085#1091' '#1087#1088#1077#1076#1089#1090#1072#1074#1083#1103#1077#1090' '#1082#1086#1084#1072#1085#1076#1072'?'
     EditLabel.Width = 104
@@ -2185,7 +2185,7 @@ object AddRecordForm: TAddRecordForm
   object TeamNameLabeledEdit: TLabeledEdit
     Left = 130
     Top = 37
-    Width = 143
+    Width = 199
     Height = 23
     Hint = #1050#1072#1082#1086#1077' '#1091' '#1082#1086#1084#1072#1085#1076#1099' '#1085#1072#1079#1074#1072#1085#1080#1077'?'
     EditLabel.Width = 121
@@ -2204,7 +2204,7 @@ object AddRecordForm: TAddRecordForm
   object CoachLabeledEdit: TLabeledEdit
     Left = 175
     Top = 66
-    Width = 149
+    Width = 194
     Height = 23
     Hint = #1050#1090#1086' '#1075#1083#1072#1074#1085#1099#1081' '#1090#1088#1077#1085#1077#1088'?'
     EditLabel.Width = 95
@@ -2222,8 +2222,8 @@ object AddRecordForm: TAddRecordForm
   end
   object PointsLabeledEdit: TLabeledEdit
     Left = 122
-    Top = 95
-    Width = 143
+    Top = 100
+    Width = 95
     Height = 23
     Hint = #1050#1072#1082#1086#1081' '#1091' '#1082#1086#1084#1072#1085#1076#1099' '#1088#1077#1081#1090#1080#1085#1075'?'
     EditLabel.Width = 94
@@ -2242,8 +2242,8 @@ object AddRecordForm: TAddRecordForm
   end
   object AddButton: TButton
     Left = 8
-    Top = 124
-    Width = 316
+    Top = 129
+    Width = 361
     Height = 25
     Hint = #1053#1072#1078#1084#1080#1090#1077' '#1076#1083#1103' '#1076#1086#1073#1072#1074#1083#1077#1085#1080#1103' '#1085#1086#1074#1086#1081' '#1079#1072#1087#1080#1089#1080'.'
     Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1079#1072#1087#1080#1089#1100
