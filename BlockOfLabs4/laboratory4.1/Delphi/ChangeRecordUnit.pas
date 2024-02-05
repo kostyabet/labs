@@ -71,13 +71,25 @@ Uses
     MainFormUnit;
 
 Procedure TChangeRecordForm.ChangeButtonClick(Sender: TObject);
+Var
+    ResultKey: Integer;
 Begin
-    InputDataInMassive(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(TeamNameLabeledEdit.Text),
-        ConvertStringToWideChar(CoachLabeledEdit.Text), StrToint(PointsLabeledEdit.Text), CurentRow - 1);
-    SortFootballStats();
-    InputMassiveInTableGrid();
+    If Not IfRecordExist(CountryLabeledEdit.Text, CoachLabeledEdit.Text, TeamNameLabeledEdit.Text, PointsLabeledEdit.Text) Then
+        ResultKey := ID_YES
+    Else
+        ResultKey := Application.Messagebox
+            ('Подобная запись уже существует в таблице результатов, вы уверенны, что хотите создать дубликат?', 'Выход',
+            MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
 
-    ChangeRecordForm.Close;
+    If (ResultKey = ID_YES) Then
+    Begin
+        InputDataInMassive(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(TeamNameLabeledEdit.Text),
+            ConvertStringToWideChar(CoachLabeledEdit.Text), StrToint(PointsLabeledEdit.Text), CurentRow - 1);
+        SortFootballStats();
+        InputMassiveInTableGrid();
+
+        ChangeRecordForm.Close;
+    End;
 End;
 
 Procedure TChangeRecordForm.CoachLabeledEditChange(Sender: TObject);

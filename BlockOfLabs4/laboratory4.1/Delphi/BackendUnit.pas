@@ -49,6 +49,7 @@ Procedure LoadRecordsInFile();
 Procedure LoadRecordsFromFile();
 Function ConvertStringToWideChar(SourceString: String): TString;
 Function WideCharToStr(SourceWideChar: TString): String;
+Function IfRecordExist(Country, Coach, Team, Points: String): Boolean;
 
 Var
     FootballTable: TFootballMassive;
@@ -195,7 +196,6 @@ End;
 
 Procedure LoadRecordsInFile();
 Var
-    FileStream: TFileStream;
     I: Integer;
 Begin
     AssignFile(StatsFile, 'myFile.txt');
@@ -257,6 +257,21 @@ Begin
     End;
 
     WideCharToStr := ResStr;
+End;
+
+Function IfRecordExist(Country, Coach, Team, Points: String): Boolean;
+Var
+    I: Integer;
+Begin
+    For I := 0 To CurentRecordsCount - 1 Do
+        If (FootballTable[I].Country = ConvertStringToWideChar(Country)) And (FootballTable[I].Coach = ConvertStringToWideChar(Coach)) And
+            (FootballTable[I].Team = ConvertStringToWideChar(Team)) And (IntToStr(FootballTable[I].Points) = Points) Then
+        Begin
+            IfRecordExist := True;
+            Exit;
+        End;
+
+    IfRecordExist := False;
 End;
 
 End.

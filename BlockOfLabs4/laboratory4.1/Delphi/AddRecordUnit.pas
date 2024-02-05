@@ -72,18 +72,30 @@ Uses
     BackendUnit;
 
 Procedure TAddRecordForm.AddButtonClick(Sender: TObject);
+Var
+    ResultKey: Integer;
 Begin
-    Inc(CurentRecordsCount);
-    InputDataInMassive(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(CoachLabeledEdit.Text),
-        ConvertStringToWideChar(TeamNameLabeledEdit.Text), StrToint(PointsLabeledEdit.Text), High(FootballTable));
-    SortFootballStats();
-    InputMassiveInTableGrid();
+    If Not IfRecordExist(CountryLabeledEdit.Text, CoachLabeledEdit.Text, TeamNameLabeledEdit.Text, PointsLabeledEdit.Text) Then
+        ResultKey := ID_YES
+    Else
+        ResultKey := Application.Messagebox
+            ('Подобная запись уже существует в таблице результатов, вы уверенны, что хотите создать дубликат?', 'Выход',
+            MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
 
-    CountryLabeledEdit.Text := '';
-    TeamNameLabeledEdit.Text := '';
-    CoachLabeledEdit.Text := '';
-    PointsLabeledEdit.Text := '';
-    AddRecordForm.Close;
+    If (ResultKey = ID_YES) Then
+    Begin
+        Inc(CurentRecordsCount);
+        InputDataInMassive(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(CoachLabeledEdit.Text),
+            ConvertStringToWideChar(TeamNameLabeledEdit.Text), StrToint(PointsLabeledEdit.Text), High(FootballTable));
+        SortFootballStats();
+        InputMassiveInTableGrid();
+
+        CountryLabeledEdit.Text := '';
+        TeamNameLabeledEdit.Text := '';
+        CoachLabeledEdit.Text := '';
+        PointsLabeledEdit.Text := '';
+        AddRecordForm.Close;
+    End;
 End;
 
 Procedure TAddRecordForm.CoachLabeledEditChange(Sender: TObject);
