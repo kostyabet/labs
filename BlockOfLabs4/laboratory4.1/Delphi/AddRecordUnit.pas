@@ -72,9 +72,11 @@ Uses
 
 Procedure TAddRecordForm.AddButtonClick(Sender: TObject);
 Begin
-    InputDataInMassive(CountryLabeledEdit.Text, TeamNameLabeledEdit.Text, CoachLabeledEdit.Text, PointsLabeledEdit.Text);
-
-    InputMassiveInTableGrid(FootballTable, MainForm.PointTabelStrGrid);
+    SetLength(FootballTable, Length(FootballTable) + 1);
+    InputDataInMassive(CountryLabeledEdit.Text, TeamNameLabeledEdit.Text, CoachLabeledEdit.Text, PointsLabeledEdit.Text,
+        High(FootballTable));
+    SortFootballStats();
+    InputMassiveInTableGrid();
 
     CountryLabeledEdit.Text := '';
     TeamNameLabeledEdit.Text := '';
@@ -149,25 +151,24 @@ Begin
 End;
 
 Procedure TAddRecordForm.PointsLabeledEditKeyPress(Sender: TObject; Var Key: Char);
-Const
-    GOOD_VALUES: Set Of Char = ['0' .. '9', #08];
 Begin
-    If Not(Key In GOOD_VALUES) Then
-        Key := #0;
-
-    If (PointsLabeledEdit.Text = '10') And ((Key <> '0') And (Key <> #08)) Then
-        Key := #0;
-
-    If (Length(PointsLabeledEdit.Text) = PointsLabeledEdit.MaxLength - 1) And (PointsLabeledEdit.Text <> '10') And (Key <> #08) Then
-        Key := #0;
-
-    If (PointsLabeledEdit.Text = '0') And (Key <> #08) Then
-        Key := #0;
+    Key := CheckInput(Key, PointsLabeledEdit);
 End;
 
 Procedure TAddRecordForm.ReferenceButtonClick(Sender: TObject);
+Var
+    InstractionTest: String;
 Begin
-    CreateModalForm('Справка', 'Справка', 410, 300);
+    InstractionTest := ' - В первых трёх полях ограничений на ввод нет за исключением' +
+    #13#10 + 'того, что максимальная длина записи 20 символов. Опасайтесь' + 
+    #13#10 + 'пробелов, они не видны в турнирной таблице.' + 
+    #13#10 + ' - У поля итогового рейтинга команды есть ограничения: ' + 
+    #13#10 + 'Там можно писать только натуральные числа в диапазоне от 0' +
+    #13#10 + 'до 100.' +
+    #13#10 + ' - После того как все поля заполнены нажимайте на кнопку' + 
+    #13#10 + '''' + AddButton.Caption + ''';';
+
+    CreateModalForm('Справка', InstractionTest, 490, 210);
 End;
 
 Procedure TAddRecordForm.TeamNameLabeledEditChange(Sender: TObject);
