@@ -28,6 +28,8 @@ Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeigh
 Function IsCorrectPointsClipboard(ClipbrdText: String; PointsLabeledEdit: TLabeledEdit): Boolean;
 Function IsCorrectStrings(ClipbrdText: String; LabeledEdit: TLabeledEdit): Boolean;
 Function IsVisibleAddOnChange(CountryLEdit, CoachLEdit, PointsLEdit, TeamNameLEdit: TLabeledEdit): Boolean;
+Procedure InputInCurentRow(I: Integer; Country, Team, Coach: String; Points: Integer);
+Function CheckInput(Key: Char; PointsLabeledEdit: TLabeledEdit): Char;
 
 Const
     MAX_STR_LENGTH: Integer = 20;
@@ -54,6 +56,7 @@ Begin
         ModalForm.BorderIcons := [BiSystemMenu];
         ModalForm.FormStyle := FsStayOnTop;
         ModalForm.Icon := MainForm.Icon;
+        ModalForm.Scaled := False;
 
         ModalLabel := TLabel.Create(ModalForm);
         ModalLabel.Parent := ModalForm;
@@ -118,7 +121,6 @@ Function IsVisibleAddOnChange(CountryLEdit, CoachLEdit, PointsLEdit, TeamNameLEd
 Var
     IsCorrect: Boolean;
 Begin
-    IsCorrect := False;
     Try
         IsCorrect := (CountryLEdit.Text <> '') And (CoachLEdit.Text <> '') And (PointsLEdit.Text <> '') And (TeamNameLEdit.Text <> '');
     Except
@@ -126,6 +128,34 @@ Begin
     End;
 
     IsVisibleAddOnChange := IsCorrect;
+End;
+
+Procedure InputInCurentRow(I: Integer; Country, Team, Coach: String; Points: Integer);
+Begin
+    MainForm.PointTabelStrGrid.Cells[0, I] := IntToStr(I);
+    MainForm.PointTabelStrGrid.Cells[1, I] := Country;
+    MainForm.PointTabelStrGrid.Cells[2, I] := Team;
+    MainForm.PointTabelStrGrid.Cells[3, I] := Coach;
+    MainForm.PointTabelStrGrid.Cells[4, I] := IntToStr(Points);
+End;
+
+Function CheckInput(Key: Char; PointsLabeledEdit: TLabeledEdit): Char;
+Const
+    GOOD_VALUES: Set Of Char = ['0' .. '9', #08];
+Begin
+    If Not(Key In GOOD_VALUES) Then
+        Key := #0;
+
+    If (PointsLabeledEdit.Text = '10') And ((Key <> '0') And (Key <> #08)) Then
+        Key := #0;
+
+    If (Length(PointsLabeledEdit.Text) = PointsLabeledEdit.MaxLength - 1) And (PointsLabeledEdit.Text <> '10') And (Key <> #08) Then
+        Key := #0;
+
+    If (PointsLabeledEdit.Text = '0') And (Key <> #08) And (PointsLabeledEdit.SelStart = 1) Then
+        Key := #0;
+
+    CheckInput := Key;
 End;
 
 End.
