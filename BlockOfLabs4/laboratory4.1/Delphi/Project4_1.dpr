@@ -1,23 +1,36 @@
-program Project4_1;
+﻿Program Project4_1;
 
-uses
-  Vcl.Forms,
-  MainFormUnit in 'MainFormUnit.pas' {MainForm},
-  Vcl.Themes,
-  Vcl.Styles,
-  WorkFormUnit in 'WorkFormUnit.pas' {WorkForm},
-  FrontendUnit in 'FrontendUnit.pas',
-  AddRecordUnit in 'AddRecordUnit.pas' {AddRecordForm},
-  BackendUnit in 'BackendUnit.pas';
+Uses
+    Windows,
+    Vcl.ExtCtrls,
+    Vcl.Forms,
+    MainFormUnit In 'MainFormUnit.pas' {MainForm} ,
+    Vcl.Themes,
+    Vcl.Styles,
+    LoadingScreenUnit In 'LoadingScreenUnit.pas' {LoadingScreen} ,
+    FrontendUnit In 'FrontendUnit.pas',
+    AddRecordUnit In 'AddRecordUnit.pas' {AddRecordForm} ,
+    BackendUnit In 'BackendUnit.pas' {/ChangeRecordUnit in 'ChangeRecordUnit.pas' {ChangeRecordForm} ,
+    ChangeRecordUnit In 'ChangeRecordUnit.pas' {ChangeRecordForm} ,
+    SearchRecordUnit In 'SearchRecordUnit.pas' {SearchRecordForm};
 
 {$R *.res}
 
-begin
-  Application.Initialize;
-  Application.MainFormOnTaskbar := True;
-  TStyleManager.TrySetStyle('Silver');
-  Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TWorkForm, WorkForm);
-  Application.CreateForm(TAddRecordForm, AddRecordForm);
-  Application.Run;
-end.
+Begin
+    Application.Initialize;
+    Application.MainFormOnTaskbar := False;
+    TStyleManager.TrySetStyle('Silver');
+    Application.CreateForm(TMainForm, MainForm);
+    MainForm.Visible := False;
+
+    LoadingScreen := TLoadingScreen.Create(Application);
+    LoadingScreen.Show;
+    While LoadingScreen.EndLoadingScreen.Enabled Do
+        Application.ProcessMessages;
+    LoadingScreen.Hide;
+    LoadingScreen.Free;
+
+    MainForm.Visible := True;
+    Application.Run;
+
+End.
