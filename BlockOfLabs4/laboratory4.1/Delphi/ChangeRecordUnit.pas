@@ -99,7 +99,7 @@ End;
 
 Procedure TChangeRecordForm.CoachLabeledEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
 Begin
-    Handled := False;
+    Handled := True;
 End;
 
 Procedure TChangeRecordForm.CoachLabeledEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
@@ -118,7 +118,7 @@ End;
 
 Procedure TChangeRecordForm.CountryLabeledEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
 Begin
-    Handled := False;
+    Handled := True;
 End;
 
 Procedure TChangeRecordForm.CountryLabeledEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
@@ -145,7 +145,7 @@ End;
 
 Procedure TChangeRecordForm.PointsLabeledEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
 Begin
-    Handled := False;
+    Handled := True;
 End;
 
 Procedure TChangeRecordForm.PointsLabeledEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
@@ -182,7 +182,7 @@ End;
 
 Procedure TChangeRecordForm.TeamNameLabeledEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
 Begin
-    Handled := False;
+    Handled := True;
 End;
 
 Procedure TChangeRecordForm.TeamNameLabeledEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);

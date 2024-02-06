@@ -90,7 +90,7 @@ Begin
         SortRecords();
         InputRecordsInTableGrid();
         MainForm.PointTabelStrGrid.FixedRows := 1;
-        
+
         CountryLabeledEdit.Text := '';
         TeamNameLabeledEdit.Text := '';
         CoachLabeledEdit.Text := '';
@@ -106,7 +106,7 @@ End;
 
 Procedure TAddRecordForm.CoachLabeledEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
 Begin
-    Handled := False;
+    Handled := True;
 End;
 
 Procedure TAddRecordForm.CoachLabeledEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
@@ -125,7 +125,7 @@ End;
 
 Procedure TAddRecordForm.CountryLabeledEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
 Begin
-    Handled := False;
+    Handled := True;
 End;
 
 Procedure TAddRecordForm.CountryLabeledEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
@@ -152,7 +152,7 @@ End;
 
 Procedure TAddRecordForm.PointsLabeledEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
 Begin
-    Handled := False;
+    Handled := True;
 End;
 
 Procedure TAddRecordForm.PointsLabeledEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
@@ -189,7 +189,7 @@ End;
 
 Procedure TAddRecordForm.TeamNameLabeledEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
 Begin
-    Handled := False;
+    Handled := True;
 End;
 
 Procedure TAddRecordForm.TeamNameLabeledEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
