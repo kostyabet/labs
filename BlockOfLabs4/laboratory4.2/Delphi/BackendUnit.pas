@@ -22,7 +22,7 @@ Procedure InputVectorFromGrid(Var Vector: TMassive; StringGrid: TStringGrid; N: 
 Procedure AddToArray(Var Results: TMatrix; CurrentPath: TMassive; NSize, CurentSum: Integer);
 Procedure CheckingCVectorCondition(CurrentPath, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix);
 Function IndexOf(BVector: TMassive; Count: Integer): Integer;
-Procedure SearchSuitableAmo(SubArray, BVector, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix; CurrentPath: Tmassive = 0);
+Procedure SearchSuitableAmo(SubArray, BVector, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix; CurrentPath: Tmassive = nil);
 Procedure Swap(Var Matrix: TMatrix; I, J: Integer);
 Function Partition(Var Matrix: TMatrix; Left, Right: Integer): Integer;
 Procedure QuickSort(Var Matrix: TMatrix; Left, Right: Integer);
@@ -255,7 +255,6 @@ End;
 
 Procedure AddToArray(Var Results: TMatrix; CurrentPath: TMassive; NSize, CurentSum: Integer);
 Var
-    NewItem: TMassive;
     I: Integer;
 Begin
     SetLength(Results, Length(Results) + 1, NSize + 1);
@@ -289,7 +288,7 @@ Begin
     IndexOf := IndexNum;
 End;
 
-Procedure SearchSuitableAmo(SubArray, BVector, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix; CurrentPath: Tmassive = 0);
+Procedure SearchSuitableAmo(SubArray, BVector, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix; CurrentPath: Tmassive = nil);
 Var
     CurrentPath2, CurrentPath1: TMassive;
     I: Integer;
