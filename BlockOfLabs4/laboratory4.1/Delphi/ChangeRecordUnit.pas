@@ -83,10 +83,10 @@ Begin
 
     If (ResultKey = ID_YES) Then
     Begin
-        InputDataInMassive(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(TeamNameLabeledEdit.Text),
-            ConvertStringToWideChar(CoachLabeledEdit.Text), StrToint(PointsLabeledEdit.Text), CurentRow - 1);
-        SortFootballStats();
-        InputMassiveInTableGrid();
+        ChangeRecordInFile(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(TeamNameLabeledEdit.Text),
+            ConvertStringToWideChar(CoachLabeledEdit.Text), StrToint(PointsLabeledEdit.Text), CurentRow);
+        SortRecords();
+        InputRecordsInTableGrid();
 
         ChangeRecordForm.Close;
     End;
@@ -131,7 +131,6 @@ Begin
 End;
 
 Procedure TChangeRecordForm.FormCreate(Sender: TObject);
-
 Begin
     CountryLabeledEdit.EditLabel.Caption := '';
     TeamNameLabeledEdit.EditLabel.Caption := '';

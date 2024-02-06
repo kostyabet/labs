@@ -17249,7 +17249,7 @@ object MainForm: TMainForm
     Height = 553
     Align = alLeft
     TabOrder = 0
-    ExplicitHeight = 529
+    ExplicitHeight = 541
     object AddSpButton: TSpeedButton
       Left = 0
       Top = 0
@@ -17332,7 +17332,7 @@ object MainForm: TMainForm
     end
   end
   object PointTabelStrGrid: TStringGrid
-    Left = 88
+    Left = 86
     Top = 227
     Width = 756
     Height = 301
@@ -23970,15 +23970,6 @@ object MainForm: TMainForm
     object FileButton: TMenuItem
       Caption = #1060#1072#1081#1083
       ImageIndex = 0
-      object SaveButton: TMenuItem
-        Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-        Hint = #1057#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1090#1077#1082#1091#1097#1077#1081' '#1090#1072#1073#1083#1080#1094#1099' '#1074' '#1092#1072#1081#1083'.'
-        ImageIndex = 4
-        ShortCut = 16467
-      end
-      object Line: TMenuItem
-        Caption = '-'
-      end
       object CloseButton: TMenuItem
         Caption = #1042#1099#1081#1090#1080
         Hint = #1042#1099#1093#1086#1076' :('

@@ -66,14 +66,17 @@ Uses
     ChangeRecordUnit;
 
 Procedure TSearchRecordForm.ChangeRecordButtonClick(Sender: TObject);
+Var
+    TempRecord: TFootStatsRecord;
 Begin
     Application.CreateForm(TChangeRecordForm, ChangeRecordForm);
     CurentRow := StrIndex + 1;
 
-    ChangeRecordForm.CountryLabeledEdit.Text := FootballTable[StrIndex].Country;
-    ChangeRecordForm.TeamNameLabeledEdit.Text := FootballTable[StrIndex].Team;
-    ChangeRecordForm.CoachLabeledEdit.Text := FootballTable[StrIndex].Coach;
-    ChangeRecordForm.PointsLabeledEdit.Text := IntToStr(FootballTable[StrIndex].Points);
+    TempRecord := GetRecordFromFile(CurentRow);
+    ChangeRecordForm.CountryLabeledEdit.Text := TempRecord.Country;
+    ChangeRecordForm.TeamNameLabeledEdit.Text := TempRecord.Team;
+    ChangeRecordForm.CoachLabeledEdit.Text := TempRecord.Coach;
+    ChangeRecordForm.PointsLabeledEdit.Text := IntToStr(TempRecord.Points);
 
     ChangeRecordForm.Showmodal;
     SearchRecordForm.Close;
@@ -122,7 +125,7 @@ Begin
     StrIndex := IndexRecord(CBox.ItemIndex, ConvertStringToWideChar(SearchStrLEdit.Text));
     If StrIndex <> -1 Then
     Begin
-        ResultLabel.Caption := CreateResultGrid(StrIndex);
+        ResultLabel.Caption := CreateResultGrid(StrIndex + 1);
         ChangeRecordButton.Visible := True;
     End
     Else

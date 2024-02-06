@@ -23,7 +23,7 @@ Uses
 Type
     TString = Array [1 .. 20] Of WideChar;
 
-    TFootballStats = Record
+    TFootStatsRecord = Record
         Country: TString;
         Team: TString;
         Coach: TString;
@@ -35,16 +35,19 @@ Const
 
 Type
     TMassive = Array Of Integer;
-    TFootballMassive = Array [0 .. TEAMS_COUNT] Of TFootballStats;
-    TFStatsFile = File Of TFootballStats;
+    TFootballMassive = Array [0 .. TEAMS_COUNT] Of TFootStatsRecord;
+    TFileLoader = File Of TFootStatsRecord;
 
-Procedure InputDataInMassive(Country, Team, Coach: TString; Points: Integer; CurentRow: Integer);
-Procedure InputMassiveInTableGrid();
-Procedure InputInfoFromGrid(Var CountryLabeledEdit, TeamNameLabeledEdit, CoachLabeledEdit, PointsLabeledEdit: TLabeledEdit; I: Integer);
-Procedure SortFootballStats();
-Procedure DeleteRow(I: Integer);
+Function GetRecordFromFile(CurentRow: Integer): TFootStatsRecord;
+Procedure ChangeRecordInFile(Country, Team, Coach: TString; Points, CurentRow: Integer);
+Procedure InputRecordInFile(Country, Team, Coach: TString; Points: Integer);
+Procedure InputRecordsInTableGrid();
+// Procedure InputInfoFromGrid(Var CountryLabeledEdit, TeamNameLabeledEdit, CoachLabeledEdit, PointsLabeledEdit: TLabeledEdit; I: Integer);
+Procedure SortRecords();
+Procedure DeleteRow(DelRow: Integer);
 Function IndexRecord(I: Integer; CurentStr: TString): Integer;
 Function CreateResultGrid(StrIndex: Integer): String;
+Procedure CreateCorrectionFile();
 Procedure LoadRecordsInFile();
 Procedure LoadRecordsFromFile();
 Function ConvertStringToWideChar(SourceString: String): TString;
@@ -52,9 +55,14 @@ Function WideCharToStr(SourceWideChar: TString): String;
 Function IfRecordExist(Country, Coach, Team, Points: String): Boolean;
 
 Var
-    FootballTable: TFootballMassive;
     CurentRecordsCount: Integer = 0;
-    StatsFile: TFStatsFile;
+    MainFile: TFileLoader;
+    CorrectionFile: TFileLoader;
+
+Const
+    MainFilePath: String = 'MainFile.txt';
+    CorrectionFilePath: String = 'CorrectionFile.txt';
+    TempFilePath: String = 'TempFile.txt';
 
 Implementation
 
@@ -62,43 +70,156 @@ Uses
     MainFormUnit,
     FrontendUnit;
 
-Procedure InputDataInMassive(Country, Team, Coach: TString; Points: Integer; CurentRow: Integer);
-Begin
-    FootballTable[CurentRow].Country := Country;
-    FootballTable[CurentRow].Team := Team;
-    FootballTable[CurentRow].Coach := Coach;
-    FootballTable[CurentRow].Points := Points;
-End;
-
-Procedure InputMassiveInTableGrid();
+Function GetRecordFromFile(CurentRow: Integer): TFootStatsRecord;
 Var
+    TempRecord: TFootStatsRecord;
     I: Integer;
 Begin
-    MainForm.PointTabelStrGrid.RowCount := CurentRecordsCount + 1;
+    I := 0;
+    AssignFile(CorrectionFile, CorrectionFilePath);
+    Try
+        Reset(CorrectionFile);
+        While Not EOF(CorrectionFile) And (I <> CurentRow) Do
+        Begin
+            Read(CorrectionFile, TempRecord);
+            Inc(I);
+        End;
+    Finally
+        Close(CorrectionFile);
+    End;
 
-    For I := 1 To High(FootballTable) + 2 Do
-        If Not(I - 1 > High(FootballTable)) Then
-            InputInCurentRow(I, FootballTable[I - 1].Country, FootballTable[I - 1].Team, FootballTable[I - 1].Coach,
-                FootballTable[I - 1].Points);
+    GetRecordFromFile := TempRecord;
 End;
 
-Procedure InputInfoFromGrid(Var CountryLabeledEdit, TeamNameLabeledEdit, CoachLabeledEdit, PointsLabeledEdit: TLabeledEdit; I: Integer);
+Procedure ChangeRecordInFile(Country, Team, Coach: TString; Points, CurentRow: Integer);
+Var
+    TempRecord: TFootStatsRecord;
+    TempFile: TFileLoader;
+    I: Integer;
 Begin
-    If Not(I - 1 > High(FootballTable)) Then
-    Begin
-        CountryLabeledEdit.Text := FootballTable[I - 1].Country;
-        TeamNameLabeledEdit.Text := FootballTable[I - 1].Team;
-        CoachLabeledEdit.Text := FootballTable[I - 1].Coach;
-        PointsLabeledEdit.Text := IntToStr(FootballTable[I - 1].Points);
+    I := 1;
+    AssignFile(CorrectionFile, CorrectionFilePath);
+    AssignFile(TempFile, TempFilePath);
+    Try
+        Rewrite(TempFile);
+        Reset(CorrectionFile);
+        While Not EOF(CorrectionFile) Do
+        Begin
+            Read(CorrectionFile, TempRecord);
+            If (I = CurentRow) Then
+            Begin
+                TempRecord.Country := Country;
+                TempRecord.Team := Team;
+                TempRecord.Coach := Coach;
+                TempRecord.Points := Points;
+                Write(TempFile, TempRecord);
+            End
+            Else
+                Write(TempFile, TempRecord);
+            Inc(I);
+        End;
+    Finally
+        Close(CorrectionFile);
+        Close(TempFile);
+    End;
+    DeleteFile(CorrectionFilePath);
+
+    RenameFile(TempFilePath, CorrectionFilePath);
+End;
+
+Procedure InputRecordInFile(Country, Team, Coach: TString; Points: Integer);
+Var
+    TempRecord: TFootStatsRecord;
+    TempFile: TFileLoader;
+Begin
+    AssignFile(CorrectionFile, CorrectionFilePath);
+    AssignFile(TempFile, TempFilePath);
+    Try
+        Rewrite(TempFile);
+        Reset(CorrectionFile);
+        While Not EOF(CorrectionFile) Do
+        Begin
+            Read(CorrectionFile, TempRecord);
+            Write(TempFile, TempRecord);
+        End;
+        TempRecord.Country := Country;
+        TempRecord.Team := Team;
+        TempRecord.Coach := Coach;
+        TempRecord.Points := Points;
+        Write(TempFile, TempRecord);
+    Finally
+        Close(CorrectionFile);
+        Close(TempFile);
+    End;
+    DeleteFile(CorrectionFilePath);
+
+    RenameFile(TempFilePath, CorrectionFilePath);
+End;
+
+Procedure InputRecordsInTableGrid();
+Var
+    TempRecord: TFootStatsRecord;
+    I: Integer;
+Begin
+    AssignFile(CorrectionFile, CorrectionFilePath);
+    Try
+        Reset(CorrectionFile);
+
+        MainForm.PointTabelStrGrid.RowCount := CurentRecordsCount + 1;
+        I := 0;
+        While Not EOF(CorrectionFile) Do
+        Begin
+            Read(CorrectionFile, TempRecord);
+            InputInCurentRow(I + 1, WideCharToStr(TempRecord.Country), WideCharToStr(TempRecord.Team), WideCharToStr(TempRecord.Coach),
+                TempRecord.Points);
+            Inc(I);
+        End;
+    Finally
+        Close(CorrectionFile);
     End;
 End;
 
-Procedure SortFootballStats();
+Procedure InputFTInRecords(FootballTable: TFootballMassive);
 Var
+    I: Integer;
+Begin
+    AssignFile(CorrectionFile, CorrectionFilePath);
+    Rewrite(CorrectionFile);
+    Try
+        For I := 0 To CurentRecordsCount - 1 Do
+            Write(CorrectionFile, FootballTable[I]);
+    Finally
+        Close(CorrectionFile);
+    End;
+End;
+
+Procedure InputRecordsInFT(Var FootballTable: TFootballMassive);
+Var
+    I: Integer;
+Begin
+    I := 0;
+    AssignFile(CorrectionFile, CorrectionFilePath);
+    Reset(CorrectionFile);
+    Try
+        While Not EOF(CorrectionFile) Do
+        Begin
+            Read(CorrectionFile, FootballTable[I]);
+            Inc(I);
+        End;
+    Finally
+        Close(CorrectionFile);
+    End;
+End;
+
+Procedure SortRecords();
+Var
+    FootballTable: TFootballMassive;
     TempP, I, J: Integer;
     TempT, TempCh, TempCy: TString;
 Begin
-    For I := 1 To High(FootballTable) Do
+    InputRecordsInFT(FootballTable);
+
+    For I := 1 To CurentRecordsCount - 1 Do
     Begin
         TempP := FootballTable[I].Points;
         TempT := FootballTable[I].Team;
@@ -121,26 +242,45 @@ Begin
             Dec(J);
         End;
     End;
+
+    InputFTInRecords(FootballTable);
 End;
 
-Procedure DeleteRow(I: Integer);
+Procedure DeleteRow(DelRow: Integer);
+Var
+    TempRecord: TFootStatsRecord;
+    TempFile: TFileLoader;
+    I: Integer;
 Begin
-    Dec(CurentRecordsCount);
-    While Not(I > High(FootballTable) - 1) Do
-    Begin
-        FootballTable[I].Country := FootballTable[I + 1].Country;
-        FootballTable[I].Team := FootballTable[I + 1].Team;
-        FootballTable[I].Coach := FootballTable[I + 1].Coach;
-        FootballTable[I].Points := FootballTable[I + 1].Points;
-        Inc(I);
+    I := 1;
+    AssignFile(CorrectionFile, CorrectionFilePath);
+    AssignFile(TempFile, TempFilePath);
+    Try
+        Rewrite(TempFile);
+        Reset(CorrectionFile);
+        While Not EOF(CorrectionFile) Do
+        Begin
+            Read(CorrectionFile, TempRecord);
+            If (I <> DelRow) Then
+                Write(TempFile, TempRecord);
+            Inc(I);
+        End;
+    Finally
+        Close(CorrectionFile);
+        Close(TempFile);
     End;
-    InputMassiveInTableGrid();
+    DeleteFile(CorrectionFilePath);
+
+    RenameFile(TempFilePath, CorrectionFilePath);
 End;
 
 Function IndexRecord(I: Integer; CurentStr: TString): Integer;
 Var
+    FootballTable: TFootballMassive;
     J: Integer;
 Begin
+    InputRecordsInFT(FootballTable);
+
     IndexRecord := -1;
     Case I Of
         0:
@@ -184,49 +324,61 @@ End;
 
 Function CreateResultGrid(StrIndex: Integer): String;
 Var
+    TempRecord: TFootStatsRecord;
     ResStr: String;
 Begin
-    ResStr := 'Страна: ' + WideCharToStr(FootballTable[StrIndex].Country) + ';'#13#10;
-    ResStr := ResStr + 'Название команды: ' + WideCharToStr(FootballTable[StrIndex].Team) + ';'#13#10;
-    ResStr := ResStr + 'Главный Тренер: ' + WideCharToStr(FootballTable[StrIndex].Coach) + ';'#13#10;
-    ResStr := ResStr + 'Итоговый результат:' + IntToStr(FootballTable[StrIndex].Points);
+    TempRecord := GetRecordFromFile(StrIndex);
+
+    ResStr := 'Страна: ' + WideCharToStr(TempRecord.Country) + ';'#13#10;
+    ResStr := ResStr + 'Название команды: ' + WideCharToStr(TempRecord.Team) + ';'#13#10;
+    ResStr := ResStr + 'Главный Тренер: ' + WideCharToStr(TempRecord.Coach) + ';'#13#10;
+    ResStr := ResStr + 'Итоговый результат:' + IntToStr(TempRecord.Points);
 
     CreateResultGrid := ResStr;
 End;
 
-Procedure LoadRecordsInFile();
-Var
-    I: Integer;
+Procedure CreateCorrectionFile();
 Begin
-    AssignFile(StatsFile, 'myFile.txt');
+    AssignFile(CorrectionFile, CorrectionFilePath);
+    Rewrite(CorrectionFile);
+    Close(CorrectionFile);
+End;
 
-    Rewrite(StatsFile);
+Procedure LoadRecordsInFile();
+Begin
+    If FileExists(MainFilePath) Then
+        DeleteFile(MainFilePath);
 
-    For I := 0 To CurentRecordsCount - 1 Do
-    Begin
-        Write(StatsFile, FootballTable[I]);
-    End;
-
-    CloseFile(StatsFile);
+    RenameFile(CorrectionFilePath, MainFilePath);
 End;
 
 Procedure LoadRecordsFromFile();
 Var
-    I: Integer;
+    TempRecord: TFootStatsRecord;
 Begin
-    I := 0;
-    AssignFile(StatsFile, 'myFile.txt');
-    Reset(StatsFile);
-    While Not EOF(StatsFile) Do
-    Begin
-        Read(StatsFile, FootballTable[I]);
-        Inc(I);
-    End;
-    CloseFile(StatsFile);
+    CreateCorrectionFile;
 
-    CurentRecordsCount := I;
-    SortFootballStats();
-    InputMassiveInTableGrid();
+    CurentRecordsCount := 0;
+    AssignFile(MainFile, MainFilePath);
+    AssignFile(CorrectionFile, CorrectionFilePath);
+    Try
+        Reset(MainFile);
+        ReWrite(CorrectionFile);
+        While Not EOF(MainFile) Do
+        Begin
+            Read(MainFile, TempRecord);
+            Write(CorrectionFile, TempRecord);
+            Inc(CurentRecordsCount);
+        End;
+        CloseFile(MainFile);
+        CloseFile(CorrectionFile);
+    Except
+        Rewrite(MainFile);
+        Close(MainFile);
+    End;
+
+    SortRecords();
+    InputRecordsInTableGrid();
 End;
 
 Function ConvertStringToWideChar(SourceString: String): TString;
@@ -263,13 +415,13 @@ Function IfRecordExist(Country, Coach, Team, Points: String): Boolean;
 Var
     I: Integer;
 Begin
-    For I := 0 To CurentRecordsCount - 1 Do
+    (*For I := 0 To CurentRecordsCount - 1 Do
         If (FootballTable[I].Country = ConvertStringToWideChar(Country)) And (FootballTable[I].Coach = ConvertStringToWideChar(Coach)) And
             (FootballTable[I].Team = ConvertStringToWideChar(Team)) And (IntToStr(FootballTable[I].Points) = Points) Then
         Begin
             IfRecordExist := True;
             Exit;
-        End;
+        End; *)
 
     IfRecordExist := False;
 End;

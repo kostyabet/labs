@@ -38,14 +38,12 @@ Type
         FileButton: TMenuItem;
         InstractionButton: TMenuItem;
         AboutEditorButton: TMenuItem;
-        SaveButton: TMenuItem;
         CupImage: TImage;
         AboutCupLabel: TLabel;
         PointTabelStrGrid: TStringGrid;
         BestFormLabel: TLabel;
         ExposureLabel: TLabel;
         StGridInfo: TLabel;
-        Line: TMenuItem;
         CloseButton: TMenuItem;
         MMIconImgList: TImageList;
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
@@ -109,6 +107,8 @@ Begin
 End;
 
 Procedure TMainForm.ChangeSpButtonClick(Sender: TObject);
+Var
+    TempRecord: TFootStatsRecord;
 Begin
     CurentRow := MainForm.PointTabelStrGrid.Row;
 
@@ -116,10 +116,11 @@ Begin
     Begin
         Application.CreateForm(TChangeRecordForm, ChangeRecordForm);
 
-        ChangeRecordForm.CountryLabeledEdit.Text := String(FootballTable[CurentRow - 1].Country);
-        ChangeRecordForm.TeamNameLabeledEdit.Text := String(FootballTable[CurentRow - 1].Team);
-        ChangeRecordForm.CoachLabeledEdit.Text := String(FootballTable[CurentRow - 1].Coach);
-        ChangeRecordForm.PointsLabeledEdit.Text := IntToStr(FootballTable[CurentRow - 1].Points);
+        TempRecord := GetRecordFromFile(CurentRow);
+        ChangeRecordForm.CountryLabeledEdit.Text := TempRecord.Country;
+        ChangeRecordForm.TeamNameLabeledEdit.Text := TempRecord.Team;
+        ChangeRecordForm.CoachLabeledEdit.Text := TempRecord.Coach;
+        ChangeRecordForm.PointsLabeledEdit.Text := IntToStr(TempRecord.Points);
 
         ChangeRecordForm.Showmodal;
     End
@@ -206,7 +207,6 @@ Procedure TMainForm.RemoveSpButtonClick(Sender: TObject);
 Var
     ResultKey: Integer;
 Begin
-
     CurentRow := MainForm.PointTabelStrGrid.Row;
 
     If (CurentRow <> 0) Then
@@ -215,7 +215,12 @@ Begin
             MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
 
         If ResultKey = ID_YES Then
-            DeleteRow(CurentRow - 1);
+        Begin
+            DeleteRow(CurentRow);
+            Dec(CurentRecordsCount);
+            SortRecords();
+            InputRecordsInTableGrid();
+        End;
     End
     Else
         MessageBox(0, 'Необходимо выбрать строку для удаления!', 'Ошибка', MB_ICONERROR);

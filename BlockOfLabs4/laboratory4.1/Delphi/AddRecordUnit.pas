@@ -84,12 +84,13 @@ Begin
 
     If (ResultKey = ID_YES) Then
     Begin
+        InputRecordInFile(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(CoachLabeledEdit.Text),
+            ConvertStringToWideChar(TeamNameLabeledEdit.Text), StrToint(PointsLabeledEdit.Text));
         Inc(CurentRecordsCount);
-        InputDataInMassive(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(CoachLabeledEdit.Text),
-            ConvertStringToWideChar(TeamNameLabeledEdit.Text), StrToint(PointsLabeledEdit.Text), High(FootballTable));
-        SortFootballStats();
-        InputMassiveInTableGrid();
-
+        SortRecords();
+        InputRecordsInTableGrid();
+        MainForm.PointTabelStrGrid.FixedRows := 1;
+        
         CountryLabeledEdit.Text := '';
         TeamNameLabeledEdit.Text := '';
         CoachLabeledEdit.Text := '';
