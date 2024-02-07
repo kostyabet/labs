@@ -42,7 +42,6 @@ Function GetRecordFromFile(CurentRow: Integer): TFootStatsRecord;
 Procedure ChangeRecordInFile(Country, Team, Coach: TString; Points, CurentRow: Integer);
 Procedure InputRecordInFile(Country, Team, Coach: TString; Points: Integer);
 Procedure InputRecordsInTableGrid();
-// Procedure InputInfoFromGrid(Var CountryLabeledEdit, TeamNameLabeledEdit, CoachLabeledEdit, PointsLabeledEdit: TLabeledEdit; I: Integer);
 Procedure SortRecords();
 Procedure DeleteRow(DelRow: Integer);
 Function IndexRecord(I: Integer; CurentStr: TString): Integer;
@@ -166,6 +165,8 @@ Begin
         Reset(CorrectionFile);
 
         MainForm.PointTabelStrGrid.RowCount := CurentRecordsCount + 1;
+        If CurentRecordsCount > 11 Then
+            MainForm.PointTabelStrGrid.ColWidths[4] := 147;
         I := 0;
         While Not EOF(CorrectionFile) Do
         Begin
@@ -413,15 +414,20 @@ End;
 
 Function IfRecordExist(Country, Coach, Team, Points: String): Boolean;
 Var
+    TempRecord: TFootStatsRecord;
     I: Integer;
 Begin
-    (*For I := 0 To CurentRecordsCount - 1 Do
-        If (FootballTable[I].Country = ConvertStringToWideChar(Country)) And (FootballTable[I].Coach = ConvertStringToWideChar(Coach)) And
-            (FootballTable[I].Team = ConvertStringToWideChar(Team)) And (IntToStr(FootballTable[I].Points) = Points) Then
+    For I := 1 To CurentRecordsCount Do
+    Begin
+        TempRecord := GetRecordFromFile(I);
+
+        If (TempRecord.Country = ConvertStringToWideChar(Country)) And (TempRecord.Coach = ConvertStringToWideChar(Coach)) And
+            (TempRecord.Team = ConvertStringToWideChar(Team)) And (IntToStr(TempRecord.Points) = Points) Then
         Begin
             IfRecordExist := True;
             Exit;
-        End; *)
+        End;
+    End;
 
     IfRecordExist := False;
 End;

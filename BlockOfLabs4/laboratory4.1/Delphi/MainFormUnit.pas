@@ -160,7 +160,7 @@ Begin
     PointTabelStrGrid.ColWidths[1] := 231;
     PointTabelStrGrid.ColWidths[2] := 231;
     PointTabelStrGrid.ColWidths[3] := 231;
-    PointTabelStrGrid.ColWidths[4] := 147;
+    PointTabelStrGrid.ColWidths[4] := 168;
     PointTabelStrGrid.Cells[0, 0] := 'Место';
     PointTabelStrGrid.Cells[1, 0] := 'Страна';
     PointTabelStrGrid.Cells[2, 0] := 'Название команды';
@@ -218,6 +218,10 @@ Begin
         Begin
             DeleteRow(CurentRow);
             Dec(CurentRecordsCount);
+            If CurentRecordsCount > 11 Then
+                MainForm.PointTabelStrGrid.ColWidths[4] := 147
+            Else
+                MainForm.PointTabelStrGrid.ColWidths[4] := 168;
             SortRecords();
             InputRecordsInTableGrid();
         End;

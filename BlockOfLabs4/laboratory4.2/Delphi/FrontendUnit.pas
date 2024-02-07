@@ -23,7 +23,7 @@ Procedure LabelEditChange(ALabeledEdit, NLabeledEdit: TLabeledEdit; BVectorStrin
 Procedure StringGridVkBack(Key: Word; Var VectorStringGrid: TStringGrid);
 Function StringGridKeyPress(Var VectorStringGrid: TStringGrid; Key: Char; Col, Row: Integer): Char;
 Function VectorStringGridChange(NSize: Integer): Boolean;
-Procedure TryToAddClipboard(ClipboardText: String; Const MaxPoint, MinPoint: Integer; Var LabeledEdit: TLabeledEdit);
+Procedure TryToAddClipboard(ClipboardText: String; Const MaxPoint, MinPoint: Integer; Var LabeledEdit: TLabeledEdit; Var Key: Word);
 Procedure StGridAddClipboard(ClipBoardText: String; Var StGrid: TStringGrid; Const Col, Row: Integer);
 
 Implementation
@@ -270,7 +270,7 @@ Begin
 
 End;
 
-Procedure TryToAddClipboard(ClipboardText: String; Const MaxPoint, MinPoint: Integer; Var LabeledEdit: TLabeledEdit);
+Procedure TryToAddClipboard(ClipboardText: String; Const MaxPoint, MinPoint: Integer; Var LabeledEdit: TLabeledEdit; Var Key: Word);
 Var
     IsCorrect: Boolean;
 Begin
@@ -288,8 +288,11 @@ Begin
         IsCorrect := False;
     End;
 
-    If IsCorrect Then
+    If IsCorrect And (Key <> VK_INSERT) Then
         LabeledEdit.Text := IntToStr(StrToInt(ClipboardText));
+
+    If Not IsCorrect Then
+        Key := 0;
 End;
 
 Procedure StGridAddClipboard(ClipBoardText: String; Var StGrid: TStringGrid; Const Col, Row: Integer);
