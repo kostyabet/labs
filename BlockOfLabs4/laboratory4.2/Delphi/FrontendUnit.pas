@@ -164,6 +164,18 @@ Begin
     MainForm.ResultLabel.Visible := False;
     MainForm.SaveButton.Enabled := False;
     IfDataSavedInFile := False;
+
+    If Appearance And (StrToInt(MainForm.NLabeledEdit.Text) > 4) Then
+    Begin
+        MainForm.BVectorStringGrid.Height := 88;
+        MainForm.CVectorStringGrid.Height := 88;
+    End;
+
+    If Appearance And Not(StrToInt(MainForm.NLabeledEdit.Text) > 4) Then
+    Begin
+        MainForm.BVectorStringGrid.Height := 68;
+        MainForm.CVectorStringGrid.Height := 68;
+    End;
 End;
 
 Procedure ResultsVisible(Appearance: Boolean);

@@ -2235,7 +2235,7 @@ object MainForm: TMainForm
     Left = 24
     Top = 149
     Width = 388
-    Height = 71
+    Height = 53
     ColCount = 10
     DefaultColWidth = 76
     DefaultRowHeight = 25
