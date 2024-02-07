@@ -1,4 +1,6 @@
-﻿enum IOChoose : Int32
+﻿using System;
+
+enum IOChoose : Byte
 {
     FILE,
     CONSOLE
@@ -75,7 +77,7 @@ class Proj4_2
                 default: isCorrect = false; break;
             }
 
-            if (!isCorrect) Console.Write($"You should write one natural number({CONSOLE_VALUE}|{FILE_VALUE}): ");
+            if (!isCorrect) Console.Error.Write($"You should write one natural number({CONSOLE_VALUE}|{FILE_VALUE}): ");
             else Console.WriteLine();
         } while (!isCorrect);
 
@@ -86,14 +88,14 @@ class Proj4_2
     {
         if (filePath.Length < MIN_FILE_WAY_SIZE)
         {
-            Console.Write("The path is too short. Try again: ");
+            Console.Error.Write("The path is too short. Try again: ");
             return false;
         }
 
         string bufstr = filePath.Substring(filePath.Length - MIN_FILE_WAY_SIZE);
         if (!bufstr.Equals(".txt"))
         {
-            Console.Write("Write .txt file. Try again: ");
+            Console.Error.Write("Write .txt file. Try again: ");
             return false;
         }
 
@@ -172,7 +174,7 @@ class Proj4_2
             isCorrect = accessModifierControl(accessModifier, filePath) && isCanOpenFile(filePath);
 
             if (!isCorrect)
-                Console.Write("Can't open a file. Try write another way: ");
+                Console.Error.Write("Can't open a file. Try write another way: ");
 
         } while (!isCorrect);
 
@@ -231,7 +233,7 @@ class Proj4_2
             inputVectorFromFile(inputReader, ref CVector, ref isCorrectInput);
 
             isCorrectInput = isCorrectInput && inputReader.EndOfStream ? true : false;
-            if (!isCorrectInput) Console.WriteLine("Error in reading. Try again.");
+            if (!isCorrectInput) Console.Error.WriteLine("Error in reading. Try again.");
         }
 
         return isCorrectInput;
@@ -266,7 +268,7 @@ class Proj4_2
 
             isCorrect = isCorrect && !(num < MIN_NUM) && !(num > MAX_NUM) ? true : false;
 
-            if (!isCorrect) Console.Write($"Number must be from {MIN_NUM} to {MAX_NUM}: ");
+            if (!isCorrect) Console.Error.Write($"Number must be from {MIN_NUM} to {MAX_NUM}: ");
         } while (!isCorrect);
 
         return num;
@@ -455,7 +457,7 @@ class Proj4_2
         }
         catch
         {
-            Console.WriteLine("Error in writing. Try again.");
+            Console.Error.WriteLine("Error in writing. Try again.");
             return false;
         }
     }
