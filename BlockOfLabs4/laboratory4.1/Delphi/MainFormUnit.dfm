@@ -17250,7 +17250,6 @@ object MainForm: TMainForm
     Height = 553
     Align = alLeft
     TabOrder = 0
-    ExplicitHeight = 541
     object AddSpButton: TSpeedButton
       Left = 0
       Top = 0

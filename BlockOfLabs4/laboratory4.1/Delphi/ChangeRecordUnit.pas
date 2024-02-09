@@ -188,7 +188,7 @@ Begin
         #13#10 + 'до 100.' + #13#10 + ' - После того как все поля изменены нажимайте на кнопку' + #13#10 + '''' +
         ChangeButton.Caption + ''';';
 
-    CreateModalForm('Справка', InstractionTest, 490, 210);
+    CreateModalForm('Справка', InstractionTest, Screen.Width * 27 Div 100, Screen.Height * 21 Div 100);
 End;
 
 Procedure TChangeRecordForm.TeamNameLabeledEditChange(Sender: TObject);

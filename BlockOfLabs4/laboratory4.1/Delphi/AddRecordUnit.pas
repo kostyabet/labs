@@ -60,6 +60,11 @@ Type
         { Public declarations }
     End;
 
+Const
+    MAX_STR_LENGTH: Integer = 20;
+    MIN_POINTS: Integer = 0;
+    MAX_POINTS: Integer = 100;
+
 Var
     AddRecordForm: TAddRecordForm;
 
@@ -169,7 +174,28 @@ Begin
 End;
 
 Procedure TAddRecordForm.PointsLabeledEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Var
+    CurKey: Char;
 Begin
+    If Not Clipboard.HasFormat(CF_TEXT) And (Key = VK_INSERT) Then
+        Key := 0;
+
+    If (Key = VK_DELETE) And (PointsLabeledEdit.SelText = '') Then
+    Begin
+        CurKey := IsCorrectDelete(#127, PointsLabeledEdit.Text, PointsLabeledEdit.SelStart + 1);
+
+        If CurKey = #0 Then
+            Key := 0;
+    End;
+
+    If (Key = VK_DELETE) And (PointsLabeledEdit.SelText <> '') Then
+    Begin
+        CurKey := IsCorrectSelDelete(#127, PointsLabeledEdit.Text, PointsLabeledEdit.SelText, PointsLabeledEdit.SelStart);
+
+        If CurKey = #0 Then
+            Key := 0;
+    End;
+
     If (Key = VK_DOWN) Or (Key = VK_RETURN) Then
         SelectNext(ActiveControl, True, True);
 
@@ -195,7 +221,7 @@ Begin
         #13#10 + 'до 100.' + #13#10 + ' - После того как все поля заполнены нажимайте на кнопку' + #13#10 + '''' +
         AddButton.Caption + ''';';
 
-    CreateModalForm('Справка', InstractionTest, 490, 210);
+    CreateModalForm('Справка', InstractionTest, Screen.Width * 27 Div 100, Screen.Height * 21 Div 100);
 End;
 
 Procedure TAddRecordForm.TeamNameLabeledEditChange(Sender: TObject);

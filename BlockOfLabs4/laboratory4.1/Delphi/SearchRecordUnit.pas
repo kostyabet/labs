@@ -131,7 +131,7 @@ Begin
         ' - После того как все поля заполнены нажимайте на кнопку' + #13#10 + '''' + SearchButton.Caption + ''';' + #13#10 + #13#10 +
         'Если вы хотите изменить данные этой строки, то нажмите' + #13#10 + 'на кнопку ''' + ChangeRecordButton.Caption + '''.';
 
-    CreateModalForm('Справка', InstractionTest, 490, 240);
+    CreateModalForm('Справка', InstractionTest, Screen.Width * 27 Div 100, Screen.Height * 24 Div 100);
 End;
 
 Procedure TSearchRecordForm.SearchButtonClick(Sender: TObject);
