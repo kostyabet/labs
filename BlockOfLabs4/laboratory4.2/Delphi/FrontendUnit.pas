@@ -86,12 +86,21 @@ End;
 
 Function CheckKeyCondition(CurentText: String; Key: Char; Const MAX, MIN: Integer): Char;
 Begin
+    If (CurentText = '-') Then
+    Begin
+        CheckKeyCondition := Key;
+        Exit;
+    End;
+
     Try
         If CurentText <> '' Then
             If (StrToInt(CurentText) > MAX) Or (StrToInt(CurentText) < MIN) Then
                 Key := NULL_POINT;
 
         If (Length(CurentText) > 1) And (CurentText[1] = ZERO_KEY) Then
+            Key := NULL_POINT;
+
+        If (Length(CurentText) > 1) And (CurentText[1] = MINUS_KEY) And (CurentText[2] = ZERO_KEY) Then
             Key := NULL_POINT;
     Except
         Key := NULL_POINT;
