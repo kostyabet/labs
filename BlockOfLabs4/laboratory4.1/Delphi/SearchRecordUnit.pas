@@ -44,6 +44,8 @@ Type
         Procedure SearchStrLEditChange(Sender: TObject);
         Procedure SearchButtonClick(Sender: TObject);
         Procedure ChangeRecordButtonClick(Sender: TObject);
+        Procedure FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+        Procedure CBoxKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
     Private
         { Private declarations }
     Public
@@ -64,6 +66,12 @@ Uses
     FrontendUnit,
     BackendUnit,
     ChangeRecordUnit;
+
+Procedure TSearchRecordForm.CBoxKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Begin
+    If (Key = VK_ESCAPE) Then
+        SearchRecordForm.Close;
+End;
 
 Procedure TSearchRecordForm.ChangeRecordButtonClick(Sender: TObject);
 Var
@@ -107,6 +115,12 @@ Begin
     SearchStrLEdit.EditLabel.Caption := '';
 End;
 
+Procedure TSearchRecordForm.FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Begin
+    If (Key = VK_ESCAPE) Then
+        SearchRecordForm.Close;
+End;
+
 Procedure TSearchRecordForm.ReferenceButtonClick(Sender: TObject);
 Var
     InstractionTest: String;
@@ -122,7 +136,7 @@ End;
 
 Procedure TSearchRecordForm.SearchButtonClick(Sender: TObject);
 Begin
-    StrIndex := IndexRecord(CBox.ItemIndex, ConvertStringToWideChar(SearchStrLEdit.Text));
+    StrIndex := IndexRecord(CBox.ItemIndex, StrToWideChar(SearchStrLEdit.Text));
     If StrIndex <> -1 Then
     Begin
         ResultLabel.Caption := CreateResultGrid(StrIndex + 1);
@@ -147,6 +161,9 @@ Begin
 
     If Key = VK_UP Then
         SelectNext(ActiveControl, False, True);
+
+    If (Key = VK_ESCAPE) Then
+        SearchRecordForm.Close;
 End;
 
 Procedure TSearchRecordForm.SearchStrLEditKeyPress(Sender: TObject; Var Key: Char);

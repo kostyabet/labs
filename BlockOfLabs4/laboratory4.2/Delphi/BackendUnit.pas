@@ -12,7 +12,7 @@ Type
     TByteSet = Set Of Byte;
 
 Function TryReadNum(Var TestFile: TextFile; Var ReadStatus: Boolean; MAX_NUM: Integer; EndOfNums: Boolean): Integer;
-Function CheckNum(ReadStatus: Boolean; Num, Max, Min: Integer): Boolean;
+Function CheckNum(Num, Max, Min: Integer): Boolean;
 Function TryRead(Var TestFile: TextFile): Boolean;
 Function IsReadable(FilePath: String): Boolean;
 Procedure ReadFromFile(Var IsCorrect: Boolean; FilePath: String);
@@ -22,7 +22,8 @@ Procedure InputVectorFromGrid(Var Vector: TMassive; StringGrid: TStringGrid; N: 
 Procedure AddToArray(Var Results: TMatrix; CurrentPath: TMassive; NSize, CurentSum: Integer);
 Procedure CheckingCVectorCondition(CurrentPath, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix);
 Function IndexOf(BVector: TMassive; Count: Integer): Integer;
-Procedure SearchSuitableAmo(SubArray, BVector, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix; CurrentPath: Tmassive = nil);
+Procedure SearchSuitableAmo(SubArray, BVector, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix;
+    CurrentPath: Tmassive = Nil);
 Procedure Swap(Var Matrix: TMatrix; I, J: Integer);
 Function Partition(Var Matrix: TMatrix; Left, Right: Integer): Integer;
 Procedure QuickSort(Var Matrix: TMatrix; Left, Right: Integer);
@@ -49,7 +50,7 @@ Begin
     Num := 0;
     EndOfNum := False;
     SpaceCounter := 0;
-    Character := #0;
+    Character := NULL_POINT;
     BufChar := Character;
     MinCount := 1;
     While ReadStatus And Not(EndOfNum) And Not(EOF(TestFile)) Do
@@ -57,17 +58,15 @@ Begin
         BufChar := Character;
         Read(TestFile, Character);
 
-        If (Character <> ' ') And Not((Character > Pred('0')) And (Character < Succ('9'))) And (Character <> #13) And (Character <> #10) And
-            (Character <> '-') Then
-            ReadStatus := False;
+        ReadStatus := ReadStatus And Not((Character <> ' ') And Not((Character > Pred('0')) And (Character < Succ('9'))) And
+            (Character <> #13) And (Character <> #10) And (Character <> '-'));
 
         If (Character = ' ') Then
             Inc(SpaceCounter)
         Else
             SpaceCounter := 0;
 
-        If SpaceCounter = SPACE_LIMIT Then
-            ReadStatus := False;
+        ReadStatus := Not(SpaceCounter = SPACE_LIMIT);
 
         If (Character > Pred('0')) And (Character < Succ('9')) Then
             Num := Num * 10 + Ord(Character) - 48;
@@ -75,24 +74,18 @@ Begin
         If (Character = '-') Then
             MinCount := -1;
 
-        If (Character = '-') And (BufChar <> ' ') And (BufChar <> #0) Then
-            ReadStatus := False;
+        ReadStatus := ReadStatus And Not((Character = '-') And (BufChar <> ' ') And (BufChar <> #0));
 
-        If (Character = '-') And (MinCount <> -1) Then
-            ReadStatus := False;
+        ReadStatus := ReadStatus And Not((Character = '-') And (MinCount <> -1));
 
-        If ((Character = ' ') Or (Character = #13)) And ((BufChar > Pred('0')) And (BufChar < Succ('9'))) Then
-            EndOfNum := True;
+        EndOfNum := ((Character = ' ') Or (Character = #13)) And ((BufChar > Pred('0')) And (BufChar < Succ('9')));
 
-        If (BufChar = '0') And (Character > Pred('0')) And (Character < Succ('9')) Then
-            ReadStatus := False;
+        ReadStatus := ReadStatus And Not((Num = 0) And (Character > Pred('0')) And (Character < Succ('9')));
 
-        If (Num > MAX_NUM) Then
-            ReadStatus := False;
+        ReadStatus := ReadStatus And Not(Num > MAX_NUM);
     End;
 
-    If EOF(TestFile) And Not EndOfNums Then
-        ReadStatus := False;
+    ReadStatus := ReadStatus And Not(EOF(TestFile) And Not EndOfNums);
 
     If ReadStatus Then
         Num := MinCount * Num;
@@ -100,12 +93,9 @@ Begin
     TryReadNum := Num;
 End;
 
-Function CheckNum(ReadStatus: Boolean; Num, Max, Min: Integer): Boolean;
+Function CheckNum(Num, Max, Min: Integer): Boolean;
 Begin
-    If (Num > MAX) Or (Num < MIN) Then
-        ReadStatus := False;
-
-    CheckNum := ReadStatus;
+    CheckNum := Not((Num > MAX) Or (Num < MIN));
 End;
 
 Function TryRead(Var TestFile: TextFile): Boolean;
@@ -115,20 +105,20 @@ Var
 Begin
     ReadStatus := True;
     BufA := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM, False);
-    ReadStatus := CheckNum(ReadStatus, BufA, MAX_INT_NUM, MIN_INT_NUM);
+    ReadStatus := CheckNum(BufA, MAX_INT_NUM, MIN_INT_NUM);
     BufN := TryReadNum(TestFile, ReadStatus, MAX_N, False);
-    ReadStatus := CheckNum(ReadStatus, BufN, MAX_N, MIN_N);
+    ReadStatus := CheckNum(BufN, MAX_N, MIN_N);
 
     For I := 1 To BufN Do
     Begin
         BufCoord := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM, False);
-        ReadStatus := CheckNum(ReadStatus, BufCoord, MAX_INT_NUM, MIN_INT_NUM);
+        ReadStatus := CheckNum(BufCoord, MAX_INT_NUM, MIN_INT_NUM);
     End;
 
     For I := 1 To BufN Do
     Begin
         BufCoord := TryReadNum(TestFile, ReadStatus, MAX_INT_NUM, I = BufN);
-        ReadStatus := CheckNum(ReadStatus, BufCoord, MAX_INT_NUM, MIN_INT_NUM);
+        ReadStatus := CheckNum(BufCoord, MAX_INT_NUM, MIN_INT_NUM);
     End;
 
     ReadStatus := ReadStatus And SeekEOF(TestFile);
@@ -288,7 +278,8 @@ Begin
     IndexOf := IndexNum;
 End;
 
-Procedure SearchSuitableAmo(SubArray, BVector, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix; CurrentPath: Tmassive = nil);
+Procedure SearchSuitableAmo(SubArray, BVector, CVector: TMassive; ACount, NSize: Integer; Var Results: TMatrix;
+    CurrentPath: Tmassive = Nil);
 Var
     CurrentPath2, CurrentPath1: TMassive;
     I: Integer;
@@ -365,7 +356,8 @@ Procedure TreatmentData(BVector, CVector: TMassive; ACount, NSize: Integer; Var 
 Begin
     SearchSuitableAmo(BVector, BVector, CVector, ACount, NSize, Sums);
     QuickSort(Sums, 0, Length(Sums) - 1);
-    AddResToSubset(Sums, ISubset);
+    If Sums <> Nil Then
+        AddResToSubset(Sums, ISubset);
 End;
 
 Function CreateStringWithVector(Vector: TMassive): String;

@@ -52,6 +52,7 @@ Type
         Procedure FormCreate(Sender: TObject);
         Procedure ChangeButtonClick(Sender: TObject);
         Procedure RefferenceButtonClick(Sender: TObject);
+        Procedure FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
     Private
         { Private declarations }
     Public
@@ -83,8 +84,8 @@ Begin
 
     If (ResultKey = ID_YES) Then
     Begin
-        ChangeRecordInFile(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(TeamNameLabeledEdit.Text),
-            ConvertStringToWideChar(CoachLabeledEdit.Text), StrToint(PointsLabeledEdit.Text), CurentRow);
+        ChangeRecordInFile(StrToWideChar(CountryLabeledEdit.Text), StrToWideChar(TeamNameLabeledEdit.Text),
+            StrToWideChar(CoachLabeledEdit.Text), StrToint(PointsLabeledEdit.Text), CurentRow);
         SortRecords();
         InputRecordsInTableGrid();
 
@@ -109,6 +110,9 @@ Begin
 
     If Key = VK_UP Then
         SelectNext(ActiveControl, False, True);
+
+    If (Key = VK_ESCAPE) Then
+        ChangeRecordForm.Close;
 End;
 
 Procedure TChangeRecordForm.CountryLabeledEditChange(Sender: TObject);
@@ -128,6 +132,9 @@ Begin
 
     If Key = VK_UP Then
         SelectNext(ActiveControl, False, True);
+
+    If (Key = VK_ESCAPE) Then
+        ChangeRecordForm.Close;
 End;
 
 Procedure TChangeRecordForm.FormCreate(Sender: TObject);
@@ -136,6 +143,12 @@ Begin
     TeamNameLabeledEdit.EditLabel.Caption := '';
     CoachLabeledEdit.EditLabel.Caption := '';
     PointsLabeledEdit.EditLabel.Caption := '';
+End;
+
+Procedure TChangeRecordForm.FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Begin
+    If (Key = VK_ESCAPE) Then
+        ChangeRecordForm.Close;
 End;
 
 Procedure TChangeRecordForm.PointsLabeledEditChange(Sender: TObject);
@@ -155,6 +168,9 @@ Begin
 
     If Key = VK_UP Then
         SelectNext(ActiveControl, False, True);
+
+    If (Key = VK_ESCAPE) Then
+        ChangeRecordForm.Close;
 End;
 
 Procedure TChangeRecordForm.PointsLabeledEditKeyPress(Sender: TObject; Var Key: Char);
@@ -192,6 +208,9 @@ Begin
 
     If Key = VK_UP Then
         SelectNext(ActiveControl, False, True);
+
+    If (Key = VK_ESCAPE) Then
+        ChangeRecordForm.Close;
 End;
 
 Procedure TLabeledEdit.WMPaste(Var Msg: TMessage);

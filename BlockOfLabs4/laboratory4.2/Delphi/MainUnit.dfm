@@ -4,16 +4,17 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1041#1077#1090#1077#1085#1103' '#1050'.'#1057'. 351005 '#1083#1072#1073'. 4.2'
-  ClientHeight = 387
+  ClientHeight = 437
   ClientWidth = 437
   Color = clBtnFace
-  Constraints.MaxHeight = 453
+  Constraints.MaxHeight = 500
   Constraints.MaxWidth = 449
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -12
+  Font.Height = -13
   Font.Name = 'Segoe UI'
   Font.Style = []
+  HelpFile = '../../../../Prog4_2Helper.chm'
   Icon.Data = {
     0000010001008080000001002000280801001600000028000000800000000001
     0000010020000000000000000100F63A0100F63A010000000000000000000000
@@ -2134,24 +2135,24 @@ object MainForm: TMainForm
   Position = poScreenCenter
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
-  OnKeyDown = FormKeyDown
-  TextHeight = 15
+  OnHelp = FormHelp
+  TextHeight = 17
   object TaskLabel: TLabel
     Left = 8
     Top = 8
-    Width = 424
-    Height = 75
+    Width = 422
+    Height = 120
     Caption = 
       #1055#1088#1086#1075#1088#1072#1084#1084#1072' '#1086#1087#1088#1077#1076#1077#1083#1103#1077#1090' '#1087#1086#1076#1084#1085#1086#1078#1077#1089#1090#1074#1086'(I) '#1080#1079' '#1084#1085#1086#1078#1077#1089#1090#1074#1072' {1..N}. '#1043#1076#1077' N ' +
       #8212' '#1082#1086#1083#1080#1095#1077#1089#1090#1074#1086' '#1082#1086#1086#1088#1076#1080#1085#1072#1090' '#1074#1077#1082#1090#1086#1088#1086#1074' B '#1080' C. '#1057#1091#1084#1084#1072' '#1101#1083#1077#1084#1077#1085#1090#1086#1074' '#1074#1077#1082#1090#1086#1088#1072' B' +
       ' '#1089' '#1095#1080#1089#1083#1072#1084#1080' '#1080#1079' '#1087#1086#1076#1084#1085#1086#1078#1077#1089#1090#1074#1072' I '#1103#1074#1083#1103#1077#1090#1089#1103' '#1084#1072#1082#1089#1080#1084#1072#1083#1100#1085#1086#1081' '#1087#1088#1080' '#1091#1089#1083#1086#1074#1080#1080', ' +
       #1095#1090#1086' '#1089#1091#1084#1084#1072' '#1101#1083#1077#1084#1077#1085#1090#1086#1074' '#1080#1079' '#1084#1085#1086#1078#1077#1089#1090#1074#1072' C '#1089' '#1086#1076#1080#1085#1072#1082#1086#1074#1099#1084#1080' '#1085#1086#1084#1077#1088#1072#1084#1080' '#1085#1077' '#1073#1086#1083 +
       #1100#1096#1077', '#1095#1077#1084' '#1094#1077#1083#1086#1077' '#1095#1080#1089#1083#1086' '#1040'.'
-    Constraints.MaxHeight = 82
+    Constraints.MaxHeight = 120
     Constraints.MaxWidth = 425
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -12
+    Font.Height = -15
     Font.Name = 'Segoe UI'
     Font.Style = [fsBold]
     ParentFont = False
@@ -2159,50 +2160,51 @@ object MainForm: TMainForm
   end
   object ALabel: TLabel
     Left = 24
-    Top = 102
-    Width = 57
-    Height = 15
+    Top = 150
+    Width = 62
+    Height = 17
     Caption = #1042#1074#1077#1076#1080#1090#1077' '#1040':'
   end
   object NLabel: TLabel
     Left = 240
-    Top = 102
-    Width = 58
-    Height = 15
+    Top = 150
+    Width = 64
+    Height = 17
     Caption = #1042#1074#1077#1076#1080#1090#1077' N:'
   end
   object BVectorLabel: TLabel
     Left = 24
-    Top = 128
-    Width = 96
-    Height = 15
+    Top = 176
+    Width = 106
+    Height = 17
     Caption = #1042#1074#1077#1076#1080#1090#1077' '#1074#1077#1082#1090#1086#1088' B:'
     Visible = False
   end
   object CVectorLabel: TLabel
     Left = 24
-    Top = 226
-    Width = 97
-    Height = 15
+    Top = 274
+    Width = 107
+    Height = 17
     Caption = #1042#1074#1077#1076#1080#1090#1077' '#1074#1077#1082#1090#1086#1088' C:'
     Visible = False
   end
   object ResultLabel: TLabel
     Left = 24
-    Top = 355
-    Width = 60
-    Height = 15
+    Top = 403
+    Width = 66
+    Height = 17
     Caption = 'ResultLabel'
     Visible = False
   end
   object ALabeledEdit: TLabeledEdit
-    Left = 87
-    Top = 99
+    Left = 92
+    Top = 145
     Width = 114
-    Height = 23
-    EditLabel.Width = 69
-    EditLabel.Height = 15
+    Height = 25
+    EditLabel.Width = 76
+    EditLabel.Height = 17
     EditLabel.Caption = 'ALabeledEdit'
+    MaxLength = 8
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0
@@ -2214,13 +2216,14 @@ object MainForm: TMainForm
     OnKeyPress = ALabeledEditKeyPress
   end
   object NLabeledEdit: TLabeledEdit
-    Left = 303
-    Top = 99
+    Left = 310
+    Top = 147
     Width = 74
-    Height = 23
-    EditLabel.Width = 70
-    EditLabel.Height = 15
+    Height = 25
+    EditLabel.Width = 78
+    EditLabel.Height = 17
     EditLabel.Caption = 'NLabeledEdit'
+    MaxLength = 2
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
@@ -2233,7 +2236,7 @@ object MainForm: TMainForm
   end
   object BVectorStringGrid: TStringGrid
     Left = 24
-    Top = 149
+    Top = 197
     Width = 388
     Height = 71
     ColCount = 10
@@ -2261,7 +2264,7 @@ object MainForm: TMainForm
   end
   object CVectorStringGrid: TStringGrid
     Left = 24
-    Top = 247
+    Top = 295
     Width = 388
     Height = 71
     ColCount = 10
@@ -2289,7 +2292,7 @@ object MainForm: TMainForm
   end
   object ResultButton: TButton
     Left = 24
-    Top = 324
+    Top = 372
     Width = 129
     Height = 25
     Caption = #1056#1072#1089#1089#1095#1080#1090#1072#1090#1100
@@ -2303,18 +2306,18 @@ object MainForm: TMainForm
     Filter = '|*.txt'
     Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
     Left = 328
-    Top = 328
+    Top = 376
   end
   object SaveDialog: TSaveDialog
     DefaultExt = '.txt'
     Filter = '|*.txt'
     Left = 256
-    Top = 328
+    Top = 376
   end
   object MainMenu: TMainMenu
     Images = MainMenuImageList
     Left = 400
-    Top = 328
+    Top = 376
     object FileButton: TMenuItem
       Caption = #1060#1072#1081#1083
       ImageIndex = 0
@@ -2354,7 +2357,7 @@ object MainForm: TMainForm
   end
   object MainMenuImageList: TImageList
     Left = 160
-    Top = 328
+    Top = 376
     Bitmap = {
       494C010106000800040010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020

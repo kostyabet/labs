@@ -53,6 +53,7 @@ Type
         Procedure CoachLabeledEditChange(Sender: TObject);
         Procedure TeamNameLabeledEditChange(Sender: TObject);
         Procedure AddButtonClick(Sender: TObject);
+        Procedure FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
     Private
         { Private declarations }
     Public
@@ -84,8 +85,8 @@ Begin
 
     If (ResultKey = ID_YES) Then
     Begin
-        InputRecordInFile(ConvertStringToWideChar(CountryLabeledEdit.Text), ConvertStringToWideChar(CoachLabeledEdit.Text),
-            ConvertStringToWideChar(TeamNameLabeledEdit.Text), StrToint(PointsLabeledEdit.Text));
+        InputRecordInFile(StrToWideChar(CountryLabeledEdit.Text), StrToWideChar(CoachLabeledEdit.Text),
+            StrToWideChar(TeamNameLabeledEdit.Text), StrToint(PointsLabeledEdit.Text));
         Inc(CurentRecordsCount);
         SortRecords();
         InputRecordsInTableGrid();
@@ -116,6 +117,9 @@ Begin
 
     If Key = VK_UP Then
         SelectNext(ActiveControl, False, True);
+
+    If (Key = VK_ESCAPE) Then
+        AddRecordForm.Close;
 End;
 
 Procedure TAddRecordForm.CountryLabeledEditChange(Sender: TObject);
@@ -135,6 +139,9 @@ Begin
 
     If Key = VK_UP Then
         SelectNext(ActiveControl, False, True);
+
+    If (Key = VK_ESCAPE) Then
+        AddRecordForm.Close;
 End;
 
 Procedure TAddRecordForm.FormCreate(Sender: TObject);
@@ -143,6 +150,12 @@ Begin
     TeamNameLabeledEdit.EditLabel.Caption := '';
     CoachLabeledEdit.EditLabel.Caption := '';
     PointsLabeledEdit.EditLabel.Caption := '';
+End;
+
+Procedure TAddRecordForm.FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Begin
+    If (Key = VK_ESCAPE) Then
+        AddRecordForm.Close;
 End;
 
 Procedure TAddRecordForm.PointsLabeledEditChange(Sender: TObject);
@@ -162,6 +175,9 @@ Begin
 
     If Key = VK_UP Then
         SelectNext(ActiveControl, False, True);
+
+    If (Key = VK_ESCAPE) Then
+        AddRecordForm.Close;
 End;
 
 Procedure TAddRecordForm.PointsLabeledEditKeyPress(Sender: TObject; Var Key: Char);
@@ -199,6 +215,9 @@ Begin
 
     If Key = VK_UP Then
         SelectNext(ActiveControl, False, True);
+
+    If (Key = VK_ESCAPE) Then
+        AddRecordForm.Close;
 End;
 
 Procedure TLabeledEdit.WMPaste(Var Msg: TMessage);
@@ -216,7 +235,7 @@ Begin
 
             If (AddRecordForm.ActiveControl = AddRecordForm.TeamNameLabeledEdit) And
                 Not IsCorrectStrings(Clipboard.AsText, AddRecordForm.TeamNameLabeledEdit) Then
-                Raise Exception.Create('Некорректное название команды!'#13#10'Нужно более корокое название.');
+                Raise Exception.Create('Некорректное название команды!'#13#10'Нужно более короткое название.');
 
             If (AddRecordForm.ActiveControl = AddRecordForm.CountryLabeledEdit) And
                 Not IsCorrectStrings(Clipboard.AsText, AddRecordForm.CountryLabeledEdit) Then

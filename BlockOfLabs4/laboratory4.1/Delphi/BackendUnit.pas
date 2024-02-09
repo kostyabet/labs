@@ -49,7 +49,7 @@ Function CreateResultGrid(StrIndex: Integer): String;
 Procedure CreateCorrectionFile();
 Procedure LoadRecordsInFile();
 Procedure LoadRecordsFromFile();
-Function ConvertStringToWideChar(SourceString: String): TString;
+Function StrToWideChar(SourceString: String): TString;
 Function WideCharToStr(SourceWideChar: TString): String;
 Function IfRecordExist(Country, Coach, Team, Points: String): Boolean;
 
@@ -166,7 +166,7 @@ Begin
 
         MainForm.PointTabelStrGrid.RowCount := CurentRecordsCount + 1;
         If CurentRecordsCount > 11 Then
-            MainForm.PointTabelStrGrid.ColWidths[4] := 147;
+            MainForm.PointTabelStrGrid.ColWidths[4] := (MainForm.PointTabelStrGrid.Width * 19) div 100;
         I := 0;
         While Not EOF(CorrectionFile) Do
         Begin
@@ -382,7 +382,7 @@ Begin
     InputRecordsInTableGrid();
 End;
 
-Function ConvertStringToWideChar(SourceString: String): TString;
+Function StrToWideChar(SourceString: String): TString;
 Var
     DestArray: TString;
     NumCharsToCopy, I: Integer;
@@ -394,7 +394,7 @@ Begin
     For I := NumCharsToCopy + 1 To High(DestArray) Do
         DestArray[I] := WideChar(#0);
 
-    ConvertStringToWideChar := DestArray;
+    StrToWideChar := DestArray;
 End;
 
 Function WideCharToStr(SourceWideChar: TString): String;
@@ -421,8 +421,8 @@ Begin
     Begin
         TempRecord := GetRecordFromFile(I);
 
-        If (TempRecord.Country = ConvertStringToWideChar(Country)) And (TempRecord.Coach = ConvertStringToWideChar(Coach)) And
-            (TempRecord.Team = ConvertStringToWideChar(Team)) And (IntToStr(TempRecord.Points) = Points) Then
+        If (TempRecord.Country = StrToWideChar(Country)) And (TempRecord.Coach = StrToWideChar(Coach)) And
+            (TempRecord.Team = StrToWideChar(Team)) And (IntToStr(TempRecord.Points) = Points) Then
         Begin
             IfRecordExist := True;
             Exit;

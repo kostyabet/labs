@@ -2130,6 +2130,7 @@ object SearchRecordForm: TSearchRecordForm
   Menu = MainMenu
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   TextHeight = 15
   object CBoxLabel: TLabel
     Left = 8
@@ -2162,6 +2163,7 @@ object SearchRecordForm: TSearchRecordForm
     ShowHint = True
     TabOrder = 0
     OnCloseUp = CBoxCloseUp
+    OnKeyDown = CBoxKeyDown
   end
   object SearchStrLEdit: TLabeledEdit
     Left = 156

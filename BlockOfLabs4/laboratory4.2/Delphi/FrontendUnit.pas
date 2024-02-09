@@ -4,26 +4,23 @@ Interface
 
 Uses
     Winapi.Windows,
-    Winapi.Messages,
     System.SysUtils,
-    Vcl.ExtCtrls,
     Vcl.Grids;
 
+Function IsCorrectAddInNum(Key: Char; CurentStr: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
+Function IsCorrectNumClipboard(ClipbrdText: String; Cursor: Integer; Const MAX, MIN: Integer): Boolean;
+Function IsCorrectSelTextInputWithKey(Key: Char; CurentText, SelText: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
+Function IsCorrectDelete(Key: Char; CurentText: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
+Function IsCorrectSelDelete(Key: Char; CurentText, SelText: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
 Function TryToAdd(Key: Char; Str: String; SelPos: Integer; Const MaxPoint, MinPoint: Integer): Boolean;
-Function TryToDelete(Key: Word; Str: String; SelPos: Integer; LabeledEdit: TLabeledEdit): Word;
-Function CheckMinus(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
-Function CheckZero(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
-Function CheckSelText(LabeledEdit: TLabeledEdit; Key: Char; Const MAX_NUM, MIN_NUM: Integer): Boolean;
 Procedure VectorGridPrepearing(ArrayGrid: TStringGrid; NumOfCols: Integer);
 Procedure ResettingArray(ArrayGrid: TStringGrid; NumOfCols: Integer);
 Procedure VectorsVisible(Appearance: Boolean);
 Procedure ResultsVisible(Appearance: Boolean);
-Function CheckСhanges(IntLabEdit: TLabeledEdit): Boolean;
-Procedure LabelEditChange(ALabeledEdit, NLabeledEdit: TLabeledEdit; BVectorStringGrid, CVectorStringGrid: TStringGrid);
+Procedure LabelEditChange(ALabeledEdit, NLabeledEdit: String; BVectorStringGrid, CVectorStringGrid: TStringGrid);
 Procedure StringGridVkBack(Key: Word; Var VectorStringGrid: TStringGrid);
 Function StringGridKeyPress(Var VectorStringGrid: TStringGrid; Key: Char; Col, Row: Integer): Char;
 Function VectorStringGridChange(NSize: Integer): Boolean;
-Procedure TryToAddClipboard(ClipboardText: String; Const MaxPoint, MinPoint: Integer; Var LabeledEdit: TLabeledEdit; Var Key: Word);
 Procedure StGridAddClipboard(ClipBoardText: String; Var StGrid: TStringGrid; Const Col, Row: Integer);
 
 Implementation
@@ -31,104 +28,109 @@ Implementation
 Uses
     MainUnit;
 
+Function IsCorrectAddInNum(Key: Char; CurentStr: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
+Begin
+    Insert(Key, CurentStr, SelStart + 1);
+
+    Try
+        If (StrToInt(CurentStr) > MAX) Or (StrToInt(CurentStr) < MIN) Then
+            Key := NULL_POINT;
+
+        If (Length(CurentStr) > 1) And (CurentStr[1] = ZERO_KEY) Then
+            Key := NULL_POINT;
+
+        If (Length(CurentStr) > 1) And (CurentStr[1] = MINUS_KEY) And (CurentStr[2] = ZERO_KEY) Then
+            Key := NULL_POINT;
+    Except
+        Key := NULL_POINT;
+    End;
+
+    IsCorrectAddInNum := Key;
+End;
+
+Function IsCorrectNumClipboard(ClipbrdText: String; Cursor: Integer; Const MAX, MIN: Integer): Boolean;
+Var
+    IsCorrect: Boolean;
+    BufStr, WorkStr: String;
+Begin
+    If (MainForm.ActiveControl = MainForm.ALabeledEdit) Then
+    Begin
+        BufStr := MainForm.ALabeledEdit.Text;
+        MainForm.ALabeledEdit.ClearSelection;
+        WorkStr := MainForm.ALabeledEdit.Text;
+    End
+    Else
+    Begin
+        BufStr := MainForm.NLabeledEdit.Text;
+        MainForm.NLabeledEdit.ClearSelection;
+        WorkStr := MainForm.NLabeledEdit.Text;
+    End;
+    Insert(ClipbrdText, WorkStr, Cursor + 1);
+
+    Try
+        IsCorrect := Not((StrToInt(WorkStr) > MAX) Or (StrToInt(WorkStr) < MIN));
+
+        IsCorrect := IsCorrect And (Length(WorkStr) > 1) And (WorkStr[1] = ZERO_KEY);
+    Except
+        IsCorrect := False;
+    End;
+
+    If Not IsCorrect And (MainForm.ActiveControl = MainForm.ALabeledEdit) Then
+        MainForm.ALabeledEdit.Text := BufStr;
+
+    If Not IsCorrect And (MainForm.ActiveControl = MainForm.NLabeledEdit) Then
+        MainForm.NLabeledEdit.Text := BufStr;
+
+    IsCorrectNumClipboard := IsCorrect;
+End;
+
+Function CheckKeyCondition(CurentText: String; Key: Char; Const MAX, MIN: Integer): Char;
+Begin
+    Try
+        If CurentText <> '' Then
+            If (StrToInt(CurentText) > MAX) Or (StrToInt(CurentText) < MIN) Then
+                Key := NULL_POINT;
+
+        If (Length(CurentText) > 1) And (CurentText[1] = ZERO_KEY) Then
+            Key := NULL_POINT;
+    Except
+        Key := NULL_POINT;
+    End;
+
+    CheckKeyCondition := Key;
+End;
+
+Function IsCorrectDelete(Key: Char; CurentText: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
+Begin
+    Delete(CurentText, SelStart, 1);
+
+    IsCorrectDelete := CheckKeyCondition(CurentText, Key, MAX, MIN);
+End;
+
+Function IsCorrectSelDelete(Key: Char; CurentText, SelText: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
+Begin
+    Delete(CurentText, SelStart + 1, Length(SelText));
+
+    IsCorrectSelDelete := CheckKeyCondition(CurentText, Key, MAX, MIN);
+End;
+
+Function IsCorrectSelTextInputWithKey(Key: Char; CurentText, SelText: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
+Begin
+    Delete(CurentText, SelStart + 1, Length(SelText));
+    Insert(Key, CurentText, SelStart + 1);
+
+    IsCorrectSelTextInputWithKey := CheckKeyCondition(CurentText, Key, MAX, MIN);
+End;
+
 Function TryToAdd(Key: Char; Str: String; SelPos: Integer; Const MaxPoint, MinPoint: Integer): Boolean;
 Begin
     Insert(Key, Str, SelPos + 1);
 
     Try
-        If (StrToInt(Str) > MaxPoint) Or (StrToInt(Str) < MinPoint) Then
-            TryToAdd := False
-        Else
-            TryToAdd := True;
+        TryToAdd := Not((StrToInt(Str) > MaxPoint) Or (StrToInt(Str) < MinPoint))
     Except
         TryToAdd := False;
     End;
-End;
-
-Function TryToDelete(Key: Word; Str: String; SelPos: Integer; LabeledEdit: TLabeledEdit): Word;
-Begin
-    If (LabeledEdit.SelText = '') And (Length(Str) > 0) Then
-        Delete(Str, SelPos + Ord(Key = VK_DELETE), 1)
-    Else
-        If (Length(Str) > 0) Then
-        Begin
-            Delete(Str, SelPos + 1, Length(LabeledEdit.SelText));
-            Inc(SelPos);
-        End;
-
-    Try
-        If (Str <> '0') And (LabeledEdit.Text = MainForm.NLabeledEdit.Text) Then
-            LabeledEdit.Text := Str;
-
-        If Not((Str[1] = '0') And (Length(Str) > 1)) And (Str <> '-0') And (LabeledEdit.Text = MainForm.ALabeledEdit.Text) Then
-            LabeledEdit.Text := Str;
-    Except
-        LabeledEdit.Text := LabeledEdit.Text;
-    End;
-
-    If (Str = '') Or (Str = '-') Then
-        LabeledEdit.Text := Str;
-
-    If (Key = VK_BACK) And (LabeledEdit.Text = Str) Then
-        SelPos := SelPos - 1;
-    LabeledEdit.SelStart := SelPos;
-
-    TryToDelete := 0;
-End;
-
-Function CheckMinus(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
-Const
-    GOOD_VALUES: Set Of Char = ['0' .. '9'];
-Begin
-    If Not((Key In GOOD_VALUES) Or (Key = '-')) Then
-        Key := NULL_POINT;
-
-    If (Key = '-') And (LabeledEdit.SelStart <> 0) Then
-        Key := NULL_POINT;
-
-    If Not((Key In GOOD_VALUES) Or (Key = '-')) Then
-        Key := NULL_POINT;
-
-    CheckMinus := Key;
-End;
-
-Function CheckZero(Key: Char; Const NULL_POINT: Char; LabeledEdit: TLabeledEdit): Char;
-Const
-    GOOD_VALUES: Set Of Char = ['0' .. '9'];
-Begin
-    If (Length(LabeledEdit.Text) <> 0) And (LabeledEdit.Text[1] = '0') And (Key = '0') Then
-        Key := NULL_POINT;
-
-    If (Key = '0') And (LabeledEdit.SelStart = 0) And (Length(LabeledEdit.Text) <> 0) Then
-        Key := NULL_POINT;
-
-    If (Key = '0') And (LabeledEdit.SelStart = 1) And (LabeledEdit.Text[1] = '-') Then
-        Key := NULL_POINT;
-
-    CheckZero := Key;
-End;
-
-Function CheckSelText(LabeledEdit: TLabeledEdit; Key: Char; Const MAX_NUM, MIN_NUM: Integer): Boolean;
-Var
-    PastStr: String;
-    PastSelStart: Integer;
-    IsCorrect: Boolean;
-Begin
-    PastStr := LabeledEdit.Text;
-    PastSelStart := LabeledEdit.SelStart;
-    LabeledEdit.ClearSelection;
-
-    IsCorrect := TryToAdd(Key, LabeledEdit.Text, LabeledEdit.SelStart, MAX_NUM, MIN_NUM);
-    Key := CheckMinus(Key, NULL_POINT, LabeledEdit);
-    Key := CheckZero(Key, NULL_POINT, LabeledEdit);
-
-    If Not(IsCorrect) Or (Key = NULL_POINT) Then
-    Begin
-        LabeledEdit.Text := PastStr;
-        LabeledEdit.SelStart := PastSelStart;
-    End;
-
-    CheckSelText := IsCorrect;
 End;
 
 Procedure VectorGridPrepearing(ArrayGrid: TStringGrid; NumOfCols: Integer);
@@ -190,10 +192,10 @@ Begin
     End;
 End;
 
-Function CheckСhanges(IntLabEdit: TLabeledEdit): Boolean;
+Function CheckСhanges(IntLabEdit: String): Boolean;
 Begin
     Try
-        StrToInt(IntLabEdit.Text);
+        StrToInt(IntLabEdit);
 
         CheckСhanges := True;
     Except
@@ -201,7 +203,7 @@ Begin
     End;
 End;
 
-Procedure LabelEditChange(ALabeledEdit, NLabeledEdit: TLabeledEdit; BVectorStringGrid, CVectorStringGrid: TStringGrid);
+Procedure LabelEditChange(ALabeledEdit, NLabeledEdit: String; BVectorStringGrid, CVectorStringGrid: TStringGrid);
 Var
     IsVisible: Boolean;
 Begin
@@ -210,8 +212,8 @@ Begin
 
     If IsVisible Then
     Begin
-        ResettingArray(BVectorStringGrid, StrToInt(NLabeledEdit.Text));
-        ResettingArray(CVectorStringGrid, StrToInt(NLabeledEdit.Text));
+        ResettingArray(BVectorStringGrid, StrToInt(NLabeledEdit));
+        ResettingArray(CVectorStringGrid, StrToInt(NLabeledEdit));
     End;
 End;
 
@@ -227,32 +229,34 @@ Begin
 End;
 
 Function StringGridKeyPress(Var VectorStringGrid: TStringGrid; Key: Char; Col, Row: Integer): Char;
+Const
+    MAX_COORD_LENGTH: Integer = 8;
 Var
     MinCount: Integer;
 Begin
     MinCount := 0;
 
-    If (VectorStringGrid.Cells[Col, Row] = '0') Then
+    If (VectorStringGrid.Cells[Col, Row] = ZERO_KEY) Then
         Key := NULL_POINT;
 
     If (VectorStringGrid.Cells[Col, Row] <> '') And (VectorStringGrid.Cells[Col, Row] <> '-') And
-        (StrToInt(VectorStringGrid.Cells[Col, Row]) = 0) And (Key = '0') Then
+        (StrToInt(VectorStringGrid.Cells[Col, Row]) = 0) And (Key = ZERO_KEY) Then
         Key := NULL_POINT;
 
-    If (Key = '-') And (VectorStringGrid.Cells[Col, Row] <> '') Then
+    If (Key = MINUS_KEY) And (VectorStringGrid.Cells[Col, Row] <> '') Then
         Key := NULL_POINT;
 
-    If (Key = '0') And (VectorStringGrid.Cells[Col, Row] = '-') Then
+    If (Key = ZERO_KEY) And (VectorStringGrid.Cells[Col, Row] = MINUS_KEY) Then
         Key := NULL_POINT;
 
-    If Not((Key In GOOD_VALUES) Or (Key = '-')) Then
+    If Not CharInSet(Key, STRGRID_CASE) Then
         Key := NULL_POINT;
 
     If (VectorStringGrid.Cells[Col, Row] <> '') And
         Not(TryToAdd(Key, VectorStringGrid.Cells[Col, Row], Length(VectorStringGrid.Cells[Col, Row]), MAX_INT_NUM, MIN_INT_NUM)) Then
         Key := NULL_POINT;
 
-    If ((VectorStringGrid.Cells[Col, Row] <> '') And (VectorStringGrid.Cells[Col, Row][1] = '-')) Or (Key = '-') Then
+    If ((VectorStringGrid.Cells[Col, Row] <> '') And (VectorStringGrid.Cells[Col, Row][1] = MINUS_KEY)) Or (Key = MINUS_KEY) Then
         MinCount := 1;
 
     If Length(VectorStringGrid.Cells[Col, Row]) = MAX_COORD_LENGTH + MinCount Then
@@ -282,45 +286,16 @@ Begin
 
 End;
 
-Procedure TryToAddClipboard(ClipboardText: String; Const MaxPoint, MinPoint: Integer; Var LabeledEdit: TLabeledEdit; Var Key: Word);
-Var
-    IsCorrect: Boolean;
-Begin
-    IsCorrect := True;
-    Try
-        If (StrToInt(ClipboardText) > MaxPoint) Or (StrToInt(ClipboardText) < MinPoint) Then
-            IsCorrect := False;
-
-        If ClipboardText[1] = ' ' Then
-            IsCorrect := False;
-
-        If ClipboardText[Length(ClipBoardText)] = ' ' Then
-            IsCorrect := False;
-    Except
-        IsCorrect := False;
-    End;
-
-    If IsCorrect And (Key <> VK_INSERT) Then
-        LabeledEdit.Text := IntToStr(StrToInt(ClipboardText));
-
-    If Not IsCorrect Then
-        Key := 0;
-End;
-
 Procedure StGridAddClipboard(ClipBoardText: String; Var StGrid: TStringGrid; Const Col, Row: Integer);
 Var
     IsCorrect: Boolean;
 Begin
-    IsCorrect := True;
     Try
-        If (StrToInt(ClipboardText) > MAX_INT_NUM) Or (StrToInt(ClipboardText) < MIN_INT_NUM) Then
-            IsCorrect := False;
+        IsCorrect := Not((StrToInt(ClipboardText) > MAX_INT_NUM) Or (StrToInt(ClipboardText) < MIN_INT_NUM));
 
-        If ClipboardText[1] = ' ' Then
-            IsCorrect := False;
+        IsCorrect := IsCorrect And (ClipboardText[1] <> ' ');
 
-        If ClipboardText[Length(ClipBoardText)] = ' ' Then
-            IsCorrect := False;
+        IsCorrect := IsCorrect And (ClipboardText[Length(ClipBoardText)] <> ' ');
     Except
         IsCorrect := False;
     End;

@@ -1,5 +1,0 @@
-A: 1;
-N: 1;
-vector B: 1 
-vector C: 1 
-result set I: empty set...

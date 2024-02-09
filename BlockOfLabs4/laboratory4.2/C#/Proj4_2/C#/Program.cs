@@ -2,7 +2,7 @@
 
 enum IOChoose : Byte
 {
-    FILE,
+    FILE = 1,
     CONSOLE
 }
 class Proj4_2
@@ -12,7 +12,7 @@ class Proj4_2
     const int MIN_INT_NUM = -20_000_000;
     const int MAX_INT_NUM = +20_000_000;
     const int MIN_N = 1;
-    const int MAX_N = 20;
+    const int MAX_N = 15;
     const int MIN_FILE_WAY_SIZE = 4;
 
     static void taskInfoOutput()
@@ -72,12 +72,12 @@ class Proj4_2
 
             switch (ChosenPath)
             {
-                case 0: result = IOChoose.FILE; break;
-                case 1: result = IOChoose.CONSOLE; break;
+                case FILE_VALUE: result = IOChoose.FILE; break;
+                case CONSOLE_VALUE: result = IOChoose.CONSOLE; break;
                 default: isCorrect = false; break;
             }
 
-            if (!isCorrect) Console.Error.Write($"You should write one natural number({CONSOLE_VALUE}|{FILE_VALUE}): ");
+            if (!isCorrect) Console.Error.Write($"You should write one natural number({FILE_VALUE}|{CONSOLE_VALUE}): ");
             else Console.WriteLine();
         } while (!isCorrect);
 
@@ -137,8 +137,10 @@ class Proj4_2
     {
         try
         {
-            FileAttributes attributes = File.GetAttributes(filePath);
-            return (attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
+            using (StreamReader reader = new StreamReader(filePath))
+                reader.Read();
+
+            return true;
         }
         catch
         {
@@ -195,7 +197,7 @@ class Proj4_2
                 isCorrectInput = false;
 
             if (!isServiceSymbol && isCorrectInput)
-                num = num * 10 + character - (int)char.GetNumericValue('0'); ;
+                num = num * 10 + character - 48;
 
             if (bufChar != 0 && isCorrectInput && isServiceSymbol)
                 isCorrect = false;

@@ -140,9 +140,9 @@ End;
 
 Function CheckInput(Key: Char; PointsLabeledEdit: TLabeledEdit): Char;
 Const
-    GOOD_VALUES: Set Of Char = ['0' .. '9', #08, #$16];
+    GOOD_VALUES = ['0' .. '9', #08, #$16];
 Begin
-    If Not(Key In GOOD_VALUES) Then
+    If Not CharInSet(Key, GOOD_VALUES) Then
         Key := #0;
 
     If (PointsLabeledEdit.Text = '10') And ((Key <> '0') And (Key <> #08)) Then

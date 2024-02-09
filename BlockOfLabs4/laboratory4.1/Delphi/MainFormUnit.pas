@@ -57,6 +57,9 @@ Type
         Procedure RemoveSpButtonClick(Sender: TObject);
         Procedure SearchSpButtonClick(Sender: TObject);
         Procedure PointTabelStrGridKeyUp(Sender: TObject; Var Key: Word; Shift: TShiftState);
+        Procedure PointTabelStrGridKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+        Procedure PointTabelStrGridDblClick(Sender: TObject);
+        Procedure FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
     Private
         Procedure WMGetMinMaxInfo(Var Msg: TWMGetMinMaxInfo);
     Public
@@ -156,11 +159,11 @@ End;
 
 Procedure TMainForm.FormCreate(Sender: TObject);
 Begin
-    PointTabelStrGrid.ColWidths[0] := 75;
-    PointTabelStrGrid.ColWidths[1] := 231;
-    PointTabelStrGrid.ColWidths[2] := 231;
-    PointTabelStrGrid.ColWidths[3] := 231;
-    PointTabelStrGrid.ColWidths[4] := 168;
+    PointTabelStrGrid.ColWidths[0] := (PointTabelStrGrid.Width * 9) Div 100;
+    PointTabelStrGrid.ColWidths[1] := (PointTabelStrGrid.Width * 23) Div 100;
+    PointTabelStrGrid.ColWidths[2] := (PointTabelStrGrid.Width * 23) Div 100;
+    PointTabelStrGrid.ColWidths[3] := (PointTabelStrGrid.Width * 23) Div 100;
+    PointTabelStrGrid.ColWidths[4] := (PointTabelStrGrid.Width * 21) Div 100;
     PointTabelStrGrid.Cells[0, 0] := 'Место';
     PointTabelStrGrid.Cells[1, 0] := 'Страна';
     PointTabelStrGrid.Cells[2, 0] := 'Название команды';
@@ -171,6 +174,15 @@ Begin
 
     If (CurentRecordsCount <> 0) Then
         PointTabelStrGrid.FixedRows := 1;
+End;
+
+Procedure TMainForm.FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Begin
+    If (Key = VK_INSERT) Then
+        AddSPButton.Click;
+
+    If (Key = VK_ESCAPE) Then
+        MainForm.Close;
 End;
 
 Procedure TMainForm.InstractionButtonClick(Sender: TObject);
@@ -193,6 +205,23 @@ Begin
         'команда, которая была записана в таблицу раньше.';
 
     CreateModalForm('Инструкция', InstractionText, 420, 665);
+End;
+
+Procedure TMainForm.PointTabelStrGridDblClick(Sender: TObject);
+Begin
+    ChangeSPButton.Click;
+End;
+
+Procedure TMainForm.PointTabelStrGridKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Begin
+    If (Key = VK_INSERT) Then
+        AddSPButton.Click;
+
+    If (Key = VK_DELETE) Then
+        RemoveSPButton.Click;
+
+    If (Key = VK_ESCAPE) Then
+        MainForm.Close;
 End;
 
 Procedure TMainForm.PointTabelStrGridKeyUp(Sender: TObject; Var Key: Word; Shift: TShiftState);
@@ -219,9 +248,9 @@ Begin
             DeleteRow(CurentRow);
             Dec(CurentRecordsCount);
             If CurentRecordsCount > 11 Then
-                MainForm.PointTabelStrGrid.ColWidths[4] := 147
+                PointTabelStrGrid.ColWidths[4] := (PointTabelStrGrid.Width * 19) Div 100
             Else
-                MainForm.PointTabelStrGrid.ColWidths[4] := 168;
+                MainForm.PointTabelStrGrid.ColWidths[4] := (MainForm.PointTabelStrGrid.Width * 21) Div 100;
             SortRecords();
             InputRecordsInTableGrid();
         End;
@@ -247,7 +276,9 @@ Begin
     Msg.MinMaxInfo.PtMaxSize.Y := Height;
     Msg.MinMaxInfo.PtMaxTrackSize.X := Width;
     Msg.MinMaxInfo.PtMaxTrackSize.Y := Height;
-    Position := PoScreenCenter;
+
+    Left := (Screen.Width - Width) Div 2;
+    Top := (Screen.Height - Height) Div 2;
 End;
 
 End.

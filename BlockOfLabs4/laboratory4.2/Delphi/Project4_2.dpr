@@ -1,20 +1,19 @@
-program Project4_2;
+Program Project4_2;
 
-uses
-  Vcl.Forms,
-  MainUnit in 'MainUnit.pas' {MainForm},
-  AboutEditorUnit in 'AboutEditorUnit.pas' {AboutEditor},
-  InstractionUnit in 'InstractionUnit.pas' {Instraction},
-  BackendUnit in 'BackendUnit.pas',
-  FrontendUnit in 'FrontendUnit.pas';
+Uses
+    Vcl.Forms,
+    MainUnit In 'MainUnit.pas' {MainForm} ,
+    AboutEditorUnit In 'AboutEditorUnit.pas' {AboutEditor} ,
+    InstractionUnit In 'InstractionUnit.pas' {Instraction} ,
+    BackendUnit In 'BackendUnit.pas',
+    FrontendUnit In 'FrontendUnit.pas';
 
 {$R *.res}
 
-begin
-  Application.Initialize;
-  Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TAboutEditor, AboutEditor);
-  Application.CreateForm(TInstraction, Instraction);
-  Application.Run;
-end.
+Begin
+    Application.Initialize;
+    Application.MainFormOnTaskbar := True;
+    Application.CreateForm(TMainForm, MainForm);
+    Application.Run;
+
+End.

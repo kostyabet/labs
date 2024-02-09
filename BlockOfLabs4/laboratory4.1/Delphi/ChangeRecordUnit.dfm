@@ -2129,6 +2129,7 @@ object ChangeRecordForm: TChangeRecordForm
   Menu = MainMenu
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   TextHeight = 15
   object CountryLabel: TLabel
     Left = 16

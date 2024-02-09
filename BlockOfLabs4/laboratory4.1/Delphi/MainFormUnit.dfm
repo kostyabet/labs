@@ -2133,6 +2133,7 @@ object MainForm: TMainForm
   Position = poScreenCenter
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
   TextHeight = 15
   object TMLabel: TLabel
     Left = 693
@@ -17231,9 +17232,9 @@ object MainForm: TMainForm
   object ExposureLabel: TLabel
     Left = 432
     Top = 128
-    Width = 126
+    Width = 147
     Height = 15
-    Caption = #1055#1088#1086#1089#1090#1086' '#1072#1085#1072#1083#1086#1075#1086#1074' '#1085#1077#1090' :)'
+    Caption = #1055#1088#1086#1089#1090#1086' '#1076#1088#1091#1075#1080#1093' '#1085#1077' '#1085#1072#1096#1105#1083' :)'
   end
   object StGridInfo: TLabel
     Left = 96
@@ -17337,7 +17338,7 @@ object MainForm: TMainForm
     Width = 756
     Height = 301
     Hint = #1058#1091#1088#1085#1080#1088#1085#1072#1103' '#1090#1072#1073#1083#1080#1094#1072
-    DefaultColWidth = 146
+    DefaultColWidth = 149
     FixedCols = 0
     RowCount = 1
     FixedRows = 0
@@ -17346,6 +17347,8 @@ object MainForm: TMainForm
     ScrollBars = ssVertical
     ShowHint = True
     TabOrder = 1
+    OnDblClick = PointTabelStrGridDblClick
+    OnKeyDown = PointTabelStrGridKeyDown
     OnKeyUp = PointTabelStrGridKeyUp
     RowHeights = (
       24)

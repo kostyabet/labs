@@ -45,6 +45,9 @@ Begin
     
     EndLoadingScreen.Enabled := True;
     AlphaBlendChanging.Enabled := True;
+
+    Left := (Screen.Width - Width) Div 2;
+    Top := (Screen.Height - Height) Div 2;
 End;
 
 Procedure TLoadingScreen.AlphaBlendChangingTimer(Sender: TObject);
