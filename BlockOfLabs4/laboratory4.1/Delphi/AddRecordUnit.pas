@@ -90,8 +90,8 @@ Begin
 
     If (ResultKey = ID_YES) Then
     Begin
-        InputRecordInFile(StrToWideChar(CountryLabeledEdit.Text), StrToWideChar(CoachLabeledEdit.Text),
-            StrToWideChar(TeamNameLabeledEdit.Text), StrToint(PointsLabeledEdit.Text));
+        InputRecordInFile(StrToWideChar(CountryLabeledEdit.Text), StrToWideChar(TeamNameLabeledEdit.Text),
+            StrToWideChar(CoachLabeledEdit.Text), StrToint(PointsLabeledEdit.Text));
         Inc(CurentRecordsCount);
         SortRecords();
         InputRecordsInTableGrid();

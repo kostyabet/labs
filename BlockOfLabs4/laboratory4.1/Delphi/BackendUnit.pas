@@ -31,7 +31,7 @@ Type
     End;
 
 Const
-    TEAMS_COUNT = 48;
+    TEAMS_COUNT = 32;
 
 Type
     TMassive = Array Of Integer;

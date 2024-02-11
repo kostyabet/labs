@@ -1,442 +1,518 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
+using System.Xml;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Proj4_2
-{
-    enum PanelFunctions
-    {
+namespace Proj4_2 {
+    enum PanelFunctions {
         ADD,
         CHANGE,
         SEARCH,
         DELETE,
+        REFERENCE,
         EXIT
     }
-    enum recordPoints
-    {
+    enum recordPoints {
         COUNTRY,
         TEAM,
         COACH,
         POINTS,
+        REFERENCE,
         EXIT
     }
-    class MainClass()
-    {
-        record MyRecord(string country, string team, string coach, int points);
-        static MyRecord[] recordArray = new MyRecord[0];
+    class MainClass() {
+        record struct TFootballRecord(string Country, string Team, string Coach, int Points);
+        static TFootballRecord[] recordArray = new TFootballRecord[0];
         const int MAX_STR_LENGTH = 20;
         const int MAX_N = 100;
         const int MIN_N = 0;
-        static string[] mainOptions = { " < Add Record > ", " < Change Record > ", " < Search Record > ", " < Delete Record > ", " < Exit > " };
-        static string[] changeRecordOptions = { "Country", "Team", "Coach", "Points", "<- Go Back" };
+        const int MAX_RECORDS = 32;
+        static string MainFilePath = "MainFile.txt";
+        static string CorrectionFilePath = "CorrectionFile.txt";
+        static string TempFilePath = "TempFile.txt";
+        static string[] mainOptions = { " < Добавить запись > ", " < Изменить запись > ", " < Найти запись > ", " < Удалить запись > ", " < Справка >", " < Выход > " };
+        static string[] changeRecordOptions = { "Страна", "Команда", "Тренер", "Рейтинг", "Справка", "<- Вернуться" };
+        static string[] exitOption = { "<- Вернуться" };
+        static void showReference() {
+            Console.Clear();
+            string prompt = $"""
+                Инструкция:
+                  1. Чтобы добавить новую запись выберите кнопку {mainOptions[0]};
+                  2. Если вы хотите изменить какую-то запись выберите {mainOptions[1]};
+                  3. Если у вас много записей и вы потерялись, выберите {mainOptions[2]};
+                  4. Если запись необходимо убрать из таблицы, выберите {mainOptions[3]};
+                  5. Чтобы выйти выбирайте вариант {mainOptions[5]}.
 
-        static void sortRecords() { 
-            int TempP, J;
-            string TempT, TempCh, TempCy;
+                Ограничения по вводу:
+                  1. Поля: {changeRecordOptions[0]}, {changeRecordOptions[1]}, {changeRecordOptions[2]} это 
+                     строки максимальной длиной в {MAX_STR_LENGTH} символов;
+                  2. Поле {changeRecordOptions[3]} имеет ограничение [{MIN_N}; {MAX_N}].
 
-            for (int I = 1; I < recordArray.Length; I++)
-            {
-            TempP = recordArray[I].points;
-            TempT = recordArray[I].team;
-            TempCh = recordArray[I].coach;
-            TempCy = recordArray[I].country;
+                Работа с файлами:
+                    В форме автоматически реализованы типизированный файл и файл
+                    корректур. Если вы сделали запись и закрыли форму, то всё
+                    сохранится автоматически и при запуске будет выгружено.
+                
+                Максимальное колличество команд, которые можно записать в таблицу: {MAX_RECORDS}.
 
-            J = I - 1;
-                while (J >= 0 && recordArray[J].points < TempP)
-                {
-                    recordArray[J + 1] = recordArray[J + 1] with { points = recordArray[J].points };
-                    recordArray[J + 1] = recordArray[J + 1] with { team = recordArray[J].team };
-                    recordArray[J + 1] = recordArray[J + 1] with { coach = recordArray[J].coach };
-                    recordArray[J + 1] = recordArray[J + 1] with { country = recordArray[J].country };
+                В турнирной таблице записи упорядочены по убыванию рейтинга команд.
 
-                    recordArray[J] = recordArray[J] with { points = TempP };
-                    recordArray[J] = recordArray[J] with { team = TempT };
-                    recordArray[J] = recordArray[J] with { coach = TempCh };
-                    recordArray[J] = recordArray[J] with { country = TempCy };
-
-                    J--;
+                В случае когда набрано одинаковое кол-во очков, первой будет идти
+                команда, которая была записана в таблицу раньше.
+                """;
+            getSelectedIndex(prompt, exitOption);
+        }
+        static void importRecordsForSort() {
+            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.Open))) {
+                TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
+                while (reader.BaseStream.Position < reader.BaseStream.Length) {
+                    temp.Country = reader.ReadString();
+                    temp.Team = reader.ReadString();
+                    temp.Coach = reader.ReadString();
+                    temp.Points = reader.ReadInt32();
+                    Array.Resize(ref recordArray, recordArray.Length + 1);
+                    recordArray[recordArray.Length - 1].Country = temp.Country;
+                    recordArray[recordArray.Length - 1].Team = temp.Team;
+                    recordArray[recordArray.Length - 1].Coach = temp.Coach;
+                    recordArray[recordArray.Length - 1].Points = temp.Points;
                 }
             }
         }
-
-        static void displayOptions(string prompt, string[] options, int selectedIndex = 0)
-        {
+        static void importSortRecInFile() {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(CorrectionFilePath, FileMode.Create)))
+                for (int i = 0; i < recordArray.Length; ++i) {
+                    writer.Write(recordArray[i].Country);
+                    writer.Write(recordArray[i].Team);
+                    writer.Write(recordArray[i].Coach);
+                    writer.Write(recordArray[i].Points);
+                }
+        }
+        static void sortRecords() { 
+            int j, points;
+            TFootballRecord[] temp = new TFootballRecord[1];
+            recordArray = new TFootballRecord[0];
+            importRecordsForSort();
+            for (int I = 1; I < recordArray.Length; I++) {
+                temp[0] = recordArray[I];
+                points = recordArray[I].Points;
+                j = I - 1;
+                while (j >= 0 && recordArray[j].Points < points) {
+                    recordArray[j + 1] = recordArray[j];
+                    recordArray[j] = temp[0];
+                    j--;
+                }
+            }
+            importSortRecInFile();
+        }
+        static void displayOptions(string prompt, string[] options, int selectedIndex = 0) {
             Console.WriteLine(prompt);
-            for (int i = 0; i < options.Length; ++i)
-            {
+            for (int i = 0; i < options.Length; ++i) {
                 string curentOption = options[i];
                 string prefix;
-
-                if (i == selectedIndex)
-                {
+                if (i == selectedIndex) {
                     prefix = "*";
                     Console.ForegroundColor = ConsoleColor.Black;
                     Console.BackgroundColor = ConsoleColor.White;
                 }
-                else
-                {
+                else {
                     prefix = " ";
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.BackgroundColor = ConsoleColor.Black;
                 }
-
                 Console.WriteLine($"{prefix} {curentOption}");
             }
             Console.ResetColor();
         }
-        static int getSelectedIndex(string prompt, string[] options, int selectedIndex = 0)
-        {
+        static int getSelectedIndex(string prompt, string[] options, int selectedIndex = 0) {
             ConsoleKey keyPressed;
-            do
-            {
+            do {
                 Console.Clear();
                 displayOptions(prompt, options, selectedIndex);
-
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 keyPressed = keyInfo.Key;
-
                 if (keyPressed == ConsoleKey.UpArrow)
-                {
-                    selectedIndex--;
-                    if (selectedIndex == -1)
-                        selectedIndex = options.Length - 1;
-                }
-
+                    if (--selectedIndex == -1) selectedIndex = options.Length - 1;
                 if (keyPressed == ConsoleKey.DownArrow)
-                {
-                    selectedIndex++;
-                    if (selectedIndex == options.Length)
-                        selectedIndex = 0;
-                }
+                    if (++selectedIndex == options.Length) selectedIndex = 0;
             } while (keyPressed != ConsoleKey.Enter);
-
             return selectedIndex;
         }
-
-        static PanelFunctions searchQurentMainMethod(int curentIndex)
-        {
-            switch (curentIndex)
-            {
+        static PanelFunctions searchQurentMainMethod(int curentIndex) {
+            switch (curentIndex) {
                 case (int)PanelFunctions.ADD: return PanelFunctions.ADD;
                 case (int)PanelFunctions.CHANGE: return PanelFunctions.CHANGE;
                 case (int)PanelFunctions.SEARCH: return PanelFunctions.SEARCH;
                 case (int)PanelFunctions.DELETE: return PanelFunctions.DELETE;
+                case (int)PanelFunctions.REFERENCE: return PanelFunctions.REFERENCE;
                 default: return PanelFunctions.EXIT;
             }
         }
-
-        static string outputTable()
-        {
+        static string outputTable() {
             int columnWidth = 20;
-
             string formatString = "  {0,-" + columnWidth + "} {1,-" + columnWidth + "} {2,-" + columnWidth + "} {3,-" + columnWidth + "} {4,-" + columnWidth + "}";
-            string prompt = string.Format(formatString, "Position", "Country", "Team", "Coach", "Points");
+            string prompt = string.Format(formatString, "Место", "Страна", "Команда", "Тренер", "Рейтинг");
             prompt += '\n' + new string('-', (columnWidth + 1) * 5);
-
             int i = 1;
-            foreach (MyRecord record in recordArray)
-                prompt += '\n' + string.Format(formatString, i++, record.country, record.team, record.coach, record.points);
-
+            using (BinaryReader reader = new BinaryReader(File.OpenRead(CorrectionFilePath))) {
+                TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
+                while (reader.BaseStream.Position < reader.BaseStream.Length) {
+                    temp.Country = reader.ReadString();
+                    temp.Team = reader.ReadString();
+                    temp.Coach = reader.ReadString();
+                    temp.Points = reader.ReadInt32();
+                    prompt += '\n' + string.Format(formatString, i++, temp.Country, temp.Team, temp.Coach, temp.Points);
+                }
+            }
             return prompt;
         }
-        static string inputString(string prompt, in int maxLength)
-        {
+        static string inputString(string prompt, in int maxLength) {
             Console.Write(prompt);
-
             bool isCorrect = false;
             string curentStr = string.Empty;
-            do
-            {
+            do {
                 curentStr = Console.ReadLine() ?? string.Empty;
                 isCorrect = !((curentStr.Length > maxLength) || (curentStr == string.Empty));
-                if (!isCorrect)
-                    Console.Error.Write("Error. Try again (max length 20 symbols): ");
+                if (!isCorrect) Console.Error.Write($"Ошибка! Попробуйте снова (максимальная длина {maxLength} символов): ");
             } while (!isCorrect);
-
             return curentStr;
         }
-
-        static int inputNum(string prompt, in int max, in int min)
-        {
+        static int inputNum(string prompt, in int max, in int min) {
             Console.Write(prompt);
-
             bool isCorrect = true;
             int num = 0;
-            do
-            {
+            do {
                 try {
                     num = Convert.ToInt32(Console.ReadLine());
-
                     isCorrect = true;
-                } catch {
-                    isCorrect = false;
+                } 
+                catch { 
+                    isCorrect = false; 
                 }
-
                 isCorrect = isCorrect && !(num > max) && !(num < min);
-                if (!isCorrect)
-                    Console.Error.Write($"Error. Try again [{min}; {max}]: ");
+                if (!isCorrect) Console.Error.Write($"Ошибка! Попробуйте снова [{min}; {max}]: ");
             } while (!isCorrect);
-
             return num;
         }
-        static void addRecordInMassive(MyRecord rec)
-        {
-            Array.Resize(ref recordArray, recordArray.Length + 1);
-            recordArray[recordArray.Length - 1] = rec;
+        static void addRecordInFile(TFootballRecord newRecord) {
+            using (BinaryReader reader = new BinaryReader(File.OpenRead(CorrectionFilePath)))
+                using (BinaryWriter writer = new BinaryWriter(File.Open(TempFilePath, FileMode.CreateNew)))  {
+                    TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
+                    while (reader.BaseStream.Position < reader.BaseStream.Length) {
+                        temp.Country = reader.ReadString();
+                        temp.Team = reader.ReadString();
+                        temp.Coach = reader.ReadString();
+                        temp.Points = reader.ReadInt32();
+                        writer.Write(temp.Country);
+                        writer.Write(temp.Team);
+                        writer.Write(temp.Coach);
+                        writer.Write(temp.Points);
+                    }
+                    writer.Write(newRecord.Country);
+                    writer.Write(newRecord.Team);
+                    writer.Write(newRecord.Coach);
+                    writer.Write(newRecord.Points);
+                }
+            File.Delete(CorrectionFilePath);
+            File.Move(TempFilePath, CorrectionFilePath);
         }
-        static void addNewRecord()
-        {
+        static void addNewRecord() {
+            string prompt = string.Empty;
             Console.Clear();
-            MyRecord rec = new MyRecord(string.Empty, string.Empty, string.Empty, 0);
-            Console.WriteLine("Let's go to add new record.");
-
-            string Countrty = inputString("Input Country: ", MAX_STR_LENGTH);
-            rec = rec with { country = Countrty };
-
-            string Team = inputString("Input Team name: ", MAX_STR_LENGTH);
-            rec = rec with { team = Team };
-
-            string Coach = inputString("Input Coach surname: ", MAX_STR_LENGTH);
-            rec = rec with { coach = Coach };
-
-            int Points = inputNum("Input numbers of Points: ", MAX_N, MIN_N);
-            rec = rec with { points = Points };
-
-            addRecordInMassive(rec);
-            sortRecords();
-
-            string prompt = $"""
-                Country: {Countrty};
-                Team: {Team};
-                Coach: {Coach};
-                Points: {Points};
-                """;
-            string[] options = { " <- Go Back" };
-            getSelectedIndex(prompt, options);
+            if (recordArray.Length == MAX_RECORDS) prompt = "Вы достигли максимального колличесвта команд.";
+            else {
+                TFootballRecord newRecord = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
+                Console.WriteLine("Давайте создадим новую запись.");
+                string country = inputString("Страна: ", MAX_STR_LENGTH);
+                newRecord.Country = country;
+                string team = inputString("Название команда: ", MAX_STR_LENGTH);
+                newRecord.Team = team;
+                string coach = inputString("Фамилия гл. тренера: ", MAX_STR_LENGTH);
+                newRecord.Coach = coach;
+                int points = inputNum("Рейтинг команды (кол-во очков): ", MAX_N, MIN_N);
+                newRecord.Points = points;
+                addRecordInFile(newRecord);
+                sortRecords();
+                prompt = $"""
+                    Страна: {country};
+                    Команда: {team};
+                    Тренер: {coach};
+                    Рейтинг: {points};
+                    """;
+            }
+            getSelectedIndex(prompt, exitOption);
         }
-
-        static string[] createRecordsOptions(int columnWidth, string formatString)
-        {
-            string[] result = new string[recordArray.Length + 1];
+        static string[] createRecordsOptions(int columnWidth, string formatString) {
+            string[] result = new string[0];
             int i = 1;
-
-            foreach (MyRecord record in recordArray)
-                result[i - 1] = string.Format(formatString, i++, record.country, record.team, record.coach, record.points);
-
-            result[i - 1] = "<- Go Back";
-
+            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.Open))) {
+                TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
+                while (reader.BaseStream.Position < reader.BaseStream.Length) {
+                    temp.Country = reader.ReadString();
+                    temp.Team = reader.ReadString();
+                    temp.Coach = reader.ReadString();
+                    temp.Points = reader.ReadInt32();
+                    Array.Resize(ref result, result.Length + 1);
+                    result[i - 1] += string.Format(formatString, i++, temp.Country, temp.Team, temp.Coach, temp.Points);
+                }
+            }
+            Array.Resize(ref result, result.Length + 1);
+            result[i - 1] = exitOption[0];
             return result;
         }
-
-        static int getSelectedRow()
-        {
+        static int getSelectedRow() {
             int columnWidth = 20;
-
             string formatString = "{0,-" + columnWidth + "} {1,-" + columnWidth + "} {2,-" + columnWidth + "} {3,-" + columnWidth + "} {4,-" + columnWidth + "}";
             string[] recordsOption = createRecordsOptions(columnWidth, formatString);
-
             formatString = "  {0,-" + columnWidth + "} {1,-" + columnWidth + "} {2,-" + columnWidth + "} {3,-" + columnWidth + "} {4,-" + columnWidth + "}";
-            string prompt = string.Format(formatString, "Position", "Country", "Team", "Coach", "Points");
+            string prompt = string.Format(formatString, "Место", "Страна", "Команда", "Тренер", "Рейтинг");
             prompt += "\n" + new string('-', (columnWidth + 1) * 5);
-
             return getSelectedIndex(prompt, recordsOption);
         }
-
-        static recordPoints qurentPoint(int selectedIndex)
-        {
-            switch (selectedIndex)
-            {
+        static recordPoints qurentPoint(int selectedIndex) {
+            switch (selectedIndex) {
                 case (int)recordPoints.COUNTRY: return recordPoints.COUNTRY;
                 case (int)recordPoints.TEAM: return recordPoints.TEAM;
                 case (int)recordPoints.COACH: return recordPoints.COACH;
                 case (int)recordPoints.POINTS: return recordPoints.POINTS;
+                case (int)recordPoints.REFERENCE: return recordPoints.REFERENCE;
                 default: return recordPoints.EXIT;
             }
         }
-
-        static void changeCountry(int selectedRow)
-        {
-            string Countrty = inputString("Input Country: ", MAX_STR_LENGTH);
-            recordArray[selectedRow] = recordArray[selectedRow] with { country = Countrty };
-        }
-        static void changeTeam(int selectedRow)
-        {
-            string Team = inputString("Input Team name: ", MAX_STR_LENGTH);
-            recordArray[selectedRow] = recordArray[selectedRow] with { team = Team };
-        }
-        static void changeCoach(int selectedRow)
-        {
-            string Coach = inputString("Input Coach surname: ", MAX_STR_LENGTH);
-            recordArray[selectedRow] = recordArray[selectedRow] with { coach = Coach };
-        }
-        static void changePoints(int selectedRow)
-        {
-            int Points = inputNum("Input numbers of Points: ", MAX_N, MIN_N);
-            recordArray[selectedRow] = recordArray[selectedRow] with { points = Points };
-        }
-
-        static void workWithPoint(recordPoints selectedRecordPoint, int selectedRow)
-        {
-            switch (selectedRecordPoint)
-            {
-                case recordPoints.COUNTRY: changeCountry(selectedRow); break;
-                case recordPoints.TEAM: changeTeam(selectedRow); break;
-                case recordPoints.COACH: changeCoach(selectedRow); break;
-                case recordPoints.POINTS: changePoints(selectedRow); break;
+        static void workWithPoint(recordPoints selectedRecordPoint,ref TFootballRecord curentRow) {
+            switch (selectedRecordPoint) {
+                case recordPoints.COUNTRY:
+                    string countrty = inputString("Страна: ", MAX_STR_LENGTH);
+                    curentRow.Country = countrty;
+                    break;
+                case recordPoints.TEAM:
+                    string team = inputString("Название команды: ", MAX_STR_LENGTH);
+                    curentRow.Team = team;
+                    break;
+                case recordPoints.COACH:
+                    string coach = inputString("Фамилия гл. тренера: ", MAX_STR_LENGTH);
+                    curentRow.Coach = coach;
+                    break;
+                case recordPoints.POINTS:
+                    int points = inputNum("Рейтинг команды (кол-во очков): ", MAX_N, MIN_N);
+                    curentRow.Points = points;
+                    break;
+                case recordPoints.REFERENCE: 
+                    showReference(); 
+                    break;
             }
         }
-        static void workWithSelectedRow(int selectedRow)
-        {
-            if (selectedRow == recordArray.Length)
-                return;
-
+        static void searchCurentRowInFile(int selectedRow, ref TFootballRecord curentRow, ref int recordCounter) {
+            using (BinaryReader reader = new BinaryReader(File.OpenRead(CorrectionFilePath))) {
+                TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
+                while (reader.BaseStream.Position < reader.BaseStream.Length) {
+                    temp.Country = reader.ReadString();
+                    temp.Team = reader.ReadString();
+                    temp.Coach = reader.ReadString();
+                    temp.Points = reader.ReadInt32();
+                    if (recordCounter == selectedRow) {
+                        curentRow.Country = temp.Country;
+                        curentRow.Team = temp.Team;
+                        curentRow.Coach = temp.Coach;
+                        curentRow.Points = temp.Points;
+                    }
+                    recordCounter++;
+                }
+            }
+        }
+        static void inputChangeRowInFile(int selectedRow, TFootballRecord curentRow) {
+            int recordCounter = 0;
+            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.Open)))
+            using (BinaryWriter writer = new BinaryWriter(File.Open(TempFilePath, FileMode.CreateNew))) {
+                TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
+                while (reader.BaseStream.Position < reader.BaseStream.Length) {
+                    temp.Country = reader.ReadString();
+                    temp.Team = reader.ReadString();
+                    temp.Coach = reader.ReadString();
+                    temp.Points = reader.ReadInt32();
+                    if (recordCounter == selectedRow) {
+                        writer.Write(curentRow.Country);
+                        writer.Write(curentRow.Team);
+                        writer.Write(curentRow.Coach);
+                        writer.Write(curentRow.Points);
+                    }
+                    else {
+                        writer.Write(temp.Country);
+                        writer.Write(temp.Team);
+                        writer.Write(temp.Coach);
+                        writer.Write(temp.Points);
+                    }
+                    recordCounter++;
+                }
+            }
+            File.Delete(CorrectionFilePath);
+            File.Move(TempFilePath, CorrectionFilePath);
+        }
+        static void workWithSelectedRow(int selectedRow) {
+            int recordsCounter = 0;
+            TFootballRecord curentRow = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
+            searchCurentRowInFile(selectedRow, ref curentRow, ref recordsCounter);
+            if (selectedRow == recordsCounter) return;
             recordPoints selectedRecordPoint = recordPoints.EXIT;
-            do
-            {
+            do {
                 int columnWidth = 20;
                 string formatString = "{0,-" + columnWidth + "} {1,-" + columnWidth + "} {2,-" + columnWidth + "} {3,-" + columnWidth + "} {4,-" + columnWidth + "}";
-                string prompt = string.Format(formatString, "Position", "Country", "Team", "Coach", "Points");
+                string prompt = string.Format(formatString, "Место", "Страна", "Команда", "Тренер", "Рейтинг");
                 prompt += "\n" + new string('-', columnWidth * 5);
-                prompt += '\n' + string.Format(formatString, 0, recordArray[selectedRow].country, recordArray[selectedRow].team, recordArray[selectedRow].coach, recordArray[selectedRow].points);
-                prompt += "\nWhat would you like to change:";
+                prompt += '\n' + string.Format(formatString, -1, curentRow.Country, curentRow.Team, curentRow.Coach, curentRow.Points);
+                prompt += "\nЧто вы хотите изменить:";
                 selectedRecordPoint = qurentPoint(getSelectedIndex(prompt, changeRecordOptions));
-                workWithPoint(selectedRecordPoint, selectedRow);
-                sortRecords();
+                workWithPoint(selectedRecordPoint,ref curentRow);    
             } while (selectedRecordPoint != recordPoints.EXIT);
+            inputChangeRowInFile(selectedRow, curentRow);
+            sortRecords();
         }
-
-        static void changeRecord()
-        {
+        static void changeRecord() {
             int selectedRow = 0;
-            do
-            {
+            do {
                 Console.Clear();
                 selectedRow = getSelectedRow();
                 workWithSelectedRow(selectedRow);
             } while (selectedRow != recordArray.Length);
         }
-        static int returnRow(recordPoints selectedRecordPoint)
-        {
-            switch (selectedRecordPoint)
-            {
+        static int returnRow(recordPoints selectedRecordPoint) {
+            importRecordsForSort();
+            switch (selectedRecordPoint) {
                 case recordPoints.POINTS:
-                    int Points = inputNum("Input numbers of Points: ", MAX_N, MIN_N);
+                    int points = inputNum("Введите рейтинг команды (кол-во очков): ", MAX_N, MIN_N);
                     for (int i = 0; i < recordArray.Length; ++i)
-                    {
-                        if (recordArray[i].points == Points)
-                            return i;
-                    }
+                        if (recordArray[i].Points == points)
+                        { return i; }
                     break;
                 case recordPoints.COUNTRY:
-                    string Country = inputString("Input Country name: ", MAX_STR_LENGTH);
+                    string country = inputString("Введите страну: ", MAX_STR_LENGTH);
                     for (int i = 0; i < recordArray.Length; ++i)
-                    {
-                        if (recordArray[i].country == Country)
-                            return i;
-                    }
+                        if (recordArray[i].Country == country)
+                        { return i; }
                     break;
                 case recordPoints.TEAM:
-                    string Team = inputString("Input Team name: ", MAX_STR_LENGTH);
+                    string team = inputString("Введите название команды: ", MAX_STR_LENGTH);
                     for (int i = 0; i < recordArray.Length; ++i)
-                    {
-                        if (recordArray[i].team == Team)
-                            return i;
-                    }
+                        if (recordArray[i].Team == team)
+                        { return i; }
                     break;
                 case recordPoints.COACH:
-                    string Coach = inputString("Input Coach name: ", MAX_STR_LENGTH);
+                    string coach = inputString("Введите фамилию гл. тренера: ", MAX_STR_LENGTH);
                     for (int i = 0; i < recordArray.Length; ++i)
-                    {
-                        if (recordArray[i].coach == Coach)
-                            return i;
-                    }
+                        if (recordArray[i].Coach == coach)
+                        { return i; }
                     break;
             }
             return -1;
         }
-        static void workWithSearchPoint(recordPoints selectedRecordPoint)
-        {
+        static void workWithSearchPoint(recordPoints selectedRecordPoint) {
             string prompt = string.Empty;
-            string[] options = { "<- Go Back" };
             int recordIndex = returnRow(selectedRecordPoint);
-            if (recordIndex == -1 && selectedRecordPoint != recordPoints.EXIT)
-            {
-                prompt = "No suitable entry found...";
+            switch (selectedRecordPoint) { 
+                case recordPoints.EXIT: break;
+                case recordPoints.REFERENCE: showReference(); break;
+                default:
+                    if (recordIndex == -1) prompt = "Не нашлось записис по заданному параметру...";
+                    else {
+                        int columnWidth = 20;
+                        string formatString = "{0,-" + columnWidth + "} {1,-" + columnWidth + "} {2,-" + columnWidth + "} {3,-" + columnWidth + "} {4,-" + columnWidth + "}";
+                        prompt = string.Format(formatString, "Место", "Страна", "Команда", "Тренер", "Рейтинг");
+                        prompt += "\n" + new string('-', columnWidth * 5);
+                        prompt += '\n' + string.Format(formatString, 0, recordArray[recordIndex].Country, recordArray[recordIndex].Team, recordArray[recordIndex].Coach, recordArray[recordIndex].Points);
+                    }
+                    getSelectedIndex(prompt, exitOption);
+                    break;
             }
-            else if (selectedRecordPoint != recordPoints.EXIT)
-            {
-                int columnWidth = 20;
-                string formatString = "{0,-" + columnWidth + "} {1,-" + columnWidth + "} {2,-" + columnWidth + "} {3,-" + columnWidth + "} {4,-" + columnWidth + "}";
-                prompt = string.Format(formatString, "Position", "Country", "Team", "Coach", "Points");
-                prompt += "\n" + new string('-', columnWidth * 5);
-                prompt += '\n' + string.Format(formatString, 0, recordArray[recordIndex].country, recordArray[recordIndex].team, recordArray[recordIndex].coach, recordArray[recordIndex].points);
-            }
-
-            if (selectedRecordPoint != recordPoints.EXIT)
-                getSelectedIndex(prompt, options);
         }
-        static void searchRecord()
-        {
+        static void searchRecord() {
             Console.Clear();
             recordPoints selectedRecordPoint = recordPoints.EXIT;
-            do
-            {
-                string prompt = "What parameter will we search for: ";
+            do {
+                string prompt = "Какой параметр выберем: ";
                 selectedRecordPoint = qurentPoint(getSelectedIndex(prompt, changeRecordOptions));
                 workWithSearchPoint(selectedRecordPoint);
             } while (selectedRecordPoint != recordPoints.EXIT);
         }
-        static void tryDeleteRow(int deleteRow)
-        {
-            if (deleteRow == recordArray.Length)
-                return;
-
-            for (int i = deleteRow; i < recordArray.Length - 1; i++)
-                recordArray[i] = recordArray[i + 1];
-
-            Array.Resize(ref recordArray, recordArray.Length - 1);
+        static void tryDeleteRow(int deleteRow, ref int upperLimit) {
+            if (deleteRow == recordArray.Length) return;
+            
+            int i = 0;
+            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.Open)))
+                using (BinaryWriter writer = new BinaryWriter(File.Open(TempFilePath, FileMode.CreateNew))) {
+                    TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
+                    while (reader.BaseStream.Position < reader.BaseStream.Length) {
+                        temp.Country = reader.ReadString();
+                        temp.Team = reader.ReadString();
+                        temp.Coach = reader.ReadString();
+                        temp.Points = reader.ReadInt32();
+                        if (i++ != deleteRow) {
+                            writer.Write(temp.Country);
+                            writer.Write(temp.Team);
+                            writer.Write(temp.Coach);
+                            writer.Write(temp.Points);
+                        }
+                    }
+                }
+            File.Delete(CorrectionFilePath);
+            File.Move(TempFilePath, CorrectionFilePath);
+            upperLimit = i;
         }
-        static void deleteRecord()
-        {
+        static void deleteRecord() {
             int deleteRow = 0;
             int upperLimit = 0;
-            do
-            {
-                upperLimit = recordArray.Length;
+            do {
                 Console.Clear();
                 deleteRow = getSelectedRow();
-                tryDeleteRow(deleteRow);
+                tryDeleteRow(deleteRow, ref upperLimit);
             } while (deleteRow != upperLimit);
         }
-
-        static void workWithMethod(PanelFunctions curentMethod)
-        {
-            switch (curentMethod)
-            {
+        static void workWithMethod(PanelFunctions curentMethod) {
+            switch (curentMethod) {
                 case PanelFunctions.ADD: addNewRecord(); break;
                 case PanelFunctions.CHANGE: changeRecord(); break;
                 case PanelFunctions.SEARCH: searchRecord(); break;
                 case PanelFunctions.DELETE: deleteRecord(); break;
+                case PanelFunctions.REFERENCE: showReference(); break;
             }
         }
+        static void importRecordsFromFile() {
+            if (!File.Exists(MainFilePath)) using (FileStream fs = File.Create(MainFilePath));
 
-        static void programBlock()
-        {
+            using (BinaryReader reader = new BinaryReader(File.Open(MainFilePath, FileMode.Open)))
+            using (BinaryWriter writer = new BinaryWriter(File.Open(CorrectionFilePath, FileMode.CreateNew))) {
+                TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
+                while (reader.BaseStream.Position < reader.BaseStream.Length) {
+                    temp.Country = reader.ReadString();
+                    temp.Team = reader.ReadString();
+                    temp.Coach = reader.ReadString();
+                    temp.Points = reader.ReadInt32();
+                    writer.Write(temp.Country);
+                    writer.Write(temp.Team);
+                    writer.Write(temp.Coach);
+                    writer.Write(temp.Points);
+                }
+            }
+        }
+        static void exportRecordsInFile() {
+            File.Delete(MainFilePath);
+            File.Move(CorrectionFilePath, MainFilePath);
+        }
+        static void programBlock() {
+            importRecordsFromFile();
             PanelFunctions curentMethod = 0;
-            do
-            {
+            do {
                 string prompt = outputTable();
                 prompt += '\n';
                 curentMethod = searchQurentMainMethod(getSelectedIndex(prompt, mainOptions));
                 workWithMethod(curentMethod);
             } while (curentMethod != PanelFunctions.EXIT);
+            exportRecordsInFile();
             Environment.Exit(0);
         }
-
-        public static void Main(string[] args)
-        {
+        public static void Main(string[] args) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             Console.OutputEncoding = Encoding.GetEncoding(1251);
             Console.InputEncoding = Encoding.GetEncoding(1251);
-            Console.Title = "Football derictory";
+            Console.Title = "Футбольный справочник™";
             programBlock();
             Console.ReadKey(true);
         }
