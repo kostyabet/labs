@@ -7,17 +7,13 @@ Uses
     Winapi.Windows,
     Winapi.Messages,
     System.SysUtils,
-    System.Variants,
     System.Classes,
-    Vcl.Graphics,
-    Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     Vcl.Menus,
     Vcl.StdCtrls,
-    Vcl.Mask,
-    System.Math,
-    Vcl.ExtCtrls;
+    Vcl.ExtCtrls,
+    Vcl.Controls,
+    Vcl.Mask;
 
 Type
     TLabeledEdit = Class(Vcl.ExtCtrls.TLabeledEdit)
