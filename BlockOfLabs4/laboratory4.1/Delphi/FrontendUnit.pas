@@ -188,6 +188,9 @@ Begin
     If Not CharInSet(Key, GOOD_VALUES) Then
         Key := #0;
 
+    If (PointsLabeledEdit.SelText <> '') Then
+        Key := IsCorrectSelTextInputWithKey(Key, PointsLabeledEdit.Text, PointsLabeledEdit.SelText, PointsLabeledEdit.SelStart);
+
     If (PointsLabeledEdit.Text = '10') And ((Key <> '0') And (Key <> #08)) Then
         Key := #0;
 

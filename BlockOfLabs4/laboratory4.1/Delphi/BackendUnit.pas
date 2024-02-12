@@ -166,7 +166,7 @@ Begin
 
         MainForm.PointTabelStrGrid.RowCount := CurentRecordsCount + 1;
         If CurentRecordsCount > 11 Then
-            MainForm.PointTabelStrGrid.ColWidths[4] := (MainForm.PointTabelStrGrid.Width * 19) div 100;
+            MainForm.PointTabelStrGrid.ColWidths[4] := (MainForm.PointTabelStrGrid.Width * 19) Div 100;
         I := 0;
         While Not EOF(CorrectionFile) Do
         Begin

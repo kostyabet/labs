@@ -2133,6 +2133,7 @@ object MainForm: TMainForm
   Position = poScreenCenter
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnHelp = FormHelp
   OnKeyDown = FormKeyDown
   TextHeight = 15
   object TMLabel: TLabel
@@ -17250,6 +17251,7 @@ object MainForm: TMainForm
     Height = 541
     Align = alLeft
     TabOrder = 0
+    ExplicitHeight = 529
     object AddSpButton: TSpeedButton
       Left = 0
       Top = 0

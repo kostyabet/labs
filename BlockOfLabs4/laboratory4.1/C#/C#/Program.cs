@@ -63,7 +63,7 @@ namespace Proj4_2 {
             getSelectedIndex(prompt, exitOption);
         }
         static void importRecordsForSort() {
-            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.Open))) {
+            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.OpenOrCreate))) {
                 TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
                 while (reader.BaseStream.Position < reader.BaseStream.Length) {
                     temp.Country = reader.ReadString();
@@ -79,7 +79,7 @@ namespace Proj4_2 {
             }
         }
         static void importSortRecInFile() {
-            using (BinaryWriter writer = new BinaryWriter(File.Open(CorrectionFilePath, FileMode.Create)))
+            using (BinaryWriter writer = new BinaryWriter(File.Open(CorrectionFilePath, FileMode.OpenOrCreate)))
                 for (int i = 0; i < recordArray.Length; ++i) {
                     writer.Write(recordArray[i].Country);
                     writer.Write(recordArray[i].Team);
@@ -103,6 +103,7 @@ namespace Proj4_2 {
                 }
             }
             importSortRecInFile();
+            recordArray = new TFootballRecord[0];
         }
         static void displayOptions(string prompt, string[] options, int selectedIndex = 0) {
             Console.WriteLine(prompt);
@@ -153,7 +154,7 @@ namespace Proj4_2 {
             string prompt = string.Format(formatString, "Место", "Страна", "Команда", "Тренер", "Рейтинг");
             prompt += '\n' + new string('-', (columnWidth + 1) * 5);
             int i = 1;
-            using (BinaryReader reader = new BinaryReader(File.OpenRead(CorrectionFilePath))) {
+            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.OpenOrCreate))) {
                 TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
                 while (reader.BaseStream.Position < reader.BaseStream.Length) {
                     temp.Country = reader.ReadString();
@@ -194,7 +195,7 @@ namespace Proj4_2 {
             return num;
         }
         static void addRecordInFile(TFootballRecord newRecord) {
-            using (BinaryReader reader = new BinaryReader(File.OpenRead(CorrectionFilePath)))
+            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.OpenOrCreate)))
                 using (BinaryWriter writer = new BinaryWriter(File.Open(TempFilePath, FileMode.CreateNew)))  {
                     TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
                     while (reader.BaseStream.Position < reader.BaseStream.Length) {
@@ -244,7 +245,7 @@ namespace Proj4_2 {
         static string[] createRecordsOptions(int columnWidth, string formatString) {
             string[] result = new string[0];
             int i = 1;
-            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.Open))) {
+            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.OpenOrCreate))) {
                 TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
                 while (reader.BaseStream.Position < reader.BaseStream.Length) {
                     temp.Country = reader.ReadString();
@@ -302,7 +303,7 @@ namespace Proj4_2 {
             }
         }
         static void searchCurentRowInFile(int selectedRow, ref TFootballRecord curentRow, ref int recordCounter) {
-            using (BinaryReader reader = new BinaryReader(File.OpenRead(CorrectionFilePath))) {
+            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.OpenOrCreate))) {
                 TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
                 while (reader.BaseStream.Position < reader.BaseStream.Length) {
                     temp.Country = reader.ReadString();
@@ -321,7 +322,7 @@ namespace Proj4_2 {
         }
         static void inputChangeRowInFile(int selectedRow, TFootballRecord curentRow) {
             int recordCounter = 0;
-            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.OpenOrCreate)))
             using (BinaryWriter writer = new BinaryWriter(File.Open(TempFilePath, FileMode.CreateNew))) {
                 TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
                 while (reader.BaseStream.Position < reader.BaseStream.Length) {
@@ -358,7 +359,7 @@ namespace Proj4_2 {
                 string formatString = "{0,-" + columnWidth + "} {1,-" + columnWidth + "} {2,-" + columnWidth + "} {3,-" + columnWidth + "} {4,-" + columnWidth + "}";
                 string prompt = string.Format(formatString, "Место", "Страна", "Команда", "Тренер", "Рейтинг");
                 prompt += "\n" + new string('-', columnWidth * 5);
-                prompt += '\n' + string.Format(formatString, -1, curentRow.Country, curentRow.Team, curentRow.Coach, curentRow.Points);
+                prompt += '\n' + string.Format(formatString, 1, curentRow.Country, curentRow.Team, curentRow.Coach, curentRow.Points);
                 prompt += "\nЧто вы хотите изменить:";
                 selectedRecordPoint = qurentPoint(getSelectedIndex(prompt, changeRecordOptions));
                 workWithPoint(selectedRecordPoint,ref curentRow);    
@@ -406,6 +407,8 @@ namespace Proj4_2 {
         }
         static void workWithSearchPoint(recordPoints selectedRecordPoint) {
             string prompt = string.Empty;
+            recordArray = new TFootballRecord[0];
+            importRecordsForSort();
             int recordIndex = returnRow(selectedRecordPoint);
             switch (selectedRecordPoint) { 
                 case recordPoints.EXIT: break;
@@ -417,11 +420,12 @@ namespace Proj4_2 {
                         string formatString = "{0,-" + columnWidth + "} {1,-" + columnWidth + "} {2,-" + columnWidth + "} {3,-" + columnWidth + "} {4,-" + columnWidth + "}";
                         prompt = string.Format(formatString, "Место", "Страна", "Команда", "Тренер", "Рейтинг");
                         prompt += "\n" + new string('-', columnWidth * 5);
-                        prompt += '\n' + string.Format(formatString, 0, recordArray[recordIndex].Country, recordArray[recordIndex].Team, recordArray[recordIndex].Coach, recordArray[recordIndex].Points);
+                        prompt += '\n' + string.Format(formatString, 1, recordArray[recordIndex].Country, recordArray[recordIndex].Team, recordArray[recordIndex].Coach, recordArray[recordIndex].Points);
                     }
                     getSelectedIndex(prompt, exitOption);
                     break;
             }
+            recordArray = new TFootballRecord[0];
         }
         static void searchRecord() {
             Console.Clear();
@@ -432,11 +436,9 @@ namespace Proj4_2 {
                 workWithSearchPoint(selectedRecordPoint);
             } while (selectedRecordPoint != recordPoints.EXIT);
         }
-        static void tryDeleteRow(int deleteRow, ref int upperLimit) {
-            if (deleteRow == recordArray.Length) return;
-            
+        static void tryDeleteRow(int deleteRow, ref int upperLimit) {        
             int i = 0;
-            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.Open)))
+            using (BinaryReader reader = new BinaryReader(File.Open(CorrectionFilePath, FileMode.OpenOrCreate)))
                 using (BinaryWriter writer = new BinaryWriter(File.Open(TempFilePath, FileMode.CreateNew))) {
                     TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
                     while (reader.BaseStream.Position < reader.BaseStream.Length) {
@@ -478,7 +480,7 @@ namespace Proj4_2 {
             if (!File.Exists(MainFilePath)) using (FileStream fs = File.Create(MainFilePath));
 
             using (BinaryReader reader = new BinaryReader(File.Open(MainFilePath, FileMode.Open)))
-            using (BinaryWriter writer = new BinaryWriter(File.Open(CorrectionFilePath, FileMode.CreateNew))) {
+            using (BinaryWriter writer = new BinaryWriter(File.Open(CorrectionFilePath, FileMode.OpenOrCreate))) {
                 TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
                 while (reader.BaseStream.Position < reader.BaseStream.Length) {
                     temp.Country = reader.ReadString();

@@ -57,6 +57,7 @@ Type
         Procedure PointTabelStrGridKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
         Procedure PointTabelStrGridDblClick(Sender: TObject);
         Procedure FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+        Function FormHelp(Command: Word; Data: NativeInt; Var CallHelp: Boolean): Boolean;
     Private
         Procedure WMGetMinMaxInfo(Var Msg: TWMGetMinMaxInfo);
     Public
@@ -160,6 +161,11 @@ Begin
 
     If (CurentRecordsCount <> 0) Then
         PointTabelStrGrid.FixedRows := 1;
+End;
+
+Function TMainForm.FormHelp(Command: Word; Data: NativeInt; Var CallHelp: Boolean): Boolean;
+Begin
+    CallHelp := False;
 End;
 
 Procedure TMainForm.FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
