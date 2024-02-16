@@ -2204,7 +2204,7 @@ object MainForm: TMainForm
     EditLabel.Width = 76
     EditLabel.Height = 17
     EditLabel.Caption = 'ALabeledEdit'
-    MaxLength = 8
+    MaxLength = 9
     ParentShowHint = False
     ShowHint = True
     TabOrder = 0

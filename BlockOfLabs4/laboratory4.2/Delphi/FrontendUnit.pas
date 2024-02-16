@@ -10,8 +10,9 @@ Uses
 Function IsCorrectAddInNum(Key: Char; CurentStr: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
 Function IsCorrectNumClipboard(ClipbrdText: String; Cursor: Integer; Const MAX, MIN: Integer): Boolean;
 Function IsCorrectSelTextInputWithKey(Key: Char; CurentText, SelText: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
-Function IsCorrectDelete(Key: Char; CurentText: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
-Function IsCorrectSelDelete(Key: Char; CurentText, SelText: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
+Function IsCorrectDelete(Key: Char; CurentText: String; SelStart: Integer; Const MAX, MIN: Integer; CurentChar: Char = 'A'): Char;
+Function IsCorrectSelDelete(Key: Char; CurentText, SelText: String; SelStart: Integer; Const MAX, MIN: Integer;
+    CurentChar: Char = 'A'): Char;
 Function TryToAdd(Key: Char; Str: String; SelPos: Integer; Const MaxPoint, MinPoint: Integer): Boolean;
 Procedure VectorGridPrepearing(ArrayGrid: TStringGrid; NumOfCols: Integer);
 Procedure ResettingArray(ArrayGrid: TStringGrid; NumOfCols: Integer);
@@ -109,16 +110,29 @@ Begin
     CheckKeyCondition := Key;
 End;
 
-Function IsCorrectDelete(Key: Char; CurentText: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
+Function IsCorrectDelete(Key: Char; CurentText: String; SelStart: Integer; Const MAX, MIN: Integer; CurentChar: Char = 'A'): Char;
 Begin
     Delete(CurentText, SelStart, 1);
+
+    If (CurentText = '0') And (CurentChar = 'N') Then
+    Begin
+        IsCorrectDelete := NULL_POINT;
+        Exit;
+    End;
 
     IsCorrectDelete := CheckKeyCondition(CurentText, Key, MAX, MIN);
 End;
 
-Function IsCorrectSelDelete(Key: Char; CurentText, SelText: String; SelStart: Integer; Const MAX, MIN: Integer): Char;
+Function IsCorrectSelDelete(Key: Char; CurentText, SelText: String; SelStart: Integer; Const MAX, MIN: Integer;
+    CurentChar: Char = 'A'): Char;
 Begin
     Delete(CurentText, SelStart + 1, Length(SelText));
+
+    If (CurentText = '0') And (CurentChar = 'N') Then
+    Begin
+        IsCorrectSelDelete := NULL_POINT;
+        Exit;
+    End;
 
     IsCorrectSelDelete := CheckKeyCondition(CurentText, Key, MAX, MIN);
 End;
@@ -175,18 +189,6 @@ Begin
     MainForm.ResultLabel.Visible := False;
     MainForm.SaveButton.Enabled := False;
     IfDataSavedInFile := False;
-
-    If Appearance And (StrToInt(MainForm.NLabeledEdit.Text) > 4) Then
-    Begin
-        MainForm.BVectorStringGrid.Height := 88;
-        MainForm.CVectorStringGrid.Height := 88;
-    End;
-
-    If Appearance And Not(StrToInt(MainForm.NLabeledEdit.Text) > 4) Then
-    Begin
-        MainForm.BVectorStringGrid.Height := 68;
-        MainForm.CVectorStringGrid.Height := 68;
-    End;
 End;
 
 Procedure ResultsVisible(Appearance: Boolean);
