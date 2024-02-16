@@ -29,7 +29,6 @@ Function IsCorrectPointsClipboard(ClipbrdText: String; PointsLabeledEdit: TLabel
 Function IsCorrectStrings(ClipbrdText: String; LabeledEdit: TLabeledEdit): Boolean;
 Function IsVisibleAddOnChange(CountryLEdit, CoachLEdit, PointsLEdit, TeamNameLEdit: TLabeledEdit): Boolean;
 Procedure InputInCurentRow(I: Integer; Country, Team, Coach: String; Points: Integer);
-Function CheckKeyCondition(CurentText: String; Key: Char): Char;
 Function IsCorrectDelete(Key: Char; CurentText: String; SelStart: Integer): Char;
 Function IsCorrectSelDelete(Key: Char; CurentText, SelText: String; SelStart: Integer): Char;
 Function IsCorrectSelTextInputWithKey(Key: Char; CurentText, SelText: String; SelStart: Integer): Char;
@@ -82,7 +81,7 @@ End;
 Function IsCorrectPointsClipboard(ClipbrdText: String; PointsLabeledEdit: TLabeledEdit): Boolean;
 Var
     Cursor: Integer;
-    WorkStr, BufStr: String;
+    WorkStr: String;
     IsCorrect: Boolean;
 Begin
     PointsLabeledEdit.ClearSelection;

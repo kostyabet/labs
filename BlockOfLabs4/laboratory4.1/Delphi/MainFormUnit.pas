@@ -153,13 +153,14 @@ Begin
     PointTabelStrGrid.Cells[2, 0] := 'Название команды';
     PointTabelStrGrid.Cells[3, 0] := 'Главный тренер';
     PointTabelStrGrid.Cells[4, 0] := 'Итоговый рейтинг';
-    LoadRecordsFromFile();
+    LoadRecordsFromFile;
     PointTabelStrGrid.FixedRows := Ord(CurentRecordsCount <> 0);
 End;
 
 Function TMainForm.FormHelp(Command: Word; Data: NativeInt; Var CallHelp: Boolean): Boolean;
 Begin
     CallHelp := False;
+    FormHelp := False;
 End;
 
 Procedure TMainForm.FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);

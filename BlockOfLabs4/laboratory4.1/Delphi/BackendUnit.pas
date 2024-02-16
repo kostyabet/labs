@@ -46,11 +46,9 @@ Procedure SortRecords();
 Procedure DeleteRow(DelRow: Integer);
 Function IndexRecord(I: Integer; CurentStr: TString): Integer;
 Function CreateResultGrid(StrIndex: Integer): String;
-Procedure CreateCorrectionFile();
 Procedure LoadRecordsInFile();
 Procedure LoadRecordsFromFile();
 Function StrToWideChar(SourceString: String): TString;
-Function WideCharToStr(SourceWideChar: TString): String;
 Function IfRecordExist(Country, Coach, Team, Points: String): Boolean;
 
 Var
@@ -69,6 +67,36 @@ Implementation
 Uses
     MainFormUnit,
     FrontendUnit;
+
+Function StrToWideChar(SourceString: String): TString;
+Var
+    DestArray: TString;
+    NumCharsToCopy, I: Integer;
+Begin
+    NumCharsToCopy := Min(Length(SourceString), SizeOf(DestArray) Div SizeOf(WideChar) - 1);
+
+    For I := 1 To NumCharsToCopy Do
+        DestArray[I] := WideChar(SourceString[I]);
+    For I := NumCharsToCopy + 1 To High(DestArray) Do
+        DestArray[I] := WideChar(NULL_POINT);
+
+    StrToWideChar := DestArray;
+End;
+
+Function WideCharToStr(SourceWideChar: TString): String;
+Var
+    ResStr: String;
+    I: Integer;
+Begin
+    ResStr := '';
+    For I := Low(SourceWideChar) To High(SourceWideChar) Do
+    Begin
+        If SourceWideChar[I] <> NULL_POINT Then
+            ResStr := ResStr + String(SourceWideChar[I]);
+    End;
+
+    WideCharToStr := ResStr;
+End;
 
 Function GetRecordFromFile(CurentRow: Integer): TFootStatsRecord;
 Var
@@ -353,36 +381,6 @@ Begin
 
     SortRecords();
     InputRecordsInTableGrid();
-End;
-
-Function StrToWideChar(SourceString: String): TString;
-Var
-    DestArray: TString;
-    NumCharsToCopy, I: Integer;
-Begin
-    NumCharsToCopy := Min(Length(SourceString), SizeOf(DestArray) Div SizeOf(WideChar) - 1);
-
-    For I := 1 To NumCharsToCopy Do
-        DestArray[I] := WideChar(SourceString[I]);
-    For I := NumCharsToCopy + 1 To High(DestArray) Do
-        DestArray[I] := WideChar(NULL_POINT);
-
-    StrToWideChar := DestArray;
-End;
-
-Function WideCharToStr(SourceWideChar: TString): String;
-Var
-    ResStr: String;
-    I: Integer;
-Begin
-    ResStr := '';
-    For I := Low(SourceWideChar) To High(SourceWideChar) Do
-    Begin
-        If SourceWideChar[I] <> NULL_POINT Then
-            ResStr := ResStr + String(SourceWideChar[I]);
-    End;
-
-    WideCharToStr := ResStr;
 End;
 
 Function IfRecordExist(Country, Coach, Team, Points: String): Boolean;
