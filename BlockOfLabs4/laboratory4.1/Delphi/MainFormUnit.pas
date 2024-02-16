@@ -135,13 +135,10 @@ Begin
     ResultKey := Application.Messagebox('Вы уверены, что хотите закрыть оконное приложение?', 'Выход',
         MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
 
+    CanClose := ResultKey = ID_YES;
+
     If ResultKey = ID_YES Then
-    Begin
-        CanClose := True;
         LoadRecordsInFile;
-    End
-    Else
-        CanClose := False;
 End;
 
 Procedure TMainForm.FormCreate(Sender: TObject);
@@ -156,11 +153,8 @@ Begin
     PointTabelStrGrid.Cells[2, 0] := 'Название команды';
     PointTabelStrGrid.Cells[3, 0] := 'Главный тренер';
     PointTabelStrGrid.Cells[4, 0] := 'Итоговый рейтинг';
-
     LoadRecordsFromFile();
-
-    If (CurentRecordsCount <> 0) Then
-        PointTabelStrGrid.FixedRows := 1;
+    PointTabelStrGrid.FixedRows := Ord(CurentRecordsCount <> 0);
 End;
 
 Function TMainForm.FormHelp(Command: Word; Data: NativeInt; Var CallHelp: Boolean): Boolean;
@@ -224,13 +218,12 @@ End;
 
 Procedure TMainForm.PointTabelStrGridKeyUp(Sender: TObject; Var Key: Word; Shift: TShiftState);
 Begin
-    If (CurentRecordsCount <> 0) Then
-        PointTabelStrGrid.FixedRows := 1
-    Else
-        PointTabelStrGrid.FixedRows := 0;
+    PointTabelStrGrid.FixedRows := Ord(CurentRecordsCount <> 0);
 End;
 
 Procedure TMainForm.RemoveSpButtonClick(Sender: TObject);
+Const
+    MAX_SEEN_RECORDS: Integer = 11;
 Var
     ResultKey: Integer;
 Begin
@@ -245,7 +238,7 @@ Begin
         Begin
             DeleteRow(CurentRow);
             Dec(CurentRecordsCount);
-            If CurentRecordsCount > 11 Then
+            If CurentRecordsCount > MAX_SEEN_RECORDS Then
                 PointTabelStrGrid.ColWidths[4] := (PointTabelStrGrid.Width * 19) Div 100
             Else
                 MainForm.PointTabelStrGrid.ColWidths[4] := (MainForm.PointTabelStrGrid.Width * 21) Div 100;

@@ -4,7 +4,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1041#1077#1090#1077#1085#1103' '#1050'. '#1057'. 351005 '#1083#1072#1073'. 4.1'
-  ClientHeight = 541
+  ClientHeight = 553
   ClientWidth = 846
   Color = clBtnFace
   Constraints.MaxHeight = 625
@@ -17248,7 +17248,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 73
-    Height = 541
+    Height = 553
     Align = alLeft
     TabOrder = 0
     ExplicitHeight = 529

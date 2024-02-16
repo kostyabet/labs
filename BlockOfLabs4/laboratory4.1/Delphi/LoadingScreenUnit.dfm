@@ -2132,7 +2132,7 @@ object LoadingScreen: TLoadingScreen
   Position = poScreenCenter
   OnCreate = FormCreate
   TextHeight = 15
-  object Image1: TImage
+  object LoadImage: TImage
     Left = -144
     Top = 0
     Width = 701

@@ -60,6 +60,8 @@ Const
     MAX_STR_LENGTH: Integer = 20;
     MIN_POINTS: Integer = 0;
     MAX_POINTS: Integer = 100;
+    NULL_POINT: Char = #0;
+    DELETE_KEY: Char = #127;
 
 Var
     AddRecordForm: TAddRecordForm;
@@ -178,17 +180,17 @@ Begin
 
     If (Key = VK_DELETE) And (PointsLabeledEdit.SelText = '') Then
     Begin
-        CurKey := IsCorrectDelete(#127, PointsLabeledEdit.Text, PointsLabeledEdit.SelStart + 1);
+        CurKey := IsCorrectDelete(DELETE_KEY, PointsLabeledEdit.Text, PointsLabeledEdit.SelStart + 1);
 
-        If CurKey = #0 Then
+        If CurKey = NULL_POINT Then
             Key := 0;
     End;
 
     If (Key = VK_DELETE) And (PointsLabeledEdit.SelText <> '') Then
     Begin
-        CurKey := IsCorrectSelDelete(#127, PointsLabeledEdit.Text, PointsLabeledEdit.SelText, PointsLabeledEdit.SelStart);
+        CurKey := IsCorrectSelDelete(DELETE_KEY, PointsLabeledEdit.Text, PointsLabeledEdit.SelText, PointsLabeledEdit.SelStart);
 
-        If CurKey = #0 Then
+        If CurKey = NULL_POINT Then
             Key := 0;
     End;
 

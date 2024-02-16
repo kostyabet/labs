@@ -14,11 +14,15 @@ Type
     TLoadingScreen = Class(TForm)
         EndLoadingScreen: TTimer;
         AlphaBlendChanging: TTimer;
-        Image1: TImage;
+        LoadImage: TImage;
         Procedure EndLoadingScreenTimer(Sender: TObject);
         Procedure FormCreate(Sender: TObject);
         Procedure AlphaBlendChangingTimer(Sender: TObject);
     End;
+
+Const
+    SIRCLE_HEIGHT: Integer = 500;
+    SIRCLE_WIDTH: Integer = 500;
 
 Var
     LoadingScreen: TLoadingScreen;
@@ -34,7 +38,7 @@ Procedure TLoadingScreen.FormCreate(Sender: TObject);
 Var
     HRgn: Cardinal;
 Begin
-    HRgn := CreateEllipticRgn(0, 0, 500, 500);
+    HRgn := CreateEllipticRgn(0, 0, SIRCLE_HEIGHT, SIRCLE_WIDTH);
     SetWindowRgn(Handle, HRgn, False);
 
     EndLoadingScreen.Enabled := True;
@@ -45,11 +49,14 @@ Begin
 End;
 
 Procedure TLoadingScreen.AlphaBlendChangingTimer(Sender: TObject);
+Const
+    GROUGHT_ABV: Integer = 2;
+    MAX_ALPHA_BLEND: Integer = 253;
 Begin
-    If LoadingScreen.AlphaBlendValue > 253 Then
+    If LoadingScreen.AlphaBlendValue > MAX_ALPHA_BLEND Then
         AlphaBlendChanging.Enabled := False
     Else
-        LoadingScreen.AlphaBlendValue := LoadingScreen.AlphaBlendValue + 2;
+        LoadingScreen.AlphaBlendValue := LoadingScreen.AlphaBlendValue + GROUGHT_ABV;
 End;
 
 Procedure TLoadingScreen.EndLoadingScreenTimer(Sender: TObject);

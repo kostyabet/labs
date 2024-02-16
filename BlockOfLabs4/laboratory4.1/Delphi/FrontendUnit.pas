@@ -39,6 +39,10 @@ Const
     MAX_STR_LENGTH: Integer = 20;
     MIN_POINTS: Integer = 0;
     MAX_POINTS: Integer = 100;
+    NULL_POINT: Char = #0;
+    BACK_SPACE: Char = #08;
+    ZERO_KEY: Char = '0';
+    MINUS_KEY: Char = '-';
 
 Implementation
 
@@ -47,6 +51,9 @@ Uses
     BackendUnit;
 
 Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
+Const
+    LEFT_MARGIN: Integer = 10;
+    TOP_MARGIN: Integer = 5;
 Var
     ModalForm: TForm;
     ModalLabel: TLAbel;
@@ -56,19 +63,16 @@ Begin
         ModalForm.Caption := CaptionText;
         ModalForm.Width := ModalWidth;
         ModalForm.Height := ModalHeight;
-
         ModalForm.Position := PoScreenCenter;
         ModalForm.BorderStyle := BsSingle;
         ModalForm.BorderIcons := [BiSystemMenu];
         ModalForm.FormStyle := FsStayOnTop;
         ModalForm.Icon := MainForm.Icon;
-
         ModalLabel := TLabel.Create(ModalForm);
         ModalLabel.Parent := ModalForm;
         ModalLabel.Caption := LabelText;
-        ModalLabel.Left := 10;
-        ModalLabel.Top := 5;
-
+        ModalLabel.Left := LEFT_MARGIN;
+        ModalLabel.Top := TOP_MARGIN;
         ModalForm.ShowModal;
     Finally
         ModalForm.Free;
@@ -81,7 +85,6 @@ Var
     WorkStr, BufStr: String;
     IsCorrect: Boolean;
 Begin
-    IsCorrect := True;
     PointsLabeledEdit.ClearSelection;
     Cursor := PointsLabeledEdit.SelStart;
     WorkStr := PointsLabeledEdit.Text;
@@ -90,7 +93,7 @@ Begin
     Try
         IsCorrect := Not((StrToInt(WorkStr) > MAX_POINTS) Or (StrToInt(WorkStr) < MIN_POINTS));
 
-        IsCorrect := IsCorrect And (Length(WorkStr) > 1) And (WorkStr[1] = '0');
+        IsCorrect := IsCorrect And (Length(WorkStr) > 1) And (WorkStr[1] = ZERO_KEY);
     Except
         IsCorrect := False;
     End;
@@ -143,17 +146,20 @@ End;
 Function CheckKeyCondition(CurentText: String; Key: Char): Char;
 Begin
     Try
+        If (CurentText = ZERO_KEY) Then
+            Key := NULL_POINT;
+
         If CurentText <> '' Then
             If (StrToInt(CurentText) > MAX_POINTS) Or (StrToInt(CurentText) < MIN_POINTS) Then
-                Key := #0;
+                Key := NULL_POINT;
 
-        If (Length(CurentText) > 0) And (CurentText[1] = '0') Then
-            Key := #0;
+        If (Length(CurentText) > 0) And (CurentText[1] = ZERO_KEY) Then
+            Key := NULL_POINT;
 
-        If (Length(CurentText) > 1) And (CurentText[1] = '-') And (CurentText[2] = '0') Then
-            Key := #0;
+        If (Length(CurentText) > 1) And (CurentText[1] = MINUS_KEY) And (CurentText[2] = ZERO_KEY) Then
+            Key := NULL_POINT;
     Except
-        Key := #0;
+        Key := NULL_POINT;
     End;
 
     CheckKeyCondition := Key;
@@ -184,29 +190,32 @@ End;
 Function CheckInput(Key: Char; PointsLabeledEdit: TLabeledEdit): Char;
 Const
     GOOD_VALUES = ['0' .. '9', #08, #$16];
+    REF_NUM: String = '10';
 Begin
     If Not CharInSet(Key, GOOD_VALUES) Then
-        Key := #0;
+        Key := NULL_POINT;
 
     If (PointsLabeledEdit.SelText <> '') Then
         Key := IsCorrectSelTextInputWithKey(Key, PointsLabeledEdit.Text, PointsLabeledEdit.SelText, PointsLabeledEdit.SelStart);
 
-    If (PointsLabeledEdit.Text = '10') And ((Key <> '0') And (Key <> #08)) Then
-        Key := #0;
+    If (PointsLabeledEdit.Text = REF_NUM) And ((Key <> ZERO_KEY) And (Key <> BACK_SPACE)) Then
+        Key := NULL_POINT;
 
-    If (Length(PointsLabeledEdit.Text) = PointsLabeledEdit.MaxLength - 1) And (PointsLabeledEdit.Text <> '10') And (Key <> #08) Then
-        Key := #0;
+    If (Length(PointsLabeledEdit.Text) = PointsLabeledEdit.MaxLength - 1) And (PointsLabeledEdit.Text <> REF_NUM) And
+        (Key <> BACK_SPACE) Then
+        Key := NULL_POINT;
 
-    If (Length(PointsLabeledEdit.Text) > 0) And (PointsLabeledEdit.Text[1] = '0') And (PointsLabeledEdit.SelStart = 0) And (Key = '0') Then
-        Key := #0;
+    If (Length(PointsLabeledEdit.Text) > 0) And (PointsLabeledEdit.Text[1] = ZERO_KEY) And (PointsLabeledEdit.SelStart = 0) And
+        (Key = ZERO_KEY) Then
+        Key := NULL_POINT;
 
-    If (PointsLabeledEdit.Text = '0') And (Key <> #08) And (PointsLabeledEdit.SelStart = 1) Then
-        Key := #0;
+    If (PointsLabeledEdit.Text = ZERO_KEY) And (Key <> BACK_SPACE) And (PointsLabeledEdit.SelStart = 1) Then
+        Key := NULL_POINT;
 
-    If (Key = #08) And (PointsLabeledEdit.SelText = '') Then
+    If (Key = BACK_SPACE) And (PointsLabeledEdit.SelText = '') Then
         Key := IsCorrectDelete(Key, PointsLabeledEdit.Text, PointsLabeledEdit.SelStart);
 
-    If (Key = #08) And (PointsLabeledEdit.SelText <> '') Then
+    If (Key = BACK_SPACE) And (PointsLabeledEdit.SelText <> '') Then
         Key := IsCorrectSelDelete(Key, PointsLabeledEdit.Text, PointsLabeledEdit.SelText, PointsLabeledEdit.SelStart);
 
     CheckInput := Key;

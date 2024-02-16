@@ -21,7 +21,9 @@ Type
         Procedure WMPaste(Var Msg: TMessage); Message WM_PASTE;
     End;
 
-    TItems = Array [1 .. 4] Of String;
+    TItemsList = (Country, Team, Coach, Points);
+
+    TItems = Array [Low(TItemsList) .. High(TItemsList)] Of String;
 
     TSearchRecordForm = Class(TForm)
         MainMenu: TMainMenu;
@@ -52,7 +54,11 @@ Type
 Var
     SearchRecordForm: TSearchRecordForm;
     StrIndex: Integer;
+    ItemsList: TItemsList;
     Items: TItems = ('по стране', 'по названию команды', 'по фамилии гл. тренера', 'по итоговому рейтингу');
+
+Const
+    NULL_POINT: Char = #0;
 
 Implementation
 
@@ -76,33 +82,34 @@ Var
 Begin
     Application.CreateForm(TChangeRecordForm, ChangeRecordForm);
     CurentRow := StrIndex + 1;
-
     TempRecord := GetRecordFromFile(CurentRow);
     ChangeRecordForm.CountryLabeledEdit.Text := TempRecord.Country;
     ChangeRecordForm.TeamNameLabeledEdit.Text := TempRecord.Team;
     ChangeRecordForm.CoachLabeledEdit.Text := TempRecord.Coach;
     ChangeRecordForm.PointsLabeledEdit.Text := IntToStr(TempRecord.Points);
-
     ChangeRecordForm.Showmodal;
     SearchRecordForm.Close;
 End;
 
 Procedure TSearchRecordForm.CBoxCloseUp(Sender: TObject);
+Const
+    POINTS_HINT: String = '0..100';
+    STRING_HINT: String = 'строка для поиска';
 Begin
     SearchStrLEdit.Text := '';
     SearchButton.Enabled := False;
     ResultLabel.Caption := '';
     ChangeRecordButton.Visible := False;
 
-    If (CBox.ItemIndex In [0 .. 2]) Then
+    If (CBox.ItemIndex = Integer(Points)) Then
     Begin
-        SearchStrLEdit.MaxLength := 20;
-        SearchStrLEdit.TextHint := 'строка для поиска';
+        SearchStrLEdit.MaxLength := Length(IntToStr(MAX_POINTS));
+        SearchStrLEdit.TextHint := POINTS_HINT;
     End
     Else
     Begin
-        SearchStrLEdit.MaxLength := 3;
-        SearchStrLEdit.TextHint := '0..100';
+        SearchStrLEdit.MaxLength := MAX_STR_LENGTH;
+        SearchStrLEdit.TextHint := STRING_HINT;
     End;
 End;
 
@@ -167,9 +174,9 @@ Procedure TSearchRecordForm.SearchStrLEditKeyPress(Sender: TObject; Var Key: Cha
 
 Begin
     If CBox.Text = '' Then
-        Key := #0;
+        Key := NULL_POINT;
 
-    If CBox.ItemIndex = 4 Then
+    If CBox.ItemIndex = Integer(Points) Then
         Key := CheckInput(Key, SearchStrLEdit);
 End;
 

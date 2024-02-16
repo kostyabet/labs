@@ -62,6 +62,7 @@ Const
     MainFilePath: String = 'MainFile.txt';
     CorrectionFilePath: String = 'CorrectionFile.txt';
     TempFilePath: String = 'TempFile.txt';
+    NULL_POINT: Char = #0;
 
 Implementation
 
@@ -93,66 +94,38 @@ End;
 Procedure ChangeRecordInFile(Country, Team, Coach: TString; Points, CurentRow: Integer);
 Var
     TempRecord: TFootStatsRecord;
-    TempFile: TFileLoader;
-    I: Integer;
 Begin
-    I := 1;
     AssignFile(CorrectionFile, CorrectionFilePath);
-    AssignFile(TempFile, TempFilePath);
     Try
-        Rewrite(TempFile);
         Reset(CorrectionFile);
-        While Not EOF(CorrectionFile) Do
-        Begin
-            Read(CorrectionFile, TempRecord);
-            If (I = CurentRow) Then
-            Begin
-                TempRecord.Country := Country;
-                TempRecord.Team := Team;
-                TempRecord.Coach := Coach;
-                TempRecord.Points := Points;
-                Write(TempFile, TempRecord);
-            End
-            Else
-                Write(TempFile, TempRecord);
-            Inc(I);
-        End;
+        Seek(CorrectionFile, CurentRow - 1);
+        TempRecord.Country := Country;
+        TempRecord.Team := Team;
+        TempRecord.Coach := Coach;
+        TempRecord.Points := Points;
+        Write(CorrectionFile, TempRecord);
     Finally
         Close(CorrectionFile);
-        Close(TempFile);
     End;
-    DeleteFile(CorrectionFilePath);
-
-    RenameFile(TempFilePath, CorrectionFilePath);
 End;
 
 Procedure InputRecordInFile(Country, Team, Coach: TString; Points: Integer);
 Var
     TempRecord: TFootStatsRecord;
-    TempFile: TFileLoader;
 Begin
+    TempRecord.Country := Country;
+    TempRecord.Team := Team;
+    TempRecord.Coach := Coach;
+    TempRecord.Points := Points;
+
     AssignFile(CorrectionFile, CorrectionFilePath);
-    AssignFile(TempFile, TempFilePath);
     Try
-        Rewrite(TempFile);
         Reset(CorrectionFile);
-        While Not EOF(CorrectionFile) Do
-        Begin
-            Read(CorrectionFile, TempRecord);
-            Write(TempFile, TempRecord);
-        End;
-        TempRecord.Country := Country;
-        TempRecord.Team := Team;
-        TempRecord.Coach := Coach;
-        TempRecord.Points := Points;
-        Write(TempFile, TempRecord);
+        Seek(CorrectionFile, FileSize(CorrectionFile));
+        Write(CorrectionFile, TempRecord);
     Finally
         Close(CorrectionFile);
-        Close(TempFile);
     End;
-    DeleteFile(CorrectionFilePath);
-
-    RenameFile(TempFilePath, CorrectionFilePath);
 End;
 
 Procedure InputRecordsInTableGrid();
@@ -392,7 +365,7 @@ Begin
     For I := 1 To NumCharsToCopy Do
         DestArray[I] := WideChar(SourceString[I]);
     For I := NumCharsToCopy + 1 To High(DestArray) Do
-        DestArray[I] := WideChar(#0);
+        DestArray[I] := WideChar(NULL_POINT);
 
     StrToWideChar := DestArray;
 End;
@@ -405,7 +378,7 @@ Begin
     ResStr := '';
     For I := Low(SourceWideChar) To High(SourceWideChar) Do
     Begin
-        If SourceWideChar[I] <> #0 Then
+        If SourceWideChar[I] <> NULL_POINT Then
             ResStr := ResStr + String(SourceWideChar[I]);
     End;
 
