@@ -1,9 +1,6 @@
-﻿using System;
-using System.Text;
-using System.Xml;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using System.Text;
 
-namespace Proj4_2 {
+namespace Proj4_1 {
     enum PanelFunctions {
         ADD,
         CHANGE,
@@ -508,7 +505,6 @@ namespace Proj4_2 {
                 workWithMethod(curentMethod);
             } while (curentMethod != PanelFunctions.EXIT);
             exportRecordsInFile();
-            Environment.Exit(0);
         }
         public static void Main(string[] args) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
@@ -516,7 +512,6 @@ namespace Proj4_2 {
             Console.InputEncoding = Encoding.GetEncoding(1251);
             Console.Title = "Футбольный справочник™";
             programBlock();
-            Console.ReadKey(true);
         }
     }
 }

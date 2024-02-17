@@ -123,9 +123,25 @@ End;
 Function IsVisibleAddOnChange(CountryLEdit, CoachLEdit, PointsLEdit, TeamNameLEdit: TLabeledEdit): Boolean;
 Var
     IsCorrect: Boolean;
+    Cursor: Integer;
+    TempStr: String;
 Begin
     Try
-        IsCorrect := (CountryLEdit.Text <> '') And (CoachLEdit.Text <> '') And (PointsLEdit.Text <> '') And (TeamNameLEdit.Text <> '');
+        TempStr := CountryLEdit.Text;
+        TempStr := Trim(TempStr);
+        IsCorrect := TempStr <> '';
+
+        TempStr := CoachLEdit.Text;
+        TempStr := Trim(TempStr);
+        IsCorrect := IsCorrect And (TempStr <> '');
+
+        TempStr := PointsLEdit.Text;
+        TempStr := Trim(TempStr);
+        IsCorrect := IsCorrect And (TempStr <> '');
+
+        TempStr := TeamNameLEdit.Text;
+        TempStr := Trim(TempStr);
+        IsCorrect := IsCorrect And (TempStr <> '');
     Except
         IsCorrect := False;
     End;
