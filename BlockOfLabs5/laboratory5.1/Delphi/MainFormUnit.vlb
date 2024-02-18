@@ -1,0 +1,13 @@
+﻿[TMLabel]
+Coordinates=75,10,64,58
+
+[]
+Coordinates=219,78,91,36
+
+[NavPanel]
+Coordinates=10,10,55,58
+
+[AddSpButton]
+Coordinates=10,78,96,36
+Visible=True
+
