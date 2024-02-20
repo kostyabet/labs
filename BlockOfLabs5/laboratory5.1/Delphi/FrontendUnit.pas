@@ -1,4 +1,4 @@
-Unit FrontendUnit;
+﻿Unit FrontendUnit;
 
 Interface
 
@@ -26,6 +26,10 @@ Function IsCorrectDelete(Key: Char; CurentText: String; SelStart: Integer): Char
 Function IsCorrectSelDelete(Key: Char; CurentText, SelText: String; SelStart: Integer): Char;
 Function IsCorrectSelTextInputWithKey(Key: Char; CurentText, SelText: String; SelStart: Integer): Char;
 Function IsCorrectInput(Key: Char; CurentText: String; SelStart: Integer): Char;
+Function IsWriteable(FilePath: String): Boolean;
+Procedure InputInFile(Var IsCorrect: Boolean; FilePath: String);
+Function IsReadable(FilePath: String): Boolean;
+Procedure ReadFromFile(Var IsCorrect: Boolean; FilePath: String);
 
 Const
     MIN_POINTS: Integer = -1_000_000_000;
@@ -37,7 +41,8 @@ Const
 Implementation
 
 Uses
-    MainFormUnit;
+    MainFormUnit,
+    DoubleLinkedList;
 
 Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
 Const
@@ -104,14 +109,11 @@ End;
 Function CheckKeyCondition(CurentText: String; Key: Char): Char;
 Begin
     Try
-        If (CurentText = ZERO_KEY) Then
-            Key := NULL_POINT;
-
-        If CurentText <> '' Then
+        If (CurentText <> '') And (CurentText <> '-') Then
             If (StrToInt(CurentText) > MAX_POINTS) Or (StrToInt(CurentText) < MIN_POINTS) Then
                 Key := NULL_POINT;
 
-        If (Length(CurentText) > 0) And (CurentText[1] = ZERO_KEY) Then
+        If (Length(CurentText) > 1) And (CurentText[1] = ZERO_KEY) Then
             Key := NULL_POINT;
 
         If (Length(CurentText) > 1) And (CurentText[1] = MINUS_KEY) And (CurentText[2] = ZERO_KEY) Then
@@ -150,6 +152,179 @@ Begin
     Insert(Key, CurentText, SelStart + 1);
 
     IsCorrectInput := CheckKeyCondition(CurentText, Key);
+End;
+
+Function IsWriteable(FilePath: String): Boolean;
+Var
+    TestFile: TextFile;
+Begin
+    Try
+        AssignFile(TestFile, FilePath);
+        Try
+            Rewrite(TestFile);
+            IsWriteable := True;
+        Finally
+            CloseFile(TestFile);
+        End;
+    Except
+        IsWriteable := False;
+    End;
+End;
+
+Procedure InputInFile(Var IsCorrect: Boolean; FilePath: String);
+Var
+    MyFile: TextFile;
+    I: Integer;
+Begin
+    If IsCorrect Then
+    Begin
+        AssignFile(MyFile, FilePath, CP_UTF8);
+        Try
+            ReWrite(MyFile);
+            Try
+                Writeln(MyFile, 'Список в обратном порядке: ');
+                Writeln(MyFile, ' _____________________________________');
+                Writeln(MyFile, '|   №  |           Значение          |');
+                Writeln(MyFile, '|-------|-----------------------------|');
+                For I := 1 To MainForm.LinkedListStrGrid.RowCount - 1 Do
+                    Writeln(MyFile, '|', MainForm.LinkedListStrGrid.Cells[0, I]:6, ' |', MainForm.LinkedListStrGrid.Cells[1, I]:28, ' |');
+                Writeln(MyFile, '|_______|_____________________________|');
+            Finally
+                Close(MyFile);
+            End;
+            IfDataSavedInFile := True;
+        Except
+            IsCorrect := False;
+        End;
+
+    End;
+End;
+
+Function TryReadNum(Var TestFile: TextFile; Var ReadStatus: Boolean; MAX_NUM: Integer; EndOfNums: Boolean): Integer;
+Const
+    SPACE_LIMIT: Integer = 4;
+Var
+    EndOfNum: Boolean;
+    Character, BufChar: Char;
+    SpaceCounter, Num, MinCount: Integer;
+Begin
+    Num := 0;
+    EndOfNum := False;
+    SpaceCounter := 0;
+    Character := NULL_POINT;
+    BufChar := Character;
+    MinCount := 1;
+    While ReadStatus And Not(EndOfNum) And Not(EOF(TestFile)) Do
+    Begin
+        BufChar := Character;
+        Read(TestFile, Character);
+
+        ReadStatus := ReadStatus And Not((Character <> ' ') And Not((Character > Pred('0')) And (Character < Succ('9'))) And
+            (Character <> #13) And (Character <> #10) And (Character <> '-'));
+
+        If (Character = ' ') Then
+            Inc(SpaceCounter)
+        Else
+            SpaceCounter := 0;
+
+        ReadStatus := Not(SpaceCounter = SPACE_LIMIT);
+
+        If (Character > Pred('0')) And (Character < Succ('9')) Then
+            Num := Num * 10 + Ord(Character) - 48;
+
+        If (Character = '-') Then
+            MinCount := -1;
+
+        ReadStatus := ReadStatus And Not((Character = '-') And (BufChar <> ' ') And (BufChar <> #0));
+
+        ReadStatus := ReadStatus And Not((Character = '-') And (MinCount <> -1));
+
+        EndOfNum := ((Character = ' ') Or (Character = #13)) And ((BufChar > Pred('0')) And (BufChar < Succ('9')));
+
+        ReadStatus := ReadStatus And Not((Num = 0) And (Character > Pred('0')) And (Character < Succ('9')));
+
+        ReadStatus := ReadStatus And Not(Num > MAX_NUM);
+    End;
+
+    ReadStatus := ReadStatus And Not(EOF(TestFile) And Not EndOfNums);
+
+    If ReadStatus Then
+        Num := MinCount * Num;
+
+    TryReadNum := Num;
+End;
+
+Function CheckNum(Num, Max, Min: Integer): Boolean;
+Begin
+    CheckNum := Not((Num > MAX) Or (Num < MIN));
+End;
+
+Function TryRead(Var TestFile: TextFile): Boolean;
+Var
+    BufA: Integer;
+    ReadStatus: Boolean;
+Begin
+    ReadStatus := True;
+    BufA := TryReadNum(TestFile, ReadStatus, MAX_POINTS, False);
+    ReadStatus := CheckNum(BufA, MAX_POINTS, MIN_POINTS);
+
+    ReadStatus := ReadStatus And SeekEOF(TestFile);
+
+    TryRead := ReadStatus;
+End;
+
+Function IsReadable(FilePath: String): Boolean;
+Var
+    TestFile: TextFile;
+Begin
+    Try
+        AssignFile(TestFile, FilePath, CP_UTF8);
+        Try
+            Reset(TestFile);
+            IsReadable := TryRead(TestFile);
+        Finally
+            Close(TestFile);
+        End;
+    Except
+        IsReadable := False;
+    End;
+End;
+
+Procedure ReadingProcess(Var IsCorrect: Boolean; Var MyFile: TextFile);
+Var
+    Num: Integer;
+Begin
+    Try
+        Read(MyFile, Num);
+        InsertInList(Num);
+        MainForm.LinkedListStrGrid.RowCount := MainForm.LinkedListStrGrid.RowCount + 1;
+        PrintList;
+        IsCorrect := True;
+    Except
+        IsCorrect := False;
+    End;
+
+    IsCorrect := IsCorrect And SeekEOF(MyFile);
+End;
+
+Procedure ReadFromFile(Var IsCorrect: Boolean; FilePath: String);
+Var
+    MyFile: TextFile;
+Begin
+    If IsCorrect Then
+    Begin
+        AssignFile(MyFile, FilePath);
+        Try
+            Reset(MyFile);
+            Try
+                ReadingProcess(IsCorrect, MyFile);
+            Finally
+                Close(MyFile);
+            End;
+        Except
+            IsCorrect := False;
+        End;
+    End;
 End;
 
 End.

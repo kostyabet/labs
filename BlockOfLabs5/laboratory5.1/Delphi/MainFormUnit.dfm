@@ -2130,6 +2130,7 @@ object MainForm: TMainForm
     FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
   Menu = MainMenu
   Position = poScreenCenter
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnHelp = FormHelp
   OnKeyDown = FormKeyDown
@@ -2141,7 +2142,7 @@ object MainForm: TMainForm
     Height = 410
     Align = alLeft
     TabOrder = 0
-    ExplicitHeight = 294
+    ExplicitHeight = 398
     object AddButton: TSpeedButton
       Left = 0
       Top = 0
@@ -2215,11 +2216,14 @@ object MainForm: TMainForm
         Caption = #1054#1090#1082#1088#1099#1090#1100
         ImageIndex = 4
         ShortCut = 16463
+        OnClick = OpenButtonClick
       end
       object SaveButton: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+        Enabled = False
         ImageIndex = 5
         ShortCut = 16467
+        OnClick = SaveButtonClick
       end
       object Line: TMenuItem
         Caption = '-'

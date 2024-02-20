@@ -85,6 +85,11 @@ Begin
     MainForm.LinkedListStrGrid.FixedRows := 1;
     If MainForm.LinkedListStrGrid.RowCount > 16 Then
         MainForm.LinkedListStrGrid.ColWidths[1] := (MainForm.LinkedListStrGrid.Width * 70) Div 100;
+    If MainForm.LinkedListStrGrid.RowCount > 1 Then
+        MainForm.SaveButton.Enabled := True
+    Else
+        MainForm.SaveButton.Enabled := False;
+    IfDataSavedInFile := False;
     AddValueForm.Close;
 End;
 
