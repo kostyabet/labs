@@ -17,7 +17,8 @@ Uses
     Vcl.StdCtrls,
     Vcl.Mask,
     Vcl.ExtCtrls,
-    Vcl.Buttons;
+    Vcl.Buttons,
+    Vcl.Grids;
 
 Type
     TLabeledEdit = Class(Vcl.ExtCtrls.TLabeledEdit)
@@ -59,8 +60,11 @@ Implementation
 
 Uses
     MainFormUnit,
-    DoubleLinkedList,
     FrontendUnit;
+
+Procedure InsertInList(Value: Integer); Stdcall; External 'DoubleLinkedList.dll';
+Procedure DeleteFromList(Num: Integer); Stdcall; External 'DoubleLinkedList.dll';
+Procedure PrintList(Var LinkedListStrGrid: TStringGrid); Stdcall; External 'DoubleLinkedList.dll';
 
 Procedure TAddValueForm.FormCreate(Sender: TObject);
 Begin
@@ -81,7 +85,7 @@ Begin
     MainForm.LinkedListStrGrid.RowCount := MainForm.LinkedListStrGrid.RowCount + 1;
     InsertInList(StrToInt(ValueLabEdit.Text));
     ClearStringGrid;
-    PrintList;
+    PrintList(MainForm.LinkedListStrGrid);
     MainForm.LinkedListStrGrid.FixedRows := 1;
     If MainForm.LinkedListStrGrid.RowCount > 16 Then
         MainForm.LinkedListStrGrid.ColWidths[1] := (MainForm.LinkedListStrGrid.Width * 70) Div 100;
@@ -94,8 +98,6 @@ Begin
 End;
 
 Procedure TAddValueForm.ValueLabEditChange(Sender: TObject);
-Var
-    TempStr: String;
 Begin
     Try
         StrToInt(ValueLabEdit.Text);
@@ -156,7 +158,7 @@ Begin
 
     If (ValueLabEdit.SelText <> '') Then
         Key := IsCorrectSelTextInputWithKey(Key, ValueLabEdit.Text, ValueLabEdit.SelText, ValueLabEdit.SelStart);
-    If (ValueLabEdit.SelText = '') And (ValueLabEdit.Text <> '') And (Key In NUMB_VAL) Then
+    If (ValueLabEdit.SelText = '') And (ValueLabEdit.Text <> '') And CharInSet(Key, NUMB_VAL) Then
         Key := IsCorrectInput(Key, ValueLabEdit.Text, ValueLabEdit.SelStart);
 
     If (Key = BACK_SPACE) And (ValueLabEdit.SelText = '') Then

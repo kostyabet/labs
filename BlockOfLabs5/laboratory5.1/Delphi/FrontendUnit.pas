@@ -17,7 +17,8 @@ Uses
     Vcl.ExtCtrls,
     Vcl.StdCtrls,
     System.ImageList,
-    Vcl.ImgList;
+    Vcl.ImgList,
+    Vcl.Grids;
 
 Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
 Function IsCorrectPointsClipboard(ClipbrdText: String; NumLabEd: TLabeledEdit): Boolean;
@@ -41,8 +42,11 @@ Const
 Implementation
 
 Uses
-    MainFormUnit,
-    DoubleLinkedList;
+    MainFormUnit;
+
+Procedure InsertInList(Value: Integer); Stdcall; External 'DoubleLinkedList.dll';
+Procedure DeleteFromList(Num: Integer); Stdcall; External 'DoubleLinkedList.dll';
+Procedure PrintList(Var LinkedListStrGrid: TStringGrid); Stdcall; External 'DoubleLinkedList.dll';
 
 Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
 Const
@@ -298,7 +302,7 @@ Begin
         Read(MyFile, Num);
         InsertInList(Num);
         MainForm.LinkedListStrGrid.RowCount := MainForm.LinkedListStrGrid.RowCount + 1;
-        PrintList;
+        PrintList(MainForm.LinkedListStrGrid);
         IsCorrect := True;
     Except
         IsCorrect := False;

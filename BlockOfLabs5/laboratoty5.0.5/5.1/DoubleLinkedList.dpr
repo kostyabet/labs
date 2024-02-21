@@ -1,9 +1,8 @@
-Unit DoubleLinkedList;
-
-Interface
+Library DoubleLinkedList;
 
 Uses
-    System.SysUtils;
+    System.SysUtils,
+    Vcl.Grids;
 
 Type
     PNode = ^TNode;
@@ -14,18 +13,9 @@ Type
         Next: PNode;
     End;
 
-Procedure InsertInList(Value: Integer);
-Procedure DeleteFromList(Num: Integer);
-Procedure PrintList;
-
 Var
     Tail: PNode = Nil;
     Head: PNode = Nil;
-
-Implementation
-
-Uses
-    MainFormUnit;
 
 Procedure InsertInList(Value: Integer);
 Var
@@ -35,10 +25,10 @@ Begin
     NewNode.Data := Value;
     NewNode.Prev := Tail;
     NewNode.Next := Nil;
-    if Head = nil then
+    If Head = Nil Then
         Head := NewNode
-    else
-        Tail.Next := NewNode;
+    Else
+        Tail^.Next := NewNode;
     Tail := NewNode;
 End;
 
@@ -66,29 +56,37 @@ Begin
 
     If NextNode <> Nil Then
         NextNode^.Prev := PreviousNode
-    else
-        Tail := CurrentNode.Prev;
+    Else
+        Tail := CurrentNode^.Prev;
 
     Dispose(CurrentNode);
 End;
 
-Procedure PrintList;
+Procedure PrintList(Var LinkedListStrGrid: TStringGrid);
 Var
     CurrentNode: PNode;
-    Counter: Integer;
     HighI, I: Integer;
 Begin
     CurrentNode := Tail;
     HighI := 1;
     While CurrentNode <> Nil Do
     Begin
-        MainForm.LinkedListStrGrid.Cells[1, HighI] := IntToStr(CurrentNode.Data);
+        LinkedListStrGrid.Cells[1, HighI] := IntToStr(CurrentNode.Data);
         CurrentNode := CurrentNode.Prev;
         Inc(HighI);
     End;
     Dec(HighI);
     For I := HighI DownTo 1 Do
-        MainForm.LinkedListStrGrid.Cells[0, HighI - I + 1] := IntToStr(I);
+        LinkedListStrGrid.Cells[0, HighI - I + 1] := IntToStr(I);
 End;
+
+Exports
+    InsertInList,
+    DeleteFromList,
+    PrintList;
+
+{$R *.res}
+
+Begin
 
 End.

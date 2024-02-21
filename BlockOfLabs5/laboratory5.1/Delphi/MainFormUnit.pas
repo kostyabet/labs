@@ -62,15 +62,18 @@ Type
 Var
     MainForm: TMainForm;
     IfDataSavedInFile: Boolean = False;
-
+    
 Implementation
 
 {$R *.dfm}
 
 Uses
     AddValueUnit,
-    FrontendUnit,
-    DoubleLinkedList;
+    FrontendUnit;
+
+Procedure InsertInList(Value: Integer); Stdcall; External 'DoubleLinkedList.dll';
+Procedure DeleteFromList(Num: Integer); Stdcall; External 'DoubleLinkedList.dll';
+Procedure PrintList(Var LinkedListStrGrid: TStringGrid); Stdcall; External 'DoubleLinkedList.dll';
 
 Procedure TMainForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
 Var
@@ -213,7 +216,7 @@ Begin
             DeleteFromList(LinkedListStrGrid.RowCount - CurentRow);
             ClearStringGrid;
             LinkedListStrGrid.RowCount := LinkedListStrGrid.RowCount - 1;
-            PrintList;
+            PrintList(LinkedListStrGrid);
             If LinkedListStrGrid.RowCount < 17 Then
                 LinkedListStrGrid.ColWidths[1] := (LinkedListStrGrid.Width * 79) Div 100;
 
