@@ -40,7 +40,7 @@ Begin
     CurrentNode := Head;
     Count := 1;
 
-    While (Count < Num) Do
+    While Count < Num Do
     Begin
         CurrentNode := CurrentNode^.Next;
         Inc(Count);

@@ -40,7 +40,6 @@ Type
         OpenDialog: TOpenDialog;
         SaveDialog: TSaveDialog;
         Procedure AddButtonClick(Sender: TObject);
-        Procedure SpeedButton1Click(Sender: TObject);
         Procedure AboutEditorMMClick(Sender: TObject);
         Procedure FormCreate(Sender: TObject);
         Procedure ExitButtonClick(Sender: TObject);
@@ -185,11 +184,6 @@ Begin
         Else
             IsCorrect := True;
     Until IsCorrect;
-End;
-
-Procedure TMainForm.SpeedButton1Click(Sender: TObject);
-Begin
-    CreateModalForm('Создание списка', 'fdfsd', Screen.Width * 20 Div 100, Screen.Height * 20 Div 100);
 End;
 
 Procedure TMainForm.AddButtonClick(Sender: TObject);
