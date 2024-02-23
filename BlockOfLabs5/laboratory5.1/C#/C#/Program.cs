@@ -1,81 +1,84 @@
 ﻿using System.Text;
-class Proj4_2 {
+
+namespace C_;
+
+class Proj42 {
     class Node {
         public int Data { get; set; }
         public Node? Previous { get; set; }
         public Node? Next { get; set; }
     }
     enum MainMenu {
-        DISPLAY,
-        ADD,
-        REMOVE,
-        FILESAVE,
-        LOADFILE,
-        REFERENCE,
-        EXIT
+        Display, 
+        Add,
+        Remove,
+        Filesave,
+        Loadfile,
+        Reference,
+        Exit
     }
-    const int MIN_FILE_WAY_SIZE = 4;
-    const int MIN_NUM_OF_VALUES = 0;
-    const int MAX_NUM = 1_000_000_000;
-    const int MIN_NUM = -1_000_000_000;
-    static Node? head;
-    static Node? tail;
-    static string[] mainOptions = { " < Просмотреть список > ", " < Добавить значение > ", " < Удалить значение > ", " < Сохранить список в файл > ", " < Загрузить значение из файла > ", " < Справка > ", " < Выход > " };
-    static string[] exitOption = { "<- Вернуться" };
+    const int MinFileWaySize = 4;
+    const int MinNumOfValues = 0;
+    const int MaxNum = 1_000_000_000;
+    const int MinNum = -1_000_000_000;
+    static Node? _head;
+    static Node? _tail;
+    static string[] _mainOptions = { " < Просмотреть список > ", " < Добавить значение > ", " < Удалить значение > ", " < Сохранить список в файл > ", " < Загрузить значение из файла > ", " < Справка > ", " < Выход > " };
+    static string[] _exitOption = { "<- Вернуться" };
     static void showReference() {
         Console.Clear();
         string prompt = $"""
                 Инструкция:
                   1. Чтобы просмотреть список в обратном порядке выберите 
-                     {mainOptions[0]};
-                  2. Добавить новое значение можно выбрав {mainOptions[1]};
-                  3. Выберите {mainOptions[2]}, чтобы удалить какое-то значение;
-                  4. Просмотрите инструкцию выбрав {mainOptions[3]};
-                  5. Чтобы выйти выбирайте вариант {mainOptions[4]}.
+                     {_mainOptions[0]};
+                  2. Добавить новое значение можно выбрав {_mainOptions[1]};
+                  3. Выберите {_mainOptions[2]}, чтобы удалить какое-то значение;
+                  4. Просмотрите инструкцию выбрав {_mainOptions[3]};
+                  5. Чтобы выйти выбирайте вариант {_mainOptions[4]}.
 
-                Значения в массиве находятся в диапазоне от {MIN_NUM} до {MAX_NUM};
+                Значения в массиве находятся в диапазоне от {MinNum} до {MaxNum};
 
                 Работа с файлами:
                     Файл строго формата .txt!
                     При вводе числа через файл в файле находится только новое значение.
                     При сохранении в файл помещается та же таблица, что и в пункте
-                    {mainOptions[0]}
+                    {_mainOptions[0]}
 
                 При прсомотре списка он выводится в виде таблицы и в обратном порядке
                 в соответствии с условием задания.
                 """;
-        getSelectedIndex(prompt, exitOption);
+        getSelectedIndex(prompt, _exitOption);
     }
     static void addValueInList(int data) {
         Node newNode = new Node();
         newNode.Data = data;
-        if (head == null) {
-            head = newNode;
-            tail = newNode;
+        if (_head == null) {
+            _head = newNode;
+            _tail = newNode;
         } else {
-            newNode.Previous = tail;
-            #pragma warning disable CS8602 // Разыменование вероятной пустой ссылки.
-            tail.Next = newNode;
-            tail = newNode;
+            newNode.Previous = _tail;
+#pragma warning disable CS8602 // Разыменование вероятной пустой ссылки.
+            _tail.Next = newNode;
+            _tail = newNode;
         }
     }
     static void removeValueFromList(int numOfValue) {
-        if (head == null) return;
-        Node? currentNode = head;
+        if (_head == null) return;
+        Node? currentNode = _head;
         for (int i = 1; i < numOfValue; ++i)
             currentNode = currentNode.Next ?? currentNode;
         if (currentNode.Previous != null)
             currentNode.Previous.Next = currentNode.Next;
-        else head = currentNode.Next;
+        else _head = currentNode.Next;
         if (currentNode.Next != null)
             currentNode.Next.Previous = currentNode.Previous;    
-        else tail = currentNode.Previous;
+        else _tail = currentNode.Previous;
     }
 
-    static string ReversePrint() {
+    static string reversePrint() {  
         string prompt = string.Empty;
         prompt = "Список отображён в обратном порядке: ";
-        Node? currentNode = tail;
+        Node? currentNode = _tail;
         if (currentNode == null) return prompt += "список пуст.";
         int valCounter = 0;
         string[] values = new string[1];
@@ -135,16 +138,16 @@ class Proj4_2 {
     }
     static MainMenu searchQurentMainMethod(int curentIndex) {
         switch (curentIndex) {
-            case (int)MainMenu.DISPLAY: return MainMenu.DISPLAY;
-            case (int)MainMenu.ADD: return MainMenu.ADD;
-            case (int)MainMenu.REMOVE: return MainMenu.REMOVE;
-            case (int)MainMenu.FILESAVE: return MainMenu.FILESAVE;
-            case (int)MainMenu.LOADFILE: return MainMenu.LOADFILE;
-            case (int)MainMenu.REFERENCE: return MainMenu.REFERENCE;
-            default: return MainMenu.EXIT;
+            case (int)MainMenu.Display: return MainMenu.Display;
+            case (int)MainMenu.Add: return MainMenu.Add;
+            case (int)MainMenu.Remove: return MainMenu.Remove;
+            case (int)MainMenu.Filesave: return MainMenu.Filesave;
+            case (int)MainMenu.Loadfile: return MainMenu.Loadfile;
+            case (int)MainMenu.Reference: return MainMenu.Reference;
+            default: return MainMenu.Exit;
         }
     }
-    static int inputNumber(int MAX, int MIN) {
+    static int inputNumber(int max, int min) {
         int num = 0;
         bool isIncorrect = true;
         do {
@@ -156,8 +159,8 @@ class Proj4_2 {
                 Console.Error.Write("Ошибка!!! Введите целое число: ");
                 isIncorrect = true;
             }
-            if ((num > MAX || num < MIN) && !isIncorrect) {
-                Console.Error.Write($"Ошибка!!! Диапазон числа от {MIN} до {MAX}: ");
+            if ((num > max || num < min) && !isIncorrect) {
+                Console.Error.Write($"Ошибка!!! Диапазон числа от {min} до {max}: ");
                 isIncorrect = true;
             }
         } while (isIncorrect);
@@ -166,19 +169,19 @@ class Proj4_2 {
     static void addValueProc() {
         Console.Clear();
         Console.Write("Введите новое значение: ");
-        int num = inputNumber(MAX_NUM, MIN_NUM);
+        int num = inputNumber(MaxNum, MinNum);
         addValueInList(num);
         string prompt = "Новое значение добавлено в список: " + num;
-        getSelectedIndex(prompt, exitOption);
+        getSelectedIndex(prompt, _exitOption);
     }
     static void printProc() {
         Console.Clear();
-        string prompt = ReversePrint();
-        getSelectedIndex(prompt, exitOption);
+        string prompt = reversePrint();
+        getSelectedIndex(prompt, _exitOption);
     }
     static int findNumbOfValues() {
         int numOfEl = 0;
-        Node? currentNode = tail;
+        Node? currentNode = _tail;
         while (currentNode != null) {
             numOfEl++;
             currentNode = currentNode.Previous;
@@ -191,25 +194,25 @@ class Proj4_2 {
         int valCounter = findNumbOfValues();
         if (valCounter == 0) {
             prompt = "У вас нет ниодного значения...";
-            getSelectedIndex(prompt, exitOption);
+            getSelectedIndex(prompt, _exitOption);
             return;
         }
-        string allElements = ReversePrint();
+        string allElements = reversePrint();
         Console.WriteLine(allElements);
-        Console.Write($"{MIN_NUM_OF_VALUES} - покинуть удаление;\n");
+        Console.Write($"{MinNumOfValues} - покинуть удаление;\n");
         Console.Write("Введите номер удаляемого элемента: ");
-        int num = inputNumber(valCounter, MIN_NUM_OF_VALUES);
-        if (num == MIN_NUM_OF_VALUES) return;
+        int num = inputNumber(valCounter, MinNumOfValues);
+        if (num == MinNumOfValues) return;
         removeValueFromList(num);
-        prompt = ReversePrint();
-        getSelectedIndex(prompt, exitOption);
+        prompt = reversePrint();
+        getSelectedIndex(prompt, _exitOption);
     }
     static bool pathCondition(string filePath) {
-        if (filePath.Length < MIN_FILE_WAY_SIZE) {
+        if (filePath.Length < MinFileWaySize) {
             Console.Error.Write("Путь слишком котороткий. Попробуйте снова: ");
             return false;
         }
-        string bufstr = filePath.Substring(filePath.Length - MIN_FILE_WAY_SIZE);
+        string bufstr = filePath.Substring(filePath.Length - MinFileWaySize);
         if (!bufstr.Equals(".txt")) {
             Console.Error.Write("Введите .txt файл. Попробуйте снова: ");
             return false;
@@ -289,18 +292,18 @@ class Proj4_2 {
         int valCounter = findNumbOfValues();
         if (valCounter == 0) {
             prompt = "У вас нет ниодного значения...";
-            getSelectedIndex(prompt, exitOption);
+            getSelectedIndex(prompt, _exitOption);
             return;
         }
         string filePath = string.Empty;
         do {
             Console.Write("Введите путь к файлу (*.txt): ");
             filePath = inputPathToTheFile("output");
-        } while (!isProcesOfFileOutputCorrect(filePath, ReversePrint()));
+        } while (!isProcesOfFileOutputCorrect(filePath, reversePrint()));
         prompt = "Список успешно сохранён в файл.";
-        getSelectedIndex(prompt, exitOption);
+        getSelectedIndex(prompt, _exitOption); 
     }
-    static int inputNumberFromFile(StreamReader inputReader, ref bool isCorrectInput, int MIN_NUM, int MAX_NUM) {
+    static int inputNumberFromFile(StreamReader inputReader, ref bool isCorrectInput, int minNum, int maxNum) {
         int num = 0;
         bool isCorrect = true;
         int character, bufChar = 0;
@@ -310,23 +313,23 @@ class Proj4_2 {
             if (!isServiceSymbol && isCorrectInput) 
                 num = num * 10 + character - 48;
             isCorrect = !(bufChar != 0 && isCorrectInput && isServiceSymbol);
-            isCorrect = isCorrect && !(num > MAX_NUM);
+            isCorrect = isCorrect && !(num > maxNum);
             bufChar = character;
         }
-        isCorrectInput = !(isCorrectInput && (num > MAX_NUM || num < MIN_NUM || bufChar == 0));
+        isCorrectInput = !(isCorrectInput && (num > maxNum || num < minNum || bufChar == 0));
         return num;
     }
     static bool isProcesOfFileInputCorrect(ref int num, ref string filePath) {
         bool isCorrectInput = true;
         string prompt = string.Empty;
         using (StreamReader inputReader = new StreamReader(filePath)) {
-            num = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_NUM, MAX_NUM);
+            num = inputNumberFromFile(inputReader, ref isCorrectInput, MinNum, MaxNum);
             isCorrectInput = isCorrectInput && inputReader.EndOfStream ? true : false;
             addValueInList(num);
             if (!isCorrectInput) Console.WriteLine("Ошибка при чтении. Попробуйте снова.");
         }
         return isCorrectInput;
-    }
+    } 
     static void loadFromFileProc() {
         Console.Clear();
         string filePath = string.Empty;
@@ -336,16 +339,16 @@ class Proj4_2 {
             filePath = inputPathToTheFile("input");
         } while (!isProcesOfFileInputCorrect(ref num, ref filePath));
         string prompt = "Число успешно считано из файла.";
-        getSelectedIndex(prompt, exitOption);
+        getSelectedIndex(prompt, _exitOption);
     }
     static void workWithMethod(MainMenu curentMethod) {
         switch (curentMethod) {
-            case MainMenu.DISPLAY: printProc(); break;
-            case MainMenu.ADD: addValueProc(); break;
-            case MainMenu.REMOVE: removeProc(); break;
-            case MainMenu.FILESAVE: saveInFileProc(); break;
-            case MainMenu.LOADFILE: loadFromFileProc(); break;
-            case MainMenu.REFERENCE: showReference(); break;
+            case MainMenu.Display: printProc(); break;
+            case MainMenu.Add: addValueProc(); break;
+            case MainMenu.Remove: removeProc(); break;
+            case MainMenu.Filesave: saveInFileProc(); break;
+            case MainMenu.Loadfile: loadFromFileProc(); break;
+            case MainMenu.Reference: showReference(); break;
         }
     }
 
@@ -353,16 +356,16 @@ class Proj4_2 {
         MainMenu curentMethod = 0;
         do {
             string prompt = "Выберите, что хотите сделать: ";
-            curentMethod = searchQurentMainMethod(getSelectedIndex(prompt, mainOptions));
+            curentMethod = searchQurentMainMethod(getSelectedIndex(prompt, _mainOptions));
             workWithMethod(curentMethod);
-        } while (curentMethod != MainMenu.EXIT);
+        } while (curentMethod != MainMenu.Exit);
     }
     static void Main(String[] args) {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         Console.OutputEncoding = Encoding.GetEncoding(1251);
         Console.InputEncoding = Encoding.GetEncoding(1251);
         Console.Title = "Двусвязный список™";
-        mainWorkBlock();
+        mainWorkBlock(); 
         Environment.Exit(0);
-    }
+    } 
 }
