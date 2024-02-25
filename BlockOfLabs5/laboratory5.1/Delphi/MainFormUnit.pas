@@ -53,7 +53,7 @@ Type
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
         Procedure OpenButtonClick(Sender: TObject);
     Private
-        { Private declarations }
+        Procedure WMGetMinMaxInfo(Var Msg: TWMGetMinMaxInfo);
     Public
         { Public declarations }
     End;
@@ -125,7 +125,7 @@ Var
     OutputStr: String;
 Begin
     OutputStr := 'Инструкция:' + #13#10'1. Добавить новый элемент можно нажав на кнопку ''Добавить элемент'';' +
-        #13#10'2. Удалить элемент можно выбрав нужный элемент слева и нажав на' + #13#10'    кнопку ''Удалить элемент''.'#13#10 +
+        #13#10'2. Удалить элемент можно выбрав его слева и нажав на' + #13#10'    кнопку ''Удалить элемент''.'#13#10 +
         #13#10'Все элемент двусвяного списка выводятся в обратном порядке в' + #13#10'соответствии с условием задания.'#13#10 +
         #13#10'Нажать DEL в таблице - удаление выбранного элемента;' + #13#10'Нажать INS в таблице - добавить новый элемент.'#13#10 +
         #13#10'Вы можете выйти из формы нажам ESCape/DELete/Alt+F4.'#13#10 + #13#10'Вы можете открыть справку на F1.'#13#10 +
@@ -233,6 +233,17 @@ End;
 Procedure TMainForm.ExitMMClick(Sender: TObject);
 Begin
     MainForm.Close;
+End;
+
+Procedure TMainForm.WMGetMinMaxInfo(Var Msg: TWMGetMinMaxInfo);
+Begin
+    Msg.MinMaxInfo.PtMaxSize.X := Width;
+    Msg.MinMaxInfo.PtMaxSize.Y := Height;
+    Msg.MinMaxInfo.PtMaxTrackSize.X := Width;
+    Msg.MinMaxInfo.PtMaxTrackSize.Y := Height;
+
+    Left := (Screen.Width - Width) Div 2;
+    Top := (Screen.Height - Height) Div 2;
 End;
 
 End.

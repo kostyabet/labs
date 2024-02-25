@@ -21,10 +21,11 @@ class Proj42 {
     const int MinNumOfValues = 0;
     const int MaxNum = 1_000_000_000;
     const int MinNum = -1_000_000_000;
+    const int SPACE_LIMIT = 5;
     static Node? _head;
     static Node? _tail;
-    static string[] _mainOptions = { " < Просмотреть список > ", " < Добавить значение > ", " < Удалить значение > ", " < Сохранить список в файл > ", " < Загрузить значение из файла > ", " < Справка > ", " < Выход > " };
-    static string[] _exitOption = { "<- Вернуться" };
+    static readonly string[] _mainOptions = { " < Просмотреть список > ", " < Добавить значение > ", " < Удалить значение > ", " < Сохранить список в файл > ", " < Загрузить значение из файла > ", " < Справка > ", " < Выход > " };
+    static readonly string[] _exitOption = { "<- Вернуться" };
     static void showReference() {
         Console.Clear();
         string prompt = $"""
@@ -75,8 +76,8 @@ class Proj42 {
         else _tail = currentNode.Previous;
     }
 
-    static string reversePrint() {  
-        string prompt = string.Empty;
+    static string reversePrint() {
+        string prompt;
         prompt = "Список отображён в обратном порядке: ";
         Node? currentNode = _tail;
         if (currentNode == null) return prompt += "список пуст.";
@@ -190,7 +191,7 @@ class Proj42 {
     }
     static void removeProc() {
         Console.Clear();
-        string prompt = string.Empty;
+        string prompt;
         int valCounter = findNumbOfValues();
         if (valCounter == 0) {
             prompt = "У вас нет ниодного значения...";
@@ -213,11 +214,9 @@ class Proj42 {
             return false;
         }
         string bufstr = filePath.Substring(filePath.Length - MinFileWaySize);
-        if (!bufstr.Equals(".txt")) {
-            Console.Error.Write("Введите .txt файл. Попробуйте снова: ");
-            return false;
-        }
-        return true;
+        if (bufstr.Equals(".txt")) return true;
+        Console.Error.Write("Введите .txt файл. Попробуйте снова: ");
+        return false;
     }
     static string inputFilePath() {
         string filePath = Console.ReadLine() ?? string.Empty;
@@ -246,12 +245,14 @@ class Proj42 {
             return false;
         }
     }
-    static bool accessModifierControl(string accessModifier, string filePath) {
-        bool resultModifier = true;
-        switch (accessModifier) {
-            case "input": resultModifier = isCanRead(filePath); break;
-            case "output": resultModifier = isCanWrite(filePath); break;
-        }
+    static bool accessModifierControl(string accessModifier, string filePath)
+    {
+        bool resultModifier = accessModifier switch
+        {
+            "input" => isCanRead(filePath),
+            "output" => isCanWrite(filePath),
+            _ => true
+        };
         return resultModifier;
     }
     static bool isCanOpenFile(string filePath)
@@ -266,7 +267,7 @@ class Proj42 {
     /// <param name="accessModifier"></param>
     /// <returns></returns>
     static string inputPathToTheFile(string accessModifier) {
-        string filePath = string.Empty;
+        string filePath;
         bool isCorrect = true;
         do {
             filePath = inputFilePath();
@@ -288,14 +289,14 @@ class Proj42 {
     }
     static void saveInFileProc() {
         Console.Clear();
-        string prompt = string.Empty;
+        string prompt;
         int valCounter = findNumbOfValues();
         if (valCounter == 0) {
             prompt = "У вас нет ниодного значения...";
             getSelectedIndex(prompt, _exitOption);
             return;
         }
-        string filePath = string.Empty;
+        string filePath;
         do {
             Console.Write("Введите путь к файлу (*.txt): ");
             filePath = inputPathToTheFile("output");
@@ -305,34 +306,45 @@ class Proj42 {
     }
     static int inputNumberFromFile(StreamReader inputReader, ref bool isCorrectInput, int minNum, int maxNum) {
         int num = 0;
-        bool isCorrect = true;
-        int character, bufChar = 0;
-        while (isCorrect && isCorrectInput && (character = inputReader.Read()) != -1) {
-            bool isServiceSymbol = character == ' ' || character == '\r' || character == '\n';
-            isCorrectInput = (isServiceSymbol || !(character > '9' && character < '0'));
-            if (!isServiceSymbol && isCorrectInput) 
+        bool endOfNum = false;
+        int spaceCounter = 0;
+        int character;
+        int minCount = 1;
+        while (isCorrectInput && !(endOfNum) && (character = inputReader.Read()) != -1) {
+            var bufChar = character;
+            isCorrectInput = isCorrectInput && !((character != ' ') && !((character > '/') && (character < ':')) &&
+                                                 (character != '\n') && (character != '\r') && (character != '-'));
+            if (character == ' ') ++spaceCounter;
+            else spaceCounter = 0;
+            isCorrectInput = !(spaceCounter == SPACE_LIMIT);
+            if ((character > '/') && (character < ':'))
                 num = num * 10 + character - 48;
-            isCorrect = !(bufChar != 0 && isCorrectInput && isServiceSymbol);
-            isCorrect = isCorrect && !(num > maxNum);
-            bufChar = character;
+            if (character == '-') minCount = -1;
+            isCorrectInput = isCorrectInput && !((character == '-') && (minCount != -1));
+            endOfNum = ((character == ' ') || (character == '\n')) && ((bufChar > '/') && (bufChar < ':'));
+            isCorrectInput = isCorrectInput && !((num == 0) && (character > '/') && (character <':'));
+            isCorrectInput = isCorrectInput && !(num > maxNum);
         }
-        isCorrectInput = !(isCorrectInput && (num > maxNum || num < minNum || bufChar == 0));
+
+        isCorrectInput = isCorrectInput && !endOfNum;
+
+        if (isCorrectInput) num = minCount * num;
+
         return num;
     }
     static bool isProcesOfFileInputCorrect(ref int num, ref string filePath) {
         bool isCorrectInput = true;
         string prompt = string.Empty;
-        using (StreamReader inputReader = new StreamReader(filePath)) {
+        using StreamReader inputReader = new StreamReader(filePath);
             num = inputNumberFromFile(inputReader, ref isCorrectInput, MinNum, MaxNum);
-            isCorrectInput = isCorrectInput && inputReader.EndOfStream ? true : false;
-            addValueInList(num);
-            if (!isCorrectInput) Console.WriteLine("Ошибка при чтении. Попробуйте снова.");
-        }
+        isCorrectInput = isCorrectInput && inputReader.EndOfStream ? true : false;
+        addValueInList(num);
+        if (!isCorrectInput) Console.WriteLine("Ошибка при чтении. Попробуйте снова.");
         return isCorrectInput;
     } 
     static void loadFromFileProc() {
         Console.Clear();
-        string filePath = string.Empty;
+        string filePath;
         int num = 0;
         do {
             Console.Write("Введите путь к вашему файлу (*.txt): ");
@@ -353,19 +365,18 @@ class Proj42 {
     }
 
     static void mainWorkBlock() {
-        MainMenu curentMethod = 0;
+        MainMenu currentMethod = 0;
         do {
             string prompt = "Выберите, что хотите сделать: ";
-            curentMethod = searchQurentMainMethod(getSelectedIndex(prompt, _mainOptions));
-            workWithMethod(curentMethod);
-        } while (curentMethod != MainMenu.Exit);
+            currentMethod = searchQurentMainMethod(getSelectedIndex(prompt, _mainOptions));
+            workWithMethod(currentMethod);
+        } while (currentMethod != MainMenu.Exit);
     }
-    static void Main(String[] args) {
+    public static void Main(String[] args) {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         Console.OutputEncoding = Encoding.GetEncoding(1251);
         Console.InputEncoding = Encoding.GetEncoding(1251);
         Console.Title = "Двусвязный список™";
-        mainWorkBlock(); 
-        Environment.Exit(0);
+        mainWorkBlock();
     } 
 }

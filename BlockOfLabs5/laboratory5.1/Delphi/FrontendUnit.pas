@@ -322,6 +322,7 @@ Begin
             Reset(MyFile);
             Try
                 ReadingProcess(IsCorrect, MyFile);
+                MainForm.SaveButton.Enabled := True;
             Finally
                 Close(MyFile);
             End;

@@ -150,7 +150,7 @@ End;
 Procedure TAddValueForm.ValueLabEditKeyPress(Sender: TObject; Var Key: Char);
 Const
     GOOD_VALUES = ['0' .. '9', #08, #$16, '-'];
-    NUMB_VAL = ['0' .. '9'];
+    NUMB_VAL = ['0' .. '9', '-'];
     REF_NUM: String = '10';
 Begin
     If Not CharInSet(Key, GOOD_VALUES) Then
