@@ -31,16 +31,16 @@
     public static class Program {
         private const int FileValue = (int)IoChoose.File;
         private const int ConsoleValue = (int)IoChoose.Console;
+        private const int Exit = (int)WriteMenu.Exit;
+        private const int Continue = (int)WriteMenu.Continue;
         private static Node? _root;
-        private static int _exit = (int)WriteMenu.Exit;
-        private static int _continue = (int)WriteMenu.Continue;
+        private static Node? _longestPoint = _root;
         private const int MaxInt = +1_000_000;
         private const int MinInt = -1_000_000;
         private const int MaxKnots = 50;
-        private static Node? _longestPoint = _root;
+        private const int MinFileWaySize = 4;
         private static int _longWayCost;
         private static readonly HashSet<int> ExistPoints = new HashSet<int>();
-        const int MinFileWaySize = 4;
         private static void PrintTree(Node? node, ref string outputString, string prefix = "", bool isLeft = false)
         {
             if (node == null) return;
@@ -93,26 +93,9 @@
                 case IoChoose.Console: OutputFromConsole(resultStr); break;
             }
         }
-
-        private static int InputNum(ref int max, ref int min) {
-            var num = 0;
-            bool isCorrect;
-            do {
-                try {
-                    num = Convert.ToInt32(Console.ReadLine());
-                    isCorrect = true;
-                } catch {
-                    isCorrect = false; 
-                }
-                isCorrect = isCorrect && !(num > max || num < min);
-                if (!isCorrect) Console.Write("Error. Number out of range: ");
-            } while (!isCorrect);
-
-            return num;
-        }
-
-        private static void InsertNewBranch(int child, int cost) {
-            _root = InsertProcess(_root, _root, child, cost);
+        private static void InsertNewBranch(int child, int cost, int exitCode) {
+            if (exitCode != Exit)
+                _root = InsertProcess(_root, _root, child, cost);
         }
         private static Node InsertProcess(Node? root, Node? parent, int child, int cost) {
             if (root == null) {
@@ -134,24 +117,12 @@
 
             return root;
         }
-        private static bool IsWriterWantContinue()
-        {
-            Console.WriteLine("1 - exit; 2 - write new branch;");
-            Console.Write("Do you want write one more branch: ");
-            var num = InputNum(ref _continue, ref _exit);
-            return num switch {
-                (int)WriteMenu.Continue => true,
-                _ => false
-            };
-        }
-
-        private static void InputBranch(out int child, out int cost) {
+        private static void InputBranch(out int child, out int cost, ref int exitCode) {
             child = 0;
             cost = 0;
             bool isCorrect;
-            do
-            {
-                string[] parameters = new string[] { };
+            do {
+                string[] parameters = { };
                 try {
                     string input = Console.ReadLine() ?? string.Empty;
                     parameters = input.Split(' ');
@@ -162,28 +133,31 @@
                 catch {
                     isCorrect = false;
                 }
+
+                if (ExistPoints.Count != 0 && parameters is ["exit"]) { exitCode = Exit; return; } 
                 if (ExistPoints.Count != 0) isCorrect = isCorrect && !(parameters.Length > 2);
                 else isCorrect = isCorrect && !(parameters.Length > 1);
                 isCorrect = isCorrect && !ExistPoints.Contains(child);
-                isCorrect = isCorrect && !(child > MaxInt || child < MinInt);
-                isCorrect = isCorrect && !(cost > MaxInt || cost < MinInt);
+                isCorrect = isCorrect && child is <= MaxInt and >= MinInt;
+                isCorrect = isCorrect && cost is <= MaxInt and >= MinInt;
                 if (!isCorrect) Console.Write("Bad input! Try again: ");
             } while (!isCorrect);
         }
 
         private static void InputFromConsole()
         {
+            int exitCode = Continue;
             Console.Clear();
             do {
                 switch (ExistPoints.Count) {
                     case MaxKnots: Console.WriteLine("You write maximum count of knots!"); return;
                     case 0: Console.WriteLine("It is your first knot, write only kid."); break;
-                    case 1: Console.WriteLine("Write kid and after write cost of new branch."); break;
+                    case 1: Console.WriteLine("\nWrite 'exit' for stop writing.\nWrite kid and after write cost of new branch."); break;
                 }
                 Console.Write("Input: ");
-                InputBranch(out int child, out int cost);
-                InsertNewBranch(child,cost);
-            } while (IsWriterWantContinue());
+                InputBranch(out int child, out int cost, ref exitCode);
+                InsertNewBranch(child, cost, exitCode);
+            } while (exitCode == 0);
         }
 
         private static void OutputTextAboutIoSelection(string ioTextInfo)
