@@ -6,7 +6,6 @@
         public int RCost;
         public Node? Left;
         public Node? Right;
-
         public Node(int data, Node? parent) {
             Data = data;
             Parent = parent;
@@ -16,18 +15,14 @@
             Right = null;
         }
     }
-
-    enum WriteMenu {
+    internal enum WriteMenu {
         Exit = 1,
         Continue
     }
-    enum IoChoose
-    {
+    internal enum IoChoose {
         File = 1,
         Console
     }
-
-
     public static class Program {
         private const int FileValue = (int)IoChoose.File;
         private const int ConsoleValue = (int)IoChoose.Console;
@@ -41,61 +36,47 @@
         private const int MinFileWaySize = 4;
         private static int _longWayCost;
         private static readonly HashSet<int> ExistPoints = new HashSet<int>();
-        private static void PrintTree(Node? node, ref string outputString, string prefix = "", bool isLeft = false)
-        {
+        private static void PrintTree(Node? node, ref string outputString, string prefix = "", bool isLeft = false) {
             if (node == null) return;
             outputString += prefix + (isLeft ? "├── " : "└── ") + node.Data + '\n';
             PrintTree(node.Left, ref outputString, prefix + (isLeft ? "│   " : "    "), true);
             PrintTree(node.Right, ref outputString, prefix + (isLeft ? "│   " : "    "));
         }
-
-        private static bool IsProcessOfFileOutputCorrect(string filePath, string resultStr)
-        {
-            try
-            {
+        private static bool IsProcessOfFileOutputCorrect(string filePath, string resultStr) {
+            try {
                 using (StreamWriter writerOutput = new StreamWriter(filePath))
                     writerOutput.WriteLine(resultStr);
 
                 Console.WriteLine("Data successfully written to file.");
                 return true;
             }
-            catch
-            {
+            catch {
                 Console.Error.WriteLine("Error in writing. Try again.");
                 return false;
             }
         }
-        static void OutputFormFile(string resultStr)
-        {
+        static void OutputFormFile(string resultStr) {
             Console.Clear();
             string filePath;
-
-            do
-            {
+            do {
                 Console.Write("Write way to your file (*.txt): ");
                 filePath = InputPathToTheFile("output");
             } while (!IsProcessOfFileOutputCorrect(filePath, resultStr));
         }
-
-        private static void OutputFromConsole(string resultStr)
-        {
-            Console.WriteLine();
+        private static void OutputFromConsole(string resultStr) {
             Console.WriteLine(resultStr);
         }
-        private static void OutputTree()
-        {
+        private static void OutputTree() {
             string resultStr = "Your result tree: \n";
             PrintTree(_root, ref resultStr);
             IoChoose path = ChooseIoWay("output");
-
             switch (path) {
                 case IoChoose.File: OutputFormFile(resultStr); break;
-                case IoChoose.Console: OutputFromConsole(resultStr); break;
+                default: OutputFromConsole(resultStr); break;
             }
         }
         private static void InsertNewBranch(int child, int cost, int exitCode) {
-            if (exitCode != Exit)
-                _root = InsertProcess(_root, _root, child, cost);
+            if (exitCode != Exit) _root = InsertProcess(_root, _root, child, cost);
         }
         private static Node InsertProcess(Node? root, Node? parent, int child, int cost) {
             if (root == null) {
@@ -103,18 +84,14 @@
                 root = new Node(child, parent);
                 return root;
             }
-
             if (root.Data > child) {
-                if (root.Left?.Data == null)
-                    root.LCost = cost;
+                if (root.Left?.Data == null) root.LCost = cost;
                 root.Left = InsertProcess(root.Left, root, child, cost);   
             }
             else {
-                if (root.Right?.Data == null) 
-                    root.RCost = cost;
+                if (root.Right?.Data == null) root.RCost = cost;
                 root.Right = InsertProcess(root.Right, root, child, cost);
             }
-
             return root;
         }
         private static void InputBranch(out int child, out int cost, ref int exitCode) {
@@ -133,7 +110,6 @@
                 catch {
                     isCorrect = false;
                 }
-
                 if (ExistPoints.Count != 0 && parameters is ["exit"]) { exitCode = Exit; return; } 
                 if (ExistPoints.Count != 0) isCorrect = isCorrect && !(parameters.Length > 2);
                 else isCorrect = isCorrect && !(parameters.Length > 1);
@@ -143,9 +119,7 @@
                 if (!isCorrect) Console.Write("Bad input! Try again: ");
             } while (!isCorrect);
         }
-
-        private static void InputFromConsole()
-        {
+        private static void InputFromConsole() {
             int exitCode = Continue;
             Console.Clear();
             do {
@@ -159,9 +133,7 @@
                 InsertNewBranch(child, cost, exitCode);
             } while (exitCode == 0);
         }
-
-        private static void OutputTextAboutIoSelection(string ioTextInfo)
-        {
+        private static void OutputTextAboutIoSelection(string ioTextInfo) {
             string outputString = $"""
             Select how you will {ioTextInfo} data:
                   {IoChoose.File}: {FileValue}    {IoChoose.Console}: {ConsoleValue}
@@ -174,113 +146,76 @@
         /// </summary>
         /// <param name="ioTextInfo"></param>
         /// <returns></returns>
-        private static IoChoose ChooseIoWay(string ioTextInfo)
-        {
+        private static IoChoose ChooseIoWay(string ioTextInfo) {
             OutputTextAboutIoSelection(ioTextInfo);
-
             IoChoose result = 0;
             int chosenPath = 0;
             bool isCorrect;
-
-            do
-            {
+            do {
                 isCorrect = true;
-                try
-                {
+                try {
                     chosenPath = Convert.ToInt32(Console.ReadLine());
                 }
-                catch
-                {
+                catch {
                     isCorrect = false;
                 }
-
-                switch (chosenPath)
-                {
+                switch (chosenPath) {
                     case FileValue: result = IoChoose.File; break;
                     case ConsoleValue: result = IoChoose.Console; break;
                     default: isCorrect = false; break;
                 }
-
                 if (!isCorrect) Console.Error.Write($"You should write one natural number({FileValue}|{ConsoleValue}): ");
                 else Console.WriteLine();
             } while (!isCorrect);
-
             return result;
         }
-
-        private static bool PathCondition(string filePath)
-        {
-            if (filePath.Length < MinFileWaySize)
-            {
+        private static bool PathCondition(string filePath) {
+            if (filePath.Length < MinFileWaySize) {
                 Console.Error.Write("The path is too short. Try again: ");
                 return false;
             }
-
             string buffer = filePath.Substring(filePath.Length - MinFileWaySize);
-            if (!buffer.Equals(".txt"))
-            {
-                Console.Error.Write("Write .txt file. Try again: ");
-                return false;
-            }
-
-            return true;
+            if (buffer.Equals(".txt")) return true;
+            Console.Error.Write("Write .txt file. Try again: ");
+            return false;
         }
-
-        private static string InputFilePath()
-        {
+        private static string InputFilePath() {
             string filePath = Console.ReadLine() ?? string.Empty;
-
-            while (!PathCondition(filePath))
-                filePath = Console.ReadLine() ?? string.Empty;
-
+            while (!PathCondition(filePath)) filePath = Console.ReadLine() ?? string.Empty;
             return filePath;
         }
-
-        private static bool IsCanOpenFile(string filePath)
-        {
+        private static bool IsCanOpenFile(string filePath) {
             FileInfo fileInfo = new FileInfo(filePath);
             return fileInfo.Exists;
         }
-
-        private static bool IsWriteable(string filePath)
-        {
-            try
-            {
+        private static bool IsWriteable(string filePath) {
+            try {
                 using StreamWriter writer = new StreamWriter(filePath);
                 writer.WriteLine(string.Empty);
                 writer.Close();
                 return true;
             }
-            catch
-            {
+            catch {
                 return false;
             }
         }
-
-        private static bool IsReadable(string filePath)
-        {
-            try
-            {
+        private static bool IsReadable(string filePath) {
+            try {
                 using StreamReader reader = new StreamReader(filePath);
                 reader.Read();
                 reader.Close();
                 return true;
             }
-            catch
-            {
+            catch {
                 return false;
             }
         }
-
-        private static bool AccessModifierControl(string accessModifier, string filePath)
-        {
+        private static bool AccessModifierControl(string accessModifier, string filePath) {
             bool resultModifier = true;
-
             switch (accessModifier) {
                 case "input": resultModifier = IsReadable(filePath); break;
                 case "output": resultModifier = IsWriteable(filePath); break;
             }
-
             return resultModifier;
         }
         /// <summary>
@@ -289,36 +224,26 @@
         /// </summary>
         /// <param name="accessModifier"></param>
         /// <returns></returns>
-        private static string InputPathToTheFile(string accessModifier)
-        {
+        private static string InputPathToTheFile(string accessModifier) {
             string filePath;
             bool isCorrect;
-            do
-            {
+            do {
                 filePath = InputFilePath();
                 isCorrect = AccessModifierControl(accessModifier, filePath) && IsCanOpenFile(filePath);
-
-                if (!isCorrect)
-                    Console.Error.Write("Can't open a file. Try write another way: ");
-
+                if (!isCorrect) Console.Error.Write("Can't open a file. Try write another way: ");
             } while (!isCorrect);
-
             return filePath;
         }
-        private static bool IsProcessOfFileInputCorrect(string filePath)
-        {
+        private static bool IsProcessOfFileInputCorrect(string filePath) {
             bool isCorrectInput = true;
-
             using StreamReader inputReader = new StreamReader(filePath);
             //ACount = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_INT_NUM, MAX_INT_NUM);
             isCorrectInput = isCorrectInput && inputReader.EndOfStream;
             if (!isCorrectInput) Console.Error.WriteLine("Error in reading. Try again.");
             inputReader.Close();
-            
             return isCorrectInput;
         }
-        static void InputFormFile()
-        {
+        private static void InputFormFile() {
             Console.Clear();
             string filePath;
             do {
@@ -328,17 +253,15 @@
         }
         private static void InputTree() {
             IoChoose path = ChooseIoWay("input");
-
             switch (path)
             {
-                case IoChoose.File: InputFormFile(); break;
                 case IoChoose.Console: InputFromConsole(); break;
+                case IoChoose.File: InputFormFile(); break;
             }
             Console.Clear();
         }
 
-        private static void SearchLongestWay(Node? root, int cost)
-        {
+        private static void SearchLongestWay(Node? root, int cost) {
             if (root == null) return;
             SearchLongestWay(root.Left, cost + root.LCost);
             if (cost > _longWayCost) {
@@ -349,9 +272,7 @@
         }
 
         private static void ToMirrorTree() {
-            while (_longestPoint?.Parent != null) 
-                _longestPoint = _longestPoint.Parent;
-            
+            while (_longestPoint?.Parent != null) _longestPoint = _longestPoint.Parent;
             Node? temp = _longestPoint?.Right;
             if (temp == null) return;
             _longestPoint!.Right = _longestPoint.Left;
