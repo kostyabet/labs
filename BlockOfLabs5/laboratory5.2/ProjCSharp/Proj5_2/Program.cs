@@ -42,7 +42,6 @@
             outputString += prefix + (isLeft ? "├── " : "└── ") + node.Data + '\n';
             PrintTree(node.Left, ref outputString, prefix + (isLeft ? "│   " : "    "), true);
             PrintTree(node.Right, ref outputString, prefix + (isLeft ? "│   " : "    "));
-                
         }
         private static bool IsProcessOfFileOutputCorrect(string filePath, string resultStr) {
             try {
