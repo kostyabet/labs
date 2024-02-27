@@ -42,6 +42,7 @@
             outputString += prefix + (isLeft ? "├── " : "└── ") + node.Data + '\n';
             PrintTree(node.Left, ref outputString, prefix + (isLeft ? "│   " : "    "), true);
             PrintTree(node.Right, ref outputString, prefix + (isLeft ? "│   " : "    "));
+                
         }
         private static bool IsProcessOfFileOutputCorrect(string filePath, string resultStr) {
             try {
@@ -132,7 +133,7 @@
                 Console.Write("Input: ");
                 InputBranch(out int child, out int cost, ref exitCode);
                 InsertNewBranch(child, cost, exitCode);
-            } while (exitCode == 0);
+            } while (exitCode == Continue);
         }
         private static void OutputTextAboutIoSelection(string ioTextInfo) {
             string outputString = $"""
