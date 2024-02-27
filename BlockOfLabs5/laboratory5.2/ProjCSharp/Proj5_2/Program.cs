@@ -33,6 +33,7 @@
         private const int MaxInt = +1_000_000;
         private const int MinInt = -1_000_000;
         private const int MaxKnots = 50;
+        private const int SpaceLimit = 4;
         private const int MinFileWaySize = 4;
         private static int _longWayCost;
         private static readonly HashSet<int> ExistPoints = new HashSet<int>();
@@ -75,7 +76,7 @@
                 default: OutputFromConsole(resultStr); break;
             }
         }
-        private static void InsertNewBranch(int child, int cost, int exitCode) {
+        private static void InsertNewBranch(int child, int cost, int exitCode = Continue) {
             if (exitCode != Exit) _root = InsertProcess(_root, _root, child, cost);
         }
         private static Node InsertProcess(Node? root, Node? parent, int child, int cost) {
@@ -234,10 +235,59 @@
             } while (!isCorrect);
             return filePath;
         }
+        private static int InputNumberFromFile(StreamReader inputReader, ref bool isCorrectInput, int minNum, int maxNum) {
+            int num = 0, minCount = 1, spaceCounter = 0, character;
+            bool endOfNum = false;
+            while (isCorrectInput && !(endOfNum) && (character = inputReader.Read()) != -1) {
+                int bufChar = character;
+                isCorrectInput = isCorrectInput && !((character != ' ') && !(character is > '/' and < ':') &&
+                                                     (character != '\n') && (character != '\r') && (character != '-'));
+                if (character == ' ') ++spaceCounter;
+                else spaceCounter = 0;
+                isCorrectInput = spaceCounter != SpaceLimit;
+                if (character is > '/' and < ':')
+                    num = num * 10 + character - 48;
+                if (character == '-') minCount = -1;
+                isCorrectInput = isCorrectInput && !((character == '-') && (minCount != -1));
+                endOfNum = (character == ' ' || character == '\n') && (bufChar > '/' || bufChar < ':');
+                isCorrectInput = isCorrectInput && !((num == 0) && character is > '/' and < ':');
+                isCorrectInput = isCorrectInput && !(num > maxNum);
+            }
+            isCorrectInput = isCorrectInput && (endOfNum || inputReader.EndOfStream);
+            isCorrectInput = isCorrectInput && !(num > maxNum || num < minNum);
+            if (isCorrectInput) num = minCount * num;
+            return num;
+        }
+        private static int[,] InputBranchesFromFile(StreamReader inputReader, ref bool isCorrectInput)
+        {
+            ExistPoints.Clear();
+            int[,] parameters = new int[MaxKnots,2];
+            parameters[0, 0] = InputNumberFromFile(inputReader, ref isCorrectInput, MinInt, MaxInt);
+            ExistPoints.Add(parameters[0, 0]);
+            parameters[0, 1] = 0;
+            int counter = 1;
+            while (!inputReader.EndOfStream && isCorrectInput) {
+                parameters[counter, 0] = InputNumberFromFile(inputReader, ref isCorrectInput, MinInt, MaxInt);
+                if (isCorrectInput) isCorrectInput = !ExistPoints.Contains(parameters[counter, 0]);
+                ExistPoints.Add(parameters[counter, 0]);
+                isCorrectInput = isCorrectInput && !inputReader.EndOfStream;
+                parameters[counter, 1] = InputNumberFromFile(inputReader, ref isCorrectInput, MinInt, MaxInt);
+                counter++;
+            }
+            int[,] resultArr = new int[counter, 2];
+            for (int j = 0; j < counter && isCorrectInput; ++j) {
+                resultArr[j, 0] = parameters[j, 0];
+                resultArr[j, 1] = parameters[j, 1];
+            }
+            ExistPoints.Clear();
+            return resultArr;
+        }
         private static bool IsProcessOfFileInputCorrect(string filePath) {
             bool isCorrectInput = true;
             using StreamReader inputReader = new StreamReader(filePath);
-            //ACount = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_INT_NUM, MAX_INT_NUM);
+            int[,] parameters = InputBranchesFromFile(inputReader, ref isCorrectInput);
+            for (int i = 0; i < parameters.Length / 2 && isCorrectInput; ++i)
+                InsertNewBranch(parameters[i,0], i == 0 ? 0 : parameters[i,1]);
             isCorrectInput = isCorrectInput && inputReader.EndOfStream;
             if (!isCorrectInput) Console.Error.WriteLine("Error in reading. Try again.");
             inputReader.Close();
