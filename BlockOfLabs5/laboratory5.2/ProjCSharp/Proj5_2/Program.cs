@@ -32,7 +32,7 @@
         private static Node? longestPoint = root;
         private const int MAX_INT = +1_000_000;
         private const int MIN_INT = -1_000_000;
-        private const int MAX_KNOTS = 50;
+        private const int MAX_KNOTS = 30;
         private const int SPACE_LIMITS = 4;
         private const int MIN_FILE_WAY_SIZE = 4;
         private static int longWayCost;
@@ -195,10 +195,9 @@
                 if (character == '-') minCount = -1;
                 isCorrectInput = isCorrectInput && !((character == '-') && (minCount != -1));
                 endOfNum = (character == ' ' || character == '\n') && (bufChar > '/' || bufChar < ':');
-                isCorrectInput = isCorrectInput && !((num == 0) && character is > '/' and < ':');
+                isCorrectInput = isCorrectInput && !((bufChar == 0) && character is > '/' and < ':');
                 isCorrectInput = isCorrectInput && !(num > maxNum);
             }
-            isCorrectInput = isCorrectInput && (endOfNum || inputReader.EndOfStream);
             isCorrectInput = isCorrectInput && !(num > maxNum || num < minNum);
             if (isCorrectInput) num = minCount * num;
             return num;

@@ -67,7 +67,8 @@ Type
         Procedure SaveClick(Sender: TObject);
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
         Procedure ExitClick(Sender: TObject);
-    procedure WatchTreeSpButtonClick(Sender: TObject);
+        Procedure WatchTreeSpButtonClick(Sender: TObject);
+        Procedure OpenClick(Sender: TObject);
     Private
         { Private declarations }
     Public
@@ -79,8 +80,13 @@ Var
     IfDataSavedInFile: Boolean = False;
 
 Const
-    NULL_POINT: Char = #08;
+    ZERO_KEY: Char = '0';
+    NULL_POINT: Char = #0;
     DELETE_KEY: Char = #127;
+    BACK_SPACE: Char = #08;
+    MINUS_KEY: Char = '-';
+    MIN_INT: Integer = -1_000_000;
+    MAX_INT: Integer = +1_000_000;
 
 Implementation
 
@@ -89,7 +95,8 @@ Implementation
 Uses
     FrontendUnit,
     BackendUnit,
-    BinaryTreeUnit, DrawUnit;
+    DrawUnit,
+    TreeUnit;
 
 Procedure TMainForm.AboutEditorClick(Sender: TObject);
 Begin
@@ -98,24 +105,29 @@ Begin
 End;
 
 Procedure TMainForm.AddSpButtonClick(Sender: TObject);
+Const
+    MAX_KNOTS: Integer = 30;
 Var
-    Cost, Kid: Integer;
+    Cost, Child: Integer;
 Begin
     Cost := 0;
-    If (ExistPoints.Count <> 0) Then
+    If (GetExistPointsCount() <> 0) Then
         Cost := StrToInt(BranchCostLEdit.Text);
-    Kid := StrToInt(NewTrickLEdit.Text);
-    If (ExistPoints.IndexOf(Kid) <> -1) Then
-        Application.Messagebox('Такой узел уже существует', 'Ошибка', MB_ICONERROR + MB_DEFBUTTON2)
+    Child := StrToInt(NewTrickLEdit.Text);
+    If (GetExistPoints(Child) <> -1) Then
+        Application.Messagebox('Такой узел уже существует!', 'Ошибка', MB_ICONERROR + MB_DEFBUTTON2)
     Else
-    Begin
-        InsertNewBranch(Kid, Cost);
-        BranchCostLEdit.Visible := True;
-        BranchCostLabel.Visible := True;
-        NewTrickLEdit.Text := '';
-        BranchCostLEdit.Text := '';
-        EndSpButton.Enabled := True;
-    End;
+        If (GetExistPointsCount = MAX_KNOTS) Then
+            Application.Messagebox('Вы достигли максимального количества узлов!', 'Ошибка', MB_ICONERROR + MB_DEFBUTTON2)
+        Else
+        Begin
+            InsertNewBranch(Child, Cost);
+            BranchCostLEdit.Visible := True;
+            BranchCostLabel.Visible := True;
+            NewTrickLEdit.Text := '';
+            BranchCostLEdit.Text := '';
+            EndSpButton.Enabled := True;
+        End;
 End;
 
 Procedure TMainForm.BranchCostLEditChange(Sender: TObject);
@@ -128,7 +140,7 @@ End;
 
 Procedure TMainForm.BranchCostLEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
 Begin
-    Handled := False;
+    Handled := True;
 End;
 
 Procedure TMainForm.BranchCostLEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
@@ -177,15 +189,9 @@ Begin
 End;
 
 Procedure TMainForm.EndSpButtonClick(Sender: TObject);
-var
-    OutputString: String;
 Begin
-    SearchLongestWay(BinaryTree, 0);
-    BinaryTree := Head;
-    //ToMirrorTree;
-    //PrintTree(BinaryTree, OutputString, '', false);
-    //BinaryTree := Head;
-    //TaskLabel.Caption := OutputString;
+    SearchLongestWay();
+    ToMirrorTree();
     BranchCostLEdit.Visible := False;
     BranchCostLabel.Visible := False;
     NewTrickLEdit.Visible := False;
@@ -219,6 +225,7 @@ Begin
 
         If ResultKey = ID_YES Then
             SaveClick(Sender);
+        FreeTree();
     End;
 End;
 
@@ -240,14 +247,14 @@ Begin
     Var
         OutputStr: String;
     Begin
-        OutputStr := 'Инструкция:' + #13#10'1. Добавить новый элемент можно нажав на кнопку ''Добавить элемент'';' +
-            #13#10'2. Удалить элемент можно выбрав его слева и нажав на' + #13#10'    кнопку ''Удалить элемент''.'#13#10 +
-            #13#10'Все элемент двусвяного списка выводятся в обратном порядке в' + #13#10'соответствии с условием задания.'#13#10 +
-            #13#10'Нажать DEL в таблице - удаление выбранного элемента;' + #13#10'Нажать INS в таблице - добавить новый элемент.'#13#10 +
-            #13#10'Вы можете выйти из формы нажам ESCape/DELete/Alt+F4.'#13#10 + #13#10'Вы можете открыть справку на F1.'#13#10 +
-            #13#10'Ctrl + O - Открыть файл;' + #13#10'Ctrl + S - Сохранить в файл.' + #13#10'Инструкция для файла:' +
-            #13#10'  - Файл формата .txt!!!' + #13#10'  - В файле должно быть записано только одно число.';
-        CreateModalForm('О разработчике', OutputStr, Screen.Width * 29 Div 100, Screen.Height * 43 Div 100);
+        OutputStr := 'Инструкция:' + #13#10 + '1. Изначально вы вводите, или через файл, или через консоль,'#13#10 +
+            '   узлы вашего дерева, а также вес ветки при этом узле.'#13#10 +
+            '2. Первый узел не может иметь вес как ветку, ибо нет другого значения.'#13#10 + '3. И цена и вес ограничены в диапазоне от ' +
+            IntToStr(MIN_INT) + ' до ' + IntToStr(MAX_INT) + '.'#13#10 +
+            '4. При вводе/выводе через файл использовать только расширение .txt!'#13#10#13#10 +
+            'По условию дерево отражается относительно самого длинного пути,'#13#10 +
+            'при графическом просмотре дерева узлы длинного пути выделены.';
+        CreateModalForm('Инструкция', OutputStr, Screen.Width * 29 Div 100, Screen.Height * 23 Div 100);
     End;
 End;
 
@@ -261,7 +268,7 @@ End;
 
 Procedure TMainForm.NewTrickLEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
 Begin
-    Handled := False;
+    Handled := True;
 End;
 
 Procedure TMainForm.NewTrickLEditKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
@@ -299,6 +306,23 @@ Begin
     Key := CheckInputKey(NewTrickLEdit, Key);
 End;
 
+Procedure TMainForm.OpenClick(Sender: TObject);
+Var
+    IsCorrect: Boolean;
+Begin
+    Repeat
+        If OpenDialog.Execute() Then
+        Begin
+            IsCorrect := IsReadable(OpenDialog.FileName);
+            ReadFromFile(IsCorrect, OpenDialog.FileName);
+            If Not IsCorrect Then
+                MessageBox(0, 'Невозможен ввод из файла!', 'Ошибка', MB_ICONERROR);
+        End
+        Else
+            IsCorrect := True;
+    Until IsCorrect;
+End;
+
 Procedure TMainForm.SaveClick(Sender: TObject);
 Var
     IsCorrect: Boolean;
@@ -316,10 +340,10 @@ Begin
     Until IsCorrect;
 End;
 
-procedure TMainForm.WatchTreeSpButtonClick(Sender: TObject);
-begin
+Procedure TMainForm.WatchTreeSpButtonClick(Sender: TObject);
+Begin
     DrawForm.ShowModal;
-end;
+End;
 
 Procedure TLabeledEdit.WMPaste(Var Msg: TMessage);
 Begin

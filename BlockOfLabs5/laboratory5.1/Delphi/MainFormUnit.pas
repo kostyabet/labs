@@ -61,7 +61,7 @@ Type
 Var
     MainForm: TMainForm;
     IfDataSavedInFile: Boolean = False;
-    
+
 Implementation
 
 {$R *.dfm}
@@ -131,7 +131,7 @@ Begin
         #13#10'Вы можете выйти из формы нажам ESCape/DELete/Alt+F4.'#13#10 + #13#10'Вы можете открыть справку на F1.'#13#10 +
         #13#10'Ctrl + O - Открыть файл;' + #13#10'Ctrl + S - Сохранить в файл.' + #13#10'Инструкция для файла:' +
         #13#10'  - Файл формата .txt!!!' + #13#10'  - В файле должно быть записано только одно число.';
-    CreateModalForm('О разработчике', OutputStr, Screen.Width * 29 Div 100, Screen.Height * 43 Div 100);
+    CreateModalForm('Инструкция', OutputStr, Screen.Width * 29 Div 100, Screen.Height * 43 Div 100);
 End;
 
 Procedure TMainForm.LinkedListStrGridKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);

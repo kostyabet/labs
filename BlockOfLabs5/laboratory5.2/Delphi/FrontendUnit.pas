@@ -20,7 +20,7 @@ Uses
     Vcl.ExtCtrls,
     Vcl.Buttons;
 
-Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);    
+Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
 Function IsCorrectClipboard(ClipbrdText: String; NumLabEd: Vcl.ExtCtrls.TLabeledEdit): Boolean;
 Function CheckInput(Text: String): Boolean;
 Function CheckInputKey(LEdit: Vcl.ExtCtrls.TLabeledEdit; Key: Char): Char;
@@ -29,16 +29,8 @@ Function IsCorrectSelDelete(Key: Char; CurentText, SelText: String; SelStart: In
 
 Implementation
 
-uses MainFormUnit;
-
-Const
-    ZERO_KEY: Char = '0';
-    NULL_POINT: Char = #0;
-    DELETE_KEY: Char = #127;
-    BACK_SPACE: Char = #08;
-    MINUS_KEY: Char = '-';
-    MAX_INT: Integer = +1_000_000;
-    MIN_INT: Integer = -1_000_000;
+Uses
+    MainFormUnit;
 
 Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
 Const

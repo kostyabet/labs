@@ -4,10 +4,10 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1041#1077#1090#1077#1085#1103' '#1050'. '#1057'. 351005 '#1083#1072#1073'. 5.2'
-  ClientHeight = 221
+  ClientHeight = 238
   ClientWidth = 467
   Color = clBtnFace
-  Constraints.MaxHeight = 293
+  Constraints.MaxHeight = 310
   Constraints.MaxWidth = 485
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -2138,7 +2138,7 @@ object MainForm: TMainForm
   object TaskLabel: TLabel
     Left = 8
     Top = 8
-    Width = 453
+    Width = 438
     Height = 60
     Caption = 
       #1044#1072#1085#1085#1072#1103' '#1087#1088#1086#1075#1088#1072#1084#1084#1072' '#1089#1090#1088#1086#1080#1090' '#1073#1080#1085#1072#1088#1085#1086#1077' '#1076#1077#1088#1077#1074#1086' '#1087#1086' '#1074#1074#1077#1076#1105#1085#1085#1099#1084' '#1087#1086#1083#1100#1079#1086#1074#1072#1090#1077#1083 +
@@ -2167,7 +2167,7 @@ object MainForm: TMainForm
   object WatchTreeSpButton: TSpeedButton
     Tag = 5
     Left = 8
-    Top = 177
+    Top = 191
     Width = 453
     Height = 34
     Caption = #1055#1088#1086#1089#1084#1086#1090#1088#1077#1090#1100' '#1076#1077#1088#1077#1074#1086
@@ -2178,7 +2178,7 @@ object MainForm: TMainForm
   end
   object NewTrickLabel: TLabel
     Left = 8
-    Top = 122
+    Top = 130
     Width = 112
     Height = 15
     Caption = #1042#1074#1077#1076#1080#1090#1077' '#1085#1086#1074#1099#1081' '#1091#1079#1077#1083':'
@@ -2186,7 +2186,7 @@ object MainForm: TMainForm
   end
   object BranchCostLabel: TLabel
     Left = 8
-    Top = 151
+    Top = 159
     Width = 108
     Height = 15
     Caption = #1042#1074#1077#1076#1080#1090#1077' '#1094#1077#1085#1091' '#1074#1077#1090#1082#1080':'
@@ -2195,7 +2195,7 @@ object MainForm: TMainForm
   object EndSpButton: TSpeedButton
     Tag = 4
     Left = 280
-    Top = 148
+    Top = 156
     Width = 181
     Height = 23
     Caption = #1047#1072#1074#1077#1088#1096#1080#1090#1100
@@ -2209,7 +2209,7 @@ object MainForm: TMainForm
   object AddSpButton: TSpeedButton
     Tag = 3
     Left = 280
-    Top = 119
+    Top = 127
     Width = 181
     Height = 23
     Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1074#1077#1090#1082#1091
@@ -2223,7 +2223,7 @@ object MainForm: TMainForm
   object NewTrickLEdit: TLabeledEdit
     Tag = 1
     Left = 126
-    Top = 119
+    Top = 127
     Width = 148
     Height = 23
     EditLabel.Width = 74
@@ -2241,7 +2241,7 @@ object MainForm: TMainForm
   object BranchCostLEdit: TLabeledEdit
     Tag = 2
     Left = 126
-    Top = 148
+    Top = 156
     Width = 148
     Height = 23
     EditLabel.Width = 67
@@ -2268,6 +2268,7 @@ object MainForm: TMainForm
         Enabled = False
         ImageIndex = 3
         ShortCut = 16463
+        OnClick = OpenClick
       end
       object Save: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
@@ -2849,10 +2850,13 @@ object MainForm: TMainForm
       000000000000}
   end
   object OpenDialog: TOpenDialog
+    Filter = '*.txt|*.txt'
+    Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
     Left = 104
     Top = 8
   end
   object SaveDialog: TSaveDialog
+    Filter = '*.txt|*.txt'
     Left = 136
     Top = 8
   end

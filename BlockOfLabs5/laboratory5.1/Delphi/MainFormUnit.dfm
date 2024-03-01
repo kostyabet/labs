@@ -4,8 +4,8 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1041#1077#1090#1077#1085#1103' '#1050'. '#1057'. 351005 '#1083#1072#1073'. 5.1'
-  ClientHeight = 410
-  ClientWidth = 297
+  ClientHeight = 398
+  ClientWidth = 293
   Color = clBtnFace
   Constraints.MaxHeight = 470
   Constraints.MaxWidth = 311
@@ -2140,10 +2140,9 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 81
-    Height = 410
+    Height = 398
     Align = alLeft
     TabOrder = 0
-    ExplicitHeight = 386
     object AddButton: TSpeedButton
       Left = 0
       Top = 0
@@ -5067,10 +5066,13 @@ object MainForm: TMainForm
       000000000000}
   end
   object OpenDialog: TOpenDialog
+    Filter = '*.txt | *.txt'
+    Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
     Left = 96
     Top = 312
   end
   object SaveDialog: TSaveDialog
+    Filter = '*.txt|*.txt'
     Left = 96
     Top = 48
   end

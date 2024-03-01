@@ -1,25 +1,9 @@
-﻿Unit BinaryTreeUnit;
-
-Interface
+﻿Library Tree;
 
 Uses
-    Winapi.Windows,
-    Winapi.Messages,
     System.SysUtils,
-    System.Variants,
-    System.Classes,
     Vcl.Graphics,
-    Vcl.Controls,
-    Vcl.Forms,
-    Vcl.Dialogs,
-    Vcl.Menus,
-    System.ImageList,
-    Vcl.ImgList,
-    Vcl.StdCtrls,
-    Vcl.Mask,
     Vcl.ExtCtrls,
-    Vcl.Buttons,
-    Clipbrd,
     System.Generics.Collections;
 
 Type
@@ -42,24 +26,22 @@ Var
     LongestPoint: Node;
 
 Procedure CreateTree();
-Procedure InsertNewBranch(Child, Cost: Integer);
-Procedure SearchLongestWay();
-Procedure ToMirrorTree();
-Procedure PrintDrawTree(PBox: TPaintBox);
-Function PrintConsoleTree(): String;
-
-Implementation
-
-Uses
-    MainFormUnit,
-    FrontendUnit,
-    BackendUnit;
-
-Procedure CreateTree();
+Const
+    MIN_INT_VALUE: Integer = -4_000_000;
 Begin
     ExistPoints := TList<Integer>.Create;
-    LongWayCost := MIN_INT;
+    LongWayCost := MIN_INT_VALUE;
     LongestPoint := Nil;
+End;
+
+Function GetExistPointsCount(): Integer;
+Begin
+    GetExistPointsCount := ExistPoints.Count;
+End;
+
+Function GetExistPoints(Value: Integer): Integer;
+Begin
+    GetExistPoints := ExistPoints.IndexOf(Value);
 End;
 
 Function InsertProcess(Root, Parent: Node; Child, Cost: Integer): Node;
@@ -125,7 +107,7 @@ Var
     Temp, LHead: Node;
 Begin
     LHead := LongestPoint;
-    While LongestPoint.Parent <> Nil Do
+    While LongestPoint <> Nil Do
     Begin
         Temp := LongestPoint.Right;
         LongestPoint.Right := LongestPoint.Left;
@@ -139,24 +121,23 @@ Procedure ConsoleTree(Node: Node; Var OutputString: String; Prefix: String; IsLe
 Var
     TreeEl: String;
 Begin
-    If (Node <> Nil) Then
-    Begin
-        If IsLeft Then
-            TreeEl := '├── '
-        Else
-            TreeEl := '└── ';
-        OutputString := OutputString + Prefix + TreeEl + IntToStr(Node.Data) + #13#10;
-        If IsLeft Then
-            TreeEl := '│   '
-        Else
-            TreeEl := '    ';
-        ConsoleTree(Node.Left, OutputString, Prefix + TreeEl, True);
-        If IsLeft Then
-            TreeEl := '│   '
-        Else
-            TreeEl := '    ';
-        ConsoleTree(Node.Right, OutputString, Prefix + TreeEl, False);
-    End;
+    If (Node = Nil) Then
+        Exit;
+    If IsLeft Then
+        TreeEl := '├── '
+    Else
+        TreeEl := '└── ';
+    OutputString := OutputString + Prefix + TreeEl + IntToStr(Node.Data) + #13#10;
+    If IsLeft Then
+        TreeEl := '│   '
+    Else
+        TreeEl := '    ';
+    ConsoleTree(Node.Left, OutputString, Prefix + TreeEl, True);
+    If IsLeft Then
+        TreeEl := '│   '
+    Else
+        TreeEl := '    ';
+    ConsoleTree(Node.Right, OutputString, Prefix + TreeEl, False);
 End;
 
 Function PrintConsoleTree(): String;
@@ -164,65 +145,93 @@ Var
     ResultStr: String;
 Begin
     ResultStr := '';
+    BinaryTree := Head;
     ConsoleTree(BinaryTree, ResultStr, '', False);
+    BinaryTree := Head;
     PrintConsoleTree := ResultStr;
 End;
 
-Procedure DrawBinaryTree(Root: Node; X, Y, XOffset: Integer; PBox: TPaintBox);
+Function CheckCurentElipsColor(Root: Node): TColor;
 Const
-    NodeRadius: Integer = 25;
-    MyColor: TColor = $00FFC8B0;
+    CustomColor: TColor = $00FFC8B0;
 Var
     LHead: Node;
+    ResColor: TColor;
+Begin
+    LHead := LongestPoint;
+    ResColor := ClWhite;
+    While (LongestPoint <> Nil) Do
+    Begin
+        If (LongestPoint.Data = Root.Data) Then
+            ResColor := CustomColor;
+        LongestPoint := LongestPoint.Parent;
+    End;
+    LongestPoint := LHead;
+
+    CheckCurentElipsColor := ResColor;
+    LHead := Nil;
+End;
+
+Procedure PrintDrawTree(Root: Node; PBox: TPaintBox; X, Y, XOffset: Integer);
 Begin
     If Root = Nil Then
         Exit;
     PBox.Canvas.Font.Size := 7;
-    LHead := LongestPoint;
-    PBox.Canvas.Brush.Color := ClWhite;
-    While (LongestPoint.Parent <> Nil) Do
-    Begin
-        If (LongestPoint.Data = Root.Data) Then
-            PBox.Canvas.Brush.Color := MyColor;
-        LongestPoint := LongestPoint.Parent;
-    End;
-    If (LongestPoint.Data = Root.Data) Then
-        PBox.Canvas.Brush.Color := MyColor;
-    LongestPoint := LHead;
+    PBox.Canvas.Brush.Color := CheckCurentElipsColor(Root);
     If Root.Left <> Nil Then
     Begin
         PBox.Canvas.MoveTo(X, Y);
         PBox.Canvas.LineTo(X - XOffset, Y + 100);
+        PrintDrawTree(Root.Left, PBox, X - XOffset, Y + 100, XOffset Div 2);
     End;
-    DrawBinaryTree(Root.Left, X - XOffset, Y + 100, XOffset Div 2, PBox);
-    LHead := LongestPoint;
-    PBox.Canvas.Brush.Color := ClWhite;
-    While (LongestPoint.Parent <> Nil) Do
-    Begin
-        If (LongestPoint.Data = Root.Data) Then
-            PBox.Canvas.Brush.Color := MyColor;
-        LongestPoint := LongestPoint.Parent;
-    End;
-    If (LongestPoint.Data = Root.Data) Then
-        PBox.Canvas.Brush.Color := MyColor;
-    LongestPoint := LHead;
+    PBox.Canvas.Brush.Color := CheckCurentElipsColor(Root);
     If Root.Right <> Nil Then
     Begin
         PBox.Canvas.MoveTo(X, Y);
         PBox.Canvas.LineTo(X + XOffset, Y + 100);
+        PrintDrawTree(Root.Right, PBox, X + XOffset, Y + 100, XOffset Div 2);
     End;
-    PBox.Canvas.Ellipse(X - NodeRadius, Y - NodeRadius, X + NodeRadius, Y + NodeRadius);
+    PBox.Canvas.Ellipse(X - 25, Y - 25, X + 25, Y + 25);
     PBox.Canvas.TextOut(X - 17, Y - 7, IntToStr(Root.Data));
-    DrawBinaryTree(Root.Right, X + XOffset, Y + 100, XOffset Div 2, PBox);
 End;
 
-Procedure PrintDrawTree(PBox: TPaintBox);
-Var
-    StartX, StartY: Integer;
+Procedure ClearTreeMemory(Root: Node);
 Begin
-    StartX := PBox.Width Div 2;
-    StartY := 30;
-    DrawBinaryTree(BinaryTree, StartX, StartY, PBox.Width Div 4, PBox);
+    If Root = Nil Then
+        Exit;
+    ClearTreeMemory(Root.Left);
+    ClearTreeMemory(Root.Right);
+    Dispose(Root);
 End;
+
+Procedure FreeTree();
+Begin
+    BinaryTree := Head;
+    ClearTreeMemory(BinaryTree);
+    Head := Nil;
+    LongestPoint := Nil;
+End;
+
+Procedure DrawTree(PaintBox: TPaintBox);
+Begin
+    PrintDrawTree(Head, PaintBox, PaintBox.Width Div 2, 30, PaintBox.Width Div 4);
+    BinaryTree := Head;
+End;
+
+Exports
+    CreateTree,
+    GetExistPointsCount,
+    GetExistPoints,
+    PrintDrawTree,
+    InsertNewBranch,
+    SearchLongestWay,
+    ToMirrorTree,
+    PrintConsoleTree,
+    DrawTree,
+    FreeTree;
+
+{$R *.res}
+
+Begin
 
 End.

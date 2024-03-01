@@ -1,22 +1,23 @@
-program Project5_2;
+Program Project5_2;
 
-uses
-  Vcl.Forms,
-  MainFormUnit in 'MainFormUnit.pas' {MainForm},
-  FrontendUnit in 'FrontendUnit.pas',
-  BackendUnit in 'BackendUnit.pas',
-  BinaryTreeUnit in 'BinaryTreeUnit.pas',
-  Vcl.Themes,
-  Vcl.Styles,
-  DrawUnit in 'DrawUnit.pas' {DrawForm};
+Uses
+    Vcl.Forms,
+    MainFormUnit In 'MainFormUnit.pas' {MainForm} ,
+    FrontendUnit In 'FrontendUnit.pas',
+    BackendUnit In 'BackendUnit.pas',
+    Vcl.Themes,
+    Vcl.Styles,
+    DrawUnit In 'DrawUnit.pas' {DrawForm} ,
+    TreeUnit In 'TreeUnit.pas';
 
 {$R *.res}
 
-begin
-  Application.Initialize;
-  Application.MainFormOnTaskbar := True;
-  TStyleManager.TrySetStyle('Silver');
+Begin
+    Application.Initialize;
+    Application.MainFormOnTaskbar := True;
+    TStyleManager.TrySetStyle('Silver');
   Application.CreateForm(TMainForm, MainForm);
-  Application.CreateForm(TDrawForm, DrawForm);
-  Application.Run;
-end.
+    Application.CreateForm(TDrawForm, DrawForm);
+    Application.Run;
+
+End.
