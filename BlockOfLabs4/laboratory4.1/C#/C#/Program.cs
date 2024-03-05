@@ -474,8 +474,7 @@ namespace Proj4_1 {
             }
         }
         static void importRecordsFromFile() {
-            if (!File.Exists(MainFilePath)) using (FileStream fs = File.Create(MainFilePath));
-
+            if (!File.Exists(MainFilePath)) using (FileStream fs = File.Create(MainFilePath))
             using (BinaryReader reader = new BinaryReader(File.Open(MainFilePath, FileMode.Open)))
             using (BinaryWriter writer = new BinaryWriter(File.Open(CorrectionFilePath, FileMode.OpenOrCreate))) {
                 TFootballRecord temp = new TFootballRecord(string.Empty, string.Empty, string.Empty, 0);
