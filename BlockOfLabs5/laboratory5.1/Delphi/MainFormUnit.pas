@@ -28,7 +28,7 @@ Type
         AboutEditorMM: TMenuItem;
         Line: TMenuItem;
         ExitMM: TMenuItem;
-        AddButton: TSpeedButton;
+        AddTailButton: TSpeedButton;
         DeleteButton: TSpeedButton;
         NavPanel: TPanel;
         SpButImgList: TImageList;
@@ -39,7 +39,8 @@ Type
         SaveButton: TMenuItem;
         OpenDialog: TOpenDialog;
         SaveDialog: TSaveDialog;
-        Procedure AddButtonClick(Sender: TObject);
+        AddHeadButton: TSpeedButton;
+        Procedure AddTailButtonClick(Sender: TObject);
         Procedure AboutEditorMMClick(Sender: TObject);
         Procedure FormCreate(Sender: TObject);
         Procedure ExitButtonClick(Sender: TObject);
@@ -52,6 +53,7 @@ Type
         Procedure SaveButtonClick(Sender: TObject);
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
         Procedure OpenButtonClick(Sender: TObject);
+        Procedure AddHeadButtonClick(Sender: TObject);
     Private
         Procedure WMGetMinMaxInfo(Var Msg: TWMGetMinMaxInfo);
     Public
@@ -61,6 +63,7 @@ Type
 Var
     MainForm: TMainForm;
     IfDataSavedInFile: Boolean = False;
+    AddInTail: Boolean;
 
 Implementation
 
@@ -70,9 +73,8 @@ Uses
     AddValueUnit,
     FrontendUnit;
 
-Procedure InsertInList(Value: Integer); Stdcall; External 'DoubleLinkedList.dll';
-Procedure DeleteFromList(Num: Integer); Stdcall; External 'DoubleLinkedList.dll';
-Procedure PrintList(Var LinkedListStrGrid: TStringGrid); Stdcall; External 'DoubleLinkedList.dll';
+Procedure DeleteFromList(Num: Integer); External 'DoubleLinkedList.dll';
+Procedure PrintList(Var LinkedListStrGrid: TStringGrid); External 'DoubleLinkedList.dll';
 
 Procedure TMainForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
 Var
@@ -96,7 +98,8 @@ End;
 
 Procedure TMainForm.FormCreate(Sender: TObject);
 Begin
-    AddButton.Caption := 'Добавить'#13#10'элемент';
+    AddTailButton.Caption := 'Добавить'#13#10'в конец';
+    AddHeadButton.Caption := 'Добавить'#13#10'в начало';
     DeleteButton.Caption := 'Удалить'#13#10'элемент';
     LinkedListStrGrid.Cells[0, 0] := '№';
     LinkedListStrGrid.Cells[1, 0] := 'Значение';
@@ -114,7 +117,7 @@ End;
 Procedure TMainForm.FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
 Begin
     If (Key = VK_INSERT) Then
-        AddButton.Click;
+        AddTailButton.Click;
 
     If (Key = VK_ESCAPE) Then
         MainForm.Close;
@@ -137,7 +140,7 @@ End;
 Procedure TMainForm.LinkedListStrGridKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
 Begin
     If (Key = VK_INSERT) Then
-        AddButton.Click;
+        AddTailButton.Click;
 
     If (Key = VK_DELETE) Then
         DeleteButton.Click;
@@ -186,9 +189,17 @@ Begin
     Until IsCorrect;
 End;
 
-Procedure TMainForm.AddButtonClick(Sender: TObject);
+Procedure TMainForm.AddHeadButtonClick(Sender: TObject);
 Begin
     Application.CreateForm(TAddValueForm, AddValueForm);
+    AddInTail := False;
+    AddValueForm.ShowModal;
+End;
+
+Procedure TMainForm.AddTailButtonClick(Sender: TObject);
+Begin
+    Application.CreateForm(TAddValueForm, AddValueForm);
+    AddInTail := True;
     AddValueForm.ShowModal;
 End;
 

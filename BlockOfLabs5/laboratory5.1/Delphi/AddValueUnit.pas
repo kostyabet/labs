@@ -62,9 +62,10 @@ Uses
     MainFormUnit,
     FrontendUnit;
 
-Procedure InsertInList(Value: Integer); Stdcall; External 'DoubleLinkedList.dll';
-Procedure DeleteFromList(Num: Integer); Stdcall; External 'DoubleLinkedList.dll';
-Procedure PrintList(Var LinkedListStrGrid: TStringGrid); Stdcall; External 'DoubleLinkedList.dll';
+Procedure InsertInTail(Value: Integer); External 'DoubleLinkedList.dll';
+Procedure InsertInHead(Value: Integer); External 'DoubleLinkedList.dll';
+Procedure DeleteFromList(Num: Integer); External 'DoubleLinkedList.dll';
+Procedure PrintList(Var LinkedListStrGrid: TStringGrid); External 'DoubleLinkedList.dll';
 
 Procedure TAddValueForm.FormCreate(Sender: TObject);
 Begin
@@ -83,7 +84,10 @@ End;
 Procedure TAddValueForm.ResultButtonClick(Sender: TObject);
 Begin
     MainForm.LinkedListStrGrid.RowCount := MainForm.LinkedListStrGrid.RowCount + 1;
-    InsertInList(StrToInt(ValueLabEdit.Text));
+    If (AddInTail) Then
+        InsertInTail(StrToInt(ValueLabEdit.Text))
+    Else
+        InsertInHead(StrToInt(ValueLabEdit.Text));
     ClearStringGrid;
     PrintList(MainForm.LinkedListStrGrid);
     MainForm.LinkedListStrGrid.FixedRows := 1;

@@ -46,6 +46,9 @@ Var
 
 Implementation
 
+Uses
+    DrawUnit;
+
 Procedure CreateTree();
 Const
     MIN_INT_VALUE: Integer = -4_000_000;
@@ -204,9 +207,12 @@ Begin
         PBox.Canvas.MoveTo(X, Y);
         PBox.Canvas.LineTo(X - XOffset, Y + 100);
         If (XOffset < 25) Then
+        Begin
+            DrawForm.TreePBox.Align := AlNone;
             PrintDrawTree(Root.Left, PBox, X - XOffset, Y + 100, 0)
-        else
-            PrintDrawTree(Root.Left, PBox, X - XOffset, Y + 100, XOffset div 2)
+        End
+        Else
+            PrintDrawTree(Root.Left, PBox, X - XOffset, Y + 100, XOffset Div 2)
     End;
     PBox.Canvas.Brush.Color := CheckCurentElipsColor(Root);
     If Root.Right <> Nil Then
@@ -214,8 +220,11 @@ Begin
         PBox.Canvas.MoveTo(X, Y);
         PBox.Canvas.LineTo(X + XOffset, Y + 100);
         If (XOffset < 25) Then
+        Begin
+            DrawForm.TreePBox.Align := AlNone;
             PrintDrawTree(Root.Right, PBox, X + XOffset, Y + 100, 0)
-        else
+        End
+        Else
             PrintDrawTree(Root.Right, PBox, X + XOffset, Y + 100, XOffset Div 2)
     End;
     PBox.Canvas.Ellipse(X - 25, Y - 25, X + 25, Y + 25);

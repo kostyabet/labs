@@ -4,8 +4,8 @@ object DrawForm: TDrawForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #1041#1080#1085#1072#1088#1085#1086#1077' '#1076#1077#1088#1077#1074#1086
-  ClientHeight = 468
-  ClientWidth = 785
+  ClientHeight = 573
+  ClientWidth = 989
   Color = clBtnFace
   Constraints.MaxHeight = 1080
   Constraints.MaxWidth = 1920
@@ -2134,16 +2134,19 @@ object DrawForm: TDrawForm
   object TreeScrlB: TScrollBox
     Left = 0
     Top = 0
-    Width = 785
-    Height = 468
+    Width = 989
+    Height = 573
     Align = alClient
     TabOrder = 0
     object TreePBox: TPaintBox
       Left = 0
       Top = 0
-      Width = 5000
-      Height = 2700
+      Width = 985
+      Height = 569
+      Align = alClient
       OnPaint = TreePBoxPaint
+      ExplicitWidth = 1000
+      ExplicitHeight = 2700
     end
   end
 end

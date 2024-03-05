@@ -4,10 +4,10 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1041#1077#1090#1077#1085#1103' '#1050'. '#1057'. 351005 '#1083#1072#1073'. 5.2'
-  ClientHeight = 238
-  ClientWidth = 467
+  ClientHeight = 275
+  ClientWidth = 471
   Color = clBtnFace
-  Constraints.MaxHeight = 310
+  Constraints.MaxHeight = 335
   Constraints.MaxWidth = 485
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -2219,6 +2219,18 @@ object MainForm: TMainForm
     Layout = blGlyphRight
     Visible = False
     OnClick = AddSpButtonClick
+  end
+  object ToMirrorTreeButton: TSpeedButton
+    Tag = 5
+    Left = 8
+    Top = 231
+    Width = 453
+    Height = 34
+    Caption = #1054#1090#1088#1072#1079#1080#1090#1100' '#1076#1077#1088#1077#1074#1086
+    ImageIndex = 3
+    Images = MBImgList
+    Enabled = False
+    OnClick = ToMirrorTreeButtonClick
   end
   object NewTrickLEdit: TLabeledEdit
     Tag = 1

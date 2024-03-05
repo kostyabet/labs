@@ -17,7 +17,7 @@ Var
     Tail: PNode = Nil;
     Head: PNode = Nil;
 
-Procedure InsertInList(Value: Integer);
+Procedure InsertInTail(Value: Integer);
 Var
     NewNode: PNode;
 Begin
@@ -30,6 +30,19 @@ Begin
     Else
         Tail^.Next := NewNode;
     Tail := NewNode;
+End;
+
+Procedure InsertInHead(Value: Integer);
+Var
+    NewNode: PNode;
+Begin
+    New(NewNode);
+    NewNode.Data := Value;
+    NewNode.Prev := Nil;
+    NewNode.Next := Head;
+    If (Head <> Nil) Then
+        Head.Prev := NewNode;
+    Head := NewNode;
 End;
 
 Procedure DeleteFromList(Num: Integer);
@@ -81,7 +94,8 @@ Begin
 End;
 
 Exports
-    InsertInList,
+    InsertInTail,
+    InsertInHead,
     DeleteFromList,
     PrintList;
 

@@ -49,6 +49,7 @@ Type
         AddSpButton: TSpeedButton;
         OpenDialog: TOpenDialog;
         SaveDialog: TSaveDialog;
+        ToMirrorTreeButton: TSpeedButton;
         Procedure FormCreate(Sender: TObject);
         Procedure CreateTreeSpButtonClick(Sender: TObject);
         Procedure NewTrickLEditContextPopup(Sender: TObject; MousePos: TPoint; Var Handled: Boolean);
@@ -69,6 +70,7 @@ Type
         Procedure ExitClick(Sender: TObject);
         Procedure WatchTreeSpButtonClick(Sender: TObject);
         Procedure OpenClick(Sender: TObject);
+        Procedure ToMirrorTreeButtonClick(Sender: TObject);
     Private
         { Private declarations }
     Public
@@ -191,7 +193,6 @@ End;
 Procedure TMainForm.EndSpButtonClick(Sender: TObject);
 Begin
     SearchLongestWay();
-    ToMirrorTree();
     BranchCostLEdit.Visible := False;
     BranchCostLabel.Visible := False;
     NewTrickLEdit.Visible := False;
@@ -201,6 +202,7 @@ Begin
     Save.Enabled := True;
     EndSpButton.Visible := False;
     WatchTreeSpButton.Enabled := True;
+    ToMirrorTreeButton.Enabled := True;
 End;
 
 Procedure TMainForm.ExitClick(Sender: TObject);
@@ -338,6 +340,12 @@ Begin
         Else
             IsCorrect := True;
     Until IsCorrect;
+End;
+
+Procedure TMainForm.ToMirrorTreeButtonClick(Sender: TObject);
+Begin
+    ToMirrorTree();
+    ToMirrorTreeButton.Enabled := False;
 End;
 
 Procedure TMainForm.WatchTreeSpButtonClick(Sender: TObject);

@@ -4,10 +4,10 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1041#1077#1090#1077#1085#1103' '#1050'. '#1057'. 351005 '#1083#1072#1073'. 5.1'
-  ClientHeight = 398
-  ClientWidth = 293
+  ClientHeight = 547
+  ClientWidth = 297
   Color = clBtnFace
-  Constraints.MaxHeight = 470
+  Constraints.MaxHeight = 607
   Constraints.MaxWidth = 311
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -2140,10 +2140,11 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 81
-    Height = 398
+    Height = 547
     Align = alLeft
     TabOrder = 0
-    object AddButton: TSpeedButton
+    ExplicitHeight = 386
+    object AddTailButton: TSpeedButton
       Left = 0
       Top = 0
       Width = 81
@@ -2155,11 +2156,11 @@ object MainForm: TMainForm
       Layout = blGlyphTop
       ParentShowHint = False
       ShowHint = True
-      OnClick = AddButtonClick
+      OnClick = AddTailButtonClick
     end
     object DeleteButton: TSpeedButton
       Left = 0
-      Top = 135
+      Top = 409
       Width = 81
       Height = 138
       Hint = #1059#1076#1072#1083#1077#1085#1080#1077' '#1101#1083#1077#1084#1077#1085#1090#1072' '#1080#1079' '#1089#1087#1080#1089#1082#1072'.'
@@ -2186,10 +2187,24 @@ object MainForm: TMainForm
       ShowHint = True
       OnClick = ExitButtonClick
     end
+    object AddHeadButton: TSpeedButton
+      Left = 0
+      Top = 136
+      Width = 81
+      Height = 138
+      Hint = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1101#1083#1077#1084#1077#1085#1090#1072' '#1074' '#1089#1087#1080#1089#1086#1082'.'
+      Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1101#1083#1077#1084#1077#1085#1090
+      ImageIndex = 0
+      Images = SpButImgList
+      Layout = blGlyphTop
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = AddHeadButtonClick
+    end
   end
   object LinkedListStrGrid: TStringGrid
-    Left = 91
-    Top = 2
+    Left = 89
+    Top = 74
     Width = 200
     Height = 400
     Hint = #1054#1090#1086#1073#1088#1072#1078#1077#1085#1086' '#1074' '#1086#1073#1088#1072#1090#1085#1086#1084' '#1087#1086#1088#1103#1076#1082#1077'.'

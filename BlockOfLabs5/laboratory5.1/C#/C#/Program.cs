@@ -58,8 +58,7 @@ class Proj42 {
             _tail = newNode;
         } else {
             newNode.Previous = _tail;
-#pragma warning disable CS8602 // Разыменование вероятной пустой ссылки.
-            _tail.Next = newNode;
+            _tail!.Next = newNode;
             _tail = newNode;
         }
     }

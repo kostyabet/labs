@@ -17,7 +17,7 @@ Uses
     Vcl.ExtCtrls,
     Vcl.StdCtrls,
     System.ImageList,
-    Vcl.ImgList,
+    Vcl.ImgList,                                  
     Vcl.Grids;
 
 Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
@@ -44,9 +44,9 @@ Implementation
 Uses
     MainFormUnit;
 
-Procedure InsertInList(Value: Integer); Stdcall; External 'DoubleLinkedList.dll';
-Procedure DeleteFromList(Num: Integer); Stdcall; External 'DoubleLinkedList.dll';
-Procedure PrintList(Var LinkedListStrGrid: TStringGrid); Stdcall; External 'DoubleLinkedList.dll';
+Procedure InsertInTail(Value: Integer); External 'DoubleLinkedList.dll';
+Procedure DeleteFromList(Num: Integer); External 'DoubleLinkedList.dll';
+Procedure PrintList(Var LinkedListStrGrid: TStringGrid); External 'DoubleLinkedList.dll';
 
 Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
 Const
@@ -300,7 +300,7 @@ Var
 Begin
     Try
         Read(MyFile, Num);
-        InsertInList(Num);
+        InsertInTail(Num);
         MainForm.LinkedListStrGrid.RowCount := MainForm.LinkedListStrGrid.RowCount + 1;
         PrintList(MainForm.LinkedListStrGrid);
         IsCorrect := True;
