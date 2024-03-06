@@ -4,8 +4,8 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1041#1077#1090#1077#1085#1103' '#1050'. '#1057'. 351005 '#1083#1072#1073'. 5.1'
-  ClientHeight = 547
-  ClientWidth = 297
+  ClientHeight = 535
+  ClientWidth = 293
   Color = clBtnFace
   Constraints.MaxHeight = 607
   Constraints.MaxWidth = 311
@@ -2140,10 +2140,9 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 81
-    Height = 547
+    Height = 535
     Align = alLeft
     TabOrder = 0
-    ExplicitHeight = 386
     object AddTailButton: TSpeedButton
       Left = 0
       Top = 0
