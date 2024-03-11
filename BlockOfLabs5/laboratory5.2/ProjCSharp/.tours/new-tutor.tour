@@ -1,0 +1,15 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "new tutor",
+  "steps": [
+    {
+      "title": "Introduction",
+      "description": ""
+    },
+    {
+      "file": "Proj5_2/Program.cs",
+      "description": "aadsa",
+      "line": 335
+    }
+  ]
+}
