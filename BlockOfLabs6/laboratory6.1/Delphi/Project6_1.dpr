@@ -2,13 +2,16 @@ program Project6_1;
 
 uses
   Vcl.Forms,
-  MainFormUnit in 'MainFormUnit.pas' {Form5};
+  MainFormUnit in 'MainFormUnit.pas' {ClockForm},
+  Vcl.Themes,
+  Vcl.Styles;
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm5, Form5);
+  TStyleManager.TrySetStyle('Silver');
+  Application.CreateForm(TClockForm, ClockForm);
   Application.Run;
 end.
