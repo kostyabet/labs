@@ -15,20 +15,26 @@ Uses
     Vcl.ExtCtrls,
     Vcl.Menus,
     Vcl.Buttons,
-    DateUtils, Vcl.MPlayer;
+    DateUtils,
+    Vcl.MPlayer,
+    Vcl.StdCtrls;
 
 Type
     TClockForm = Class(TForm)
         MainMenu: TMainMenu;
         SecondTimer: TTimer;
         ClockStartSpeedButton: TSpeedButton;
-        N1: TMenuItem;
+    FileList: TMenuItem;
         Exit: TMenuItem;
-        N2: TMenuItem;
-        N3: TMenuItem;
-    MediaPlayer1: TMediaPlayer;
+    Instraction: TMenuItem;
+    AboutEditor: TMenuItem;
+    PickPlayer: TMediaPlayer;
         Procedure ClockStartSpeedButtonClick(Sender: TObject);
         Procedure SecondTimerTimer(Sender: TObject);
+        Procedure InstractionClick(Sender: TObject);
+        Procedure AboutEditorClick(Sender: TObject);
+        Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+        Procedure ExitClick(Sender: TObject);
     Private
         { Private declarations }
     Public
@@ -39,7 +45,7 @@ Var
     ClockForm: TClockForm;
     SecAngle, MinAngle, HourAngle: Double;
     MinSleep: Integer = 0;
-    
+
 Implementation
 
 {$R *.dfm}
@@ -51,7 +57,7 @@ Begin
     SecAngle := -Pi / 2;
     MinAngle := -Pi / 2;
     HourAngle := -Pi / 2;
-    MediaPlayer1.Open;
+    PickPlayer.Open;
 End;
 
 Function CompareFirstFourDigits(Num1, Num2: Extended): Boolean;
@@ -67,6 +73,65 @@ Begin
         Str2 := Copy(Str2, 1, Pos('.', Str2) - 1);
 
     Result := Copy(Str1, 1, 4) = Copy(Str2, 1, 4);
+End;
+
+Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
+Const
+    LEFT_MARGIN: Integer = 10;
+    TOP_MARGIN: Integer = 5;
+Var
+    ModalForm: TForm;
+    ModalLabel: TLAbel;
+Begin
+    ModalForm := TForm.Create(Nil);
+    Try
+        ModalForm.Caption := CaptionText;
+        ModalForm.Width := ModalWidth;
+        ModalForm.Height := ModalHeight;
+        ModalForm.Position := PoScreenCenter;
+        ModalForm.BorderStyle := BsSingle;
+        ModalForm.BorderIcons := [BiSystemMenu];
+        ModalForm.FormStyle := FsStayOnTop;
+        ModalForm.Icon := ClockForm.Icon;
+        ModalLabel := TLabel.Create(ModalForm);
+        ModalLabel.Parent := ModalForm;
+        ModalLabel.Caption := LabelText;
+        ModalLabel.Left := LEFT_MARGIN;
+        ModalLabel.Top := TOP_MARGIN;
+        ModalForm.ShowModal;
+    Finally
+        ModalForm.Free;
+    End;
+End;
+
+Procedure TClockForm.ExitClick(Sender: TObject);
+Begin
+    ClockForm.Close;
+End;
+
+Procedure TClockForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+Var
+    ResultKey: Integer;
+Begin
+    ResultKey := Application.Messagebox('Вы уверены, что хотите закрыть оконное приложение?', 'Выход',
+        MB_YESNO + MB_ICONQUESTION + MB_DEFBUTTON2);
+
+    If ResultKey = ID_NO Then
+        CanClose := False;
+End;
+
+Procedure TClockForm.InstractionClick(Sender: TObject);
+Var
+    InstractionText: String;
+Begin
+    InstractionText := 'Нажмите на кнопку ''' + ClockStartSpeedButton.Caption + '''.';
+    CreateModalForm('Инструкция', InstractionText, Screen.Width * 18 Div 100, Screen.Height * 8 Div 100);
+End;
+
+Procedure TClockForm.AboutEditorClick(Sender: TObject);
+Begin
+    CreateModalForm('О разработчике', 'Выполнил студент группы 351005 Бетеня Константин.', Screen.Width * 22 Div 100,
+        Screen.Height * 8 Div 100);
 End;
 
 Procedure TClockForm.SecondTimerTimer(Sender: TObject);
@@ -117,24 +182,25 @@ Begin
     BitMap.Canvas.LineTo(X + Trunc(LenSec * Cos(SecAngle)), Y + Trunc(LenSec * Sin(SecAngle)));
 
     SecAngle := SecAngle + Pi / 180 * 6;
-    MediaPlayer1.Play;
+    PickPlayer.Play;
     If CompareFirstFourDigits(SecAngle, (3 * Pi) / 2) Then
         SecAngle := -Pi / 2;
 
     If CompareFirstFourDigits(SecAngle, MinAngle) And (MinSleep <> 1) Then
-    begin
+    Begin
         MinAngle := MinAngle + Pi / 180 * 6;
         Inc(MinSleep);
-    end
-    else MinSleep := 0;
-    
+    End
+    Else
+        MinSleep := 0;
+
     If CompareFirstFourDigits(MinAngle, (3 * Pi) / 2) Then
-        MinAngle := - Pi / 2;
-        
+        MinAngle := -Pi / 2;
+
     If CompareFirstFourDigits(SecAngle, HourAngle) Then
         HourAngle := HourAngle + Pi / 180 * 360 / 12 / 60;
     If CompareFirstFourDigits(HourAngle, (3 * Pi) / 2) Then
-        MinAngle := - Pi / 2;
+        MinAngle := -Pi / 2;
 
     ClockForm.Canvas.Draw(0, 0, BitMap);
     BitMap.Free();

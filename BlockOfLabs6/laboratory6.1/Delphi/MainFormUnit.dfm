@@ -14,6 +14,7 @@ object ClockForm: TClockForm
   Font.Style = []
   Menu = MainMenu
   Position = poScreenCenter
+  OnCloseQuery = FormCloseQuery
   TextHeight = 15
   object ClockStartSpeedButton: TSpeedButton
     Left = 152
@@ -23,9 +24,9 @@ object ClockForm: TClockForm
     Caption = #1047#1072#1087#1091#1089#1090#1080#1090#1100' '#1090#1072#1081#1084#1077#1088
     OnClick = ClockStartSpeedButtonClick
   end
-  object MediaPlayer1: TMediaPlayer
-    Left = 240
-    Top = 485
+  object PickPlayer: TMediaPlayer
+    Left = 8
+    Top = 559
     Width = 253
     Height = 29
     DoubleBuffered = True
@@ -37,18 +38,21 @@ object ClockForm: TClockForm
   object MainMenu: TMainMenu
     Left = 32
     Top = 504
-    object N1: TMenuItem
+    object FileList: TMenuItem
       Caption = #1060#1072#1081#1083
       object Exit: TMenuItem
         Caption = #1042#1099#1081#1090#1080
         ShortCut = 16465
+        OnClick = ExitClick
       end
     end
-    object N2: TMenuItem
+    object Instraction: TMenuItem
       Caption = #1048#1085#1089#1090#1088#1091#1082#1094#1080#1103
+      OnClick = InstractionClick
     end
-    object N3: TMenuItem
+    object AboutEditor: TMenuItem
       Caption = #1054' '#1088#1072#1079#1088#1072#1073#1086#1090#1095#1080#1082#1077
+      OnClick = AboutEditorClick
     end
   end
   object SecondTimer: TTimer
