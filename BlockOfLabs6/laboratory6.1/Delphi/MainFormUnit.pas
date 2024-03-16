@@ -4,18 +4,14 @@ Interface
 
 Uses
     Winapi.Windows,
-    Winapi.Messages,
     System.SysUtils,
-    System.Variants,
     System.Classes,
     Vcl.Graphics,
     Vcl.Controls,
     Vcl.Forms,
-    Vcl.Dialogs,
     Vcl.ExtCtrls,
     Vcl.Menus,
     Vcl.Buttons,
-    DateUtils,
     Vcl.MPlayer,
     Vcl.StdCtrls;
 
@@ -24,11 +20,11 @@ Type
         MainMenu: TMainMenu;
         SecondTimer: TTimer;
         ClockStartSpeedButton: TSpeedButton;
-    FileList: TMenuItem;
+        FileList: TMenuItem;
         Exit: TMenuItem;
-    Instraction: TMenuItem;
-    AboutEditor: TMenuItem;
-    PickPlayer: TMediaPlayer;
+        Instraction: TMenuItem;
+        AboutEditor: TMenuItem;
+        PickPlayer: TMediaPlayer;
         Procedure ClockStartSpeedButtonClick(Sender: TObject);
         Procedure SecondTimerTimer(Sender: TObject);
         Procedure InstractionClick(Sender: TObject);
@@ -41,39 +37,22 @@ Type
         { Public declarations }
     End;
 
+Const
+    StartAngle: Double = -Pi / 2;
+    ThrowOffAngle: Double = 3 * Pi / 2;
+    LenSec: Integer = 180;
+    LenMinute: Integer = 150;
+    LenHour: Integer = 120;
+
 Var
     ClockForm: TClockForm;
     SecAngle, MinAngle, HourAngle: Double;
     MinSleep: Integer = 0;
+    X, Y: Integer;
 
 Implementation
 
 {$R *.dfm}
-
-Procedure TClockForm.ClockStartSpeedButtonClick(Sender: TObject);
-Begin
-    SecondTimer.Enabled := True;
-    ClockStartSpeedButton.Enabled := False;
-    SecAngle := -Pi / 2;
-    MinAngle := -Pi / 2;
-    HourAngle := -Pi / 2;
-    PickPlayer.Open;
-End;
-
-Function CompareFirstFourDigits(Num1, Num2: Extended): Boolean;
-Var
-    Str1, Str2: String;
-Begin
-    Str1 := FloatToStr(Num1);
-    Str2 := FloatToStr(Num2);
-
-    If Pos('.', Str1) > 0 Then
-        Str1 := Copy(Str1, 1, Pos('.', Str1) - 1);
-    If Pos('.', Str2) > 0 Then
-        Str2 := Copy(Str2, 1, Pos('.', Str2) - 1);
-
-    Result := Copy(Str1, 1, 4) = Copy(Str2, 1, 4);
-End;
 
 Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
 Const
@@ -134,74 +113,138 @@ Begin
         Screen.Height * 8 Div 100);
 End;
 
-Procedure TClockForm.SecondTimerTimer(Sender: TObject);
-Var
-    BitMap: TBitmap;
-    X, Y, LenMinute, LenSec, LenHour: Integer;
-    I: Integer;
-    Angle: Real;
+Procedure TClockForm.ClockStartSpeedButtonClick(Sender: TObject);
 Begin
+    SecondTimer.Enabled := True;
+    ClockStartSpeedButton.Enabled := False;
+    SecAngle := StartAngle;
+    MinAngle := StartAngle;
+    HourAngle := StartAngle;
+    PickPlayer.Open;
     X := ClockForm.ClientWidth Div 2;
-    LenSec := 180;
-    LenMinute := 150;
-    LenHour := 120;
     Y := ClockForm.ClientHeight Div 2;
-    BitMap := TBitmap.Create();
-    BitMap.Height := ClockForm.ClientHeight;
-    BitMap.Width := ClockForm.ClientWidth;
+End;
 
-    BitMap.Canvas.Pen.Width := 6;
-    BitMap.Canvas.MoveTo(X, Y);
-    BitMap.Canvas.Ellipse(X - 215, Y - 215, X + 215, Y + 215);
+Function CompareFirstFourDigits(Num1, Num2: Extended): Boolean;
+Var
+    Str1, Str2: String;
+Begin
+    Str1 := FloatToStr(Num1);
+    Str2 := FloatToStr(Num2);
 
-    Angle := -Pi / 2;
-    For I := 1 To 12 Do
+    If Pos('.', Str1) > 0 Then
+        Str1 := Copy(Str1, 1, Pos('.', Str1) - 1);
+    If Pos('.', Str2) > 0 Then
+        Str2 := Copy(Str2, 1, Pos('.', Str2) - 1);
+
+    Result := Copy(Str1, 1, 4) = Copy(Str2, 1, 4);
+End;
+
+Procedure DrawClock(Canvas: TCanvas);
+Const
+    DotsRadius: Integer = 198;
+    OuterRadius: Integer = 215;
+    OuterWidth: Integer = 6;
+    InnerRadius: Integer = 205;
+    InnerWidth: Integer = 4;
+    HourCounter: Integer = 12;
+    IncAngle: Double = Pi / 6;
+    AngleWidth: Integer = 5;
+Var
+    Angle: Real;
+    I: Integer;
+Begin
+    Canvas.Pen.Color := ClBlue;
+    Canvas.Pen.Width := OuterWidth;
+    Canvas.MoveTo(X, Y);
+    Canvas.Ellipse(X - OuterRadius, Y - OuterRadius, X + OuterRadius, Y + OuterRadius);
+
+    Canvas.Pen.Color := ClBlack;
+    Canvas.Pen.Width := InnerWidth;
+    Canvas.MoveTo(X, Y);
+    Canvas.Ellipse(X - InnerRadius, Y - InnerRadius, X + InnerRadius, Y + InnerRadius);
+
+    Canvas.Pen.Color := ClBlue;
+    Angle := StartAngle;
+    For I := 1 To HourCounter Do
     Begin
-        BitMap.Canvas.Pen.Width := 15;
-        Angle := Angle + Pi / 6;
-        BitMap.Canvas.MoveTo(X + Trunc(210 * Cos(Angle)), Y + Trunc(210 * Sin(Angle)));
-        BitMap.Canvas.LineTo(X + Trunc(210 * Cos(Angle)), Y + Trunc(210 * Sin(Angle)));
+        Canvas.Pen.Width := AngleWidth;
+        Angle := Angle + IncAngle;
+        Canvas.MoveTo(X + Trunc(DotsRadius * Cos(Angle)), Y + Trunc(DotsRadius * Sin(Angle)));
+        Canvas.LineTo(X + Trunc(DotsRadius * Cos(Angle)), Y + Trunc(DotsRadius * Sin(Angle)));
     End;
+End;
 
-    BitMap.Canvas.MoveTo(X, Y);
+Procedure DrawArrows(Canvas: TCanvas);
+Const
+    HourWidth: Integer = 10;
+    MinWidth: Integer = 5;
+    SecWidth: Integer = 2;
+    RivetRadius: Integer = 5;
+Begin
+    Canvas.Pen.Color := ClBlack;
+    Canvas.Pen.Width := HourWidth;
+    Canvas.MoveTo(X, Y);
+    Canvas.LineTo(X + Trunc(LenHour * Cos(HourAngle)), Y + Trunc(LenHour * Sin(HourAngle)));
 
-    BitMap.Canvas.Pen.Color := ClBlack;
-    BitMap.Canvas.Pen.Width := 20;
-    BitMap.Canvas.LineTo(X + Trunc(LenHour * Cos(HourAngle)), Y + Trunc(LenHour * Sin(HourAngle)));
+    Canvas.Pen.Color := ClBlack;
+    Canvas.Pen.Width := MinWidth;
+    Canvas.MoveTo(X, Y);
+    Canvas.LineTo(X + Trunc(LenMinute * Cos(MinAngle)), Y + Trunc(LenMinute * Sin(MinAngle)));
 
-    BitMap.Canvas.MoveTo(X, Y);
+    Canvas.Pen.Color := ClRed;
+    Canvas.Pen.Width := SecWidth;
+    Canvas.MoveTo(X, Y);
+    Canvas.LineTo(X + Trunc(LenSec * Cos(SecAngle)), Y + Trunc(LenSec * Sin(SecAngle)));
 
-    BitMap.Canvas.Pen.Color := ClGray;
-    BitMap.Canvas.Pen.Width := 12;
-    BitMap.Canvas.LineTo(X + Trunc(LenMinute * Cos(MinAngle)), Y + Trunc(LenMinute * Sin(MinAngle)));
+    Canvas.Pen.Color := ClBlue;
+    Canvas.MoveTo(X, Y);
+    Canvas.Ellipse(X - RivetRadius, Y - RivetRadius, X + RivetRadius, Y + RivetRadius);
+End;
 
-    BitMap.Canvas.MoveTo(X, Y);
+Procedure ChangeTheTurnsOfTheArrow();
+Const
+    IncSecMinAngle: Double = Pi / 180 * 6;
+    HourSecAngle: Double = Pi / 180 * 360 / 12 / 60;
+Var
+    RealComparisonStatus: Boolean;
+Begin
+    SecAngle := SecAngle + IncSecMinAngle;
+    ClockForm.PickPlayer.Play;
+    RealComparisonStatus := CompareFirstFourDigits(SecAngle, ThrowOffAngle);
+    If RealComparisonStatus Then
+        SecAngle := StartAngle;
 
-    BitMap.Canvas.Pen.Color := ClRed;
-    BitMap.Canvas.Pen.Width := 5;
-    BitMap.Canvas.LineTo(X + Trunc(LenSec * Cos(SecAngle)), Y + Trunc(LenSec * Sin(SecAngle)));
-
-    SecAngle := SecAngle + Pi / 180 * 6;
-    PickPlayer.Play;
-    If CompareFirstFourDigits(SecAngle, (3 * Pi) / 2) Then
-        SecAngle := -Pi / 2;
-
-    If CompareFirstFourDigits(SecAngle, MinAngle) And (MinSleep <> 1) Then
+    RealComparisonStatus := CompareFirstFourDigits(SecAngle, MinAngle);
+    If RealComparisonStatus And (MinSleep <> 1) Then
     Begin
-        MinAngle := MinAngle + Pi / 180 * 6;
+        MinAngle := MinAngle + IncSecMinAngle;
         Inc(MinSleep);
     End
     Else
         MinSleep := 0;
+    RealComparisonStatus := CompareFirstFourDigits(MinAngle, ThrowOffAngle);
+    If RealComparisonStatus Then
+        MinAngle := StartAngle;
 
-    If CompareFirstFourDigits(MinAngle, (3 * Pi) / 2) Then
-        MinAngle := -Pi / 2;
+    RealComparisonStatus := CompareFirstFourDigits(SecAngle, HourAngle);
+    If RealComparisonStatus Then
+        HourAngle := HourAngle + HourSecAngle;
+    RealComparisonStatus := CompareFirstFourDigits(HourAngle, ThrowOffAngle);
+    If RealComparisonStatus Then
+        MinAngle := StartAngle;
+End;
 
-    If CompareFirstFourDigits(SecAngle, HourAngle) Then
-        HourAngle := HourAngle + Pi / 180 * 360 / 12 / 60;
-    If CompareFirstFourDigits(HourAngle, (3 * Pi) / 2) Then
-        MinAngle := -Pi / 2;
-
+Procedure TClockForm.SecondTimerTimer(Sender: TObject);
+Var
+    BitMap: TBitmap;
+Begin
+    BitMap := TBitmap.Create();
+    BitMap.Height := ClockForm.ClientHeight;
+    BitMap.Width := ClockForm.ClientWidth;
+    DrawClock(BitMap.Canvas);
+    DrawArrows(BitMap.Canvas);
+    ChangeTheTurnsOfTheArrow();
     ClockForm.Canvas.Draw(0, 0, BitMap);
     BitMap.Free();
 End;
