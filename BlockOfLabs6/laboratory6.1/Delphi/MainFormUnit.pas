@@ -13,7 +13,8 @@ Uses
     Vcl.Menus,
     Vcl.Buttons,
     Vcl.MPlayer,
-    Vcl.StdCtrls;
+    Vcl.StdCtrls,
+    DateUtils;
 
 Type
     TClockForm = Class(TForm)
@@ -31,6 +32,7 @@ Type
         Procedure AboutEditorClick(Sender: TObject);
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
         Procedure ExitClick(Sender: TObject);
+        Procedure FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
     Private
         { Private declarations }
     Public
@@ -99,6 +101,12 @@ Begin
         CanClose := False;
 End;
 
+Procedure TClockForm.FormKeyDown(Sender: TObject; Var Key: Word; Shift: TShiftState);
+Begin
+    If (Key = VK_RETURN) Then
+        ClockStartSpeedButtonClick(Sender);
+End;
+
 Procedure TClockForm.InstractionClick(Sender: TObject);
 Var
     InstractionText: String;
@@ -117,9 +125,9 @@ Procedure TClockForm.ClockStartSpeedButtonClick(Sender: TObject);
 Begin
     SecondTimer.Enabled := True;
     ClockStartSpeedButton.Enabled := False;
-    SecAngle := StartAngle;
-    MinAngle := StartAngle;
-    HourAngle := StartAngle;
+    SecAngle := Pi / 180 * (SecondOf(Now) + 2) * 6 - Pi / 2;
+    MinAngle := Pi / 180 * MinuteOf(Now) * 6 - Pi / 2;
+    HourAngle := Pi / 180 * HourOf(Now) * 360 / 12 - Pi / 2;
     PickPlayer.Open;
     X := ClockForm.ClientWidth Div 2;
     Y := ClockForm.ClientHeight Div 2;
