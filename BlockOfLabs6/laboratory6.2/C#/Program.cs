@@ -1,4 +1,6 @@
-﻿namespace Proj6_2 {
+﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace Proj6_2 {
     internal enum IOChoose {
         FILE = 1,
         CONSOLE
@@ -297,8 +299,9 @@
         }
         static void InputMatrixInRes(ref int[][] matrix, ref List<int[]> resWayCoords, ref string resultStr) {
             for (int i = 0; i < matrix.Length; i++) {
-                for (int j = 0; j < matrix[i].Length; j++)
-                    resultStr += matrix[i][j] + " ";
+                for (int j = 0; j < matrix[i].Length; j++) {
+                    resultStr += matrix[i][j].ToString().PadLeft(6);
+                }
                 resultStr += "\n";
             }
         }
@@ -307,8 +310,9 @@
                 for (int j = 0; j < matrix[i].Length; j++) {
                     string outputVal = ".";
                     for (int k = 0; k < resWayCoords.Count; k++)
-                        if (resWayCoords[k][0] == i && resWayCoords[k][1] == j) outputVal = k.ToString();
-                    resultStr += outputVal + ' ';
+                        if (resWayCoords[k][0] == i && resWayCoords[k][1] == j) 
+                            outputVal = k.ToString().PadLeft(6);
+                    resultStr += outputVal + " ";
                 }
                 resultStr += "\n";
             }
