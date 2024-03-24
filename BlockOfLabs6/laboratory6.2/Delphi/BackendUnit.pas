@@ -14,8 +14,12 @@ Type
 Const
     Steps: TSteps = ((0, 1), (1, 0), (-1, 0), (0, -1));
 
+Var
+    ResWayCoords: TResCoords;
+    Matrix: TMatrix;
+    Ans: Integer = -2_000_000_000;
+
 Procedure SearchLongestWay(Matrix: TMatrix; I1, J1, I2, J2: Integer; Var ResWayCoords: TResCoords);
-Procedure CreateResultWindow(ResWayCoords: TResCoords);
 Function IsWriteable(FilePath: String): Boolean;
 Procedure InputInFile(Var IsCorrect: Boolean; FilePath: String);
 Function IsReadable(FilePath: String): Boolean;
@@ -48,6 +52,8 @@ End;
 Procedure InputInFile(Var IsCorrect: Boolean; FilePath: String);
 Var
     MyFile: TextFile;
+    I, J, K: Integer;
+    OutputVal: String;
 Begin
     If IsCorrect Then
     Begin
@@ -55,8 +61,29 @@ Begin
         Try
             ReWrite(MyFile);
             Try
-                Write(MyFile, 'Ваше дерево:'#13#10);
-                //Write(MyFile, PrintConsoleTree());
+                Write(MyFile, 'Ваша матрица :'#13#10);
+
+                For I := 0 To High(Matrix) Do
+                Begin
+                    For J := 0 To High(Matrix[I]) Do
+                        Write(MyFile, Matrix[I][J].ToString().PadLeft(6));
+                    Write(MyFile, #13#10);
+                End;
+                Write(MyFile, #13#10'Ваш путь: '#13#10);
+                For I := 0 To High(Matrix) Do
+                Begin
+                    For J := 0 To High(Matrix[I]) Do
+                    Begin
+                        OutputVal := '.';
+                        For K := 0 To High(ResWayCoords) Do
+                        Begin
+                            If (ResWayCoords[K][0] = I) And (ResWayCoords[K][1] = J) Then
+                                OutputVal := IntToStr(K);
+                        End;
+                        Write(MyFile, OutputVal.PadLeft(6) + ' ');
+                    End;
+                    Write(MyFile, #13#10);
+                End;
             Finally
                 Close(MyFile);
             End;
@@ -98,8 +125,7 @@ Begin
     Coords[Length(Coords) - 1][1] := J;
 End;
 
-Procedure Rec(Sx, Sy, Fx, Fy, Sum: Integer; Ans: Integer; Matrix: TMatrix; Used: TUsed; TempCoords: TResCoords;
-    Var ResWayCoords: TResCoords);
+Procedure Rec(Sx, Sy, Fx, Fy, Sum: Integer; Matrix: TMatrix; Used: TUsed; TempCoords: TResCoords; Var ResWayCoords: TResCoords);
 Const
     STEPS_COUNT: Integer = 4;
 Var
@@ -118,7 +144,7 @@ Begin
             End;
             CoordsAdd(X, Y, TempCoords);
             Used[X, Y] := True;
-            Rec(X, Y, Fx, Fy, Sum + Matrix[X][Y], Ans, Matrix, Used, TempCoords, ResWayCoords);
+            Rec(X, Y, Fx, Fy, Sum + Matrix[X][Y], Matrix, Used, TempCoords, ResWayCoords);
             Used[X, Y] := False;
             CoordsRemove(TempCoords);
         End;
@@ -133,7 +159,6 @@ Var
     I: Integer;
     J: Integer;
 Begin
-    Ans := -2_000_000_000;
     SetLength(Used, Length(Matrix));
     For I := Low(Matrix) To High(Matrix) Do
     Begin
@@ -143,17 +168,8 @@ Begin
     End;
     CoordsAdd(I1, J1, TempCoords);
     Used[I1, J1] := True;
-    Rec(I1, J1, I2, J2, Matrix[I1][J1], Ans, Matrix, Used, TempCoords, ResWayCoords);
+    Rec(I1, J1, I2, J2, Matrix[I1][J1], Matrix, Used, TempCoords, ResWayCoords);
     CoordsAdd(I2, J2, ResWayCoords);
-End;
-
-Procedure CreateResultWindow(ResWayCoords: TResCoords);
-Var
-    I: Integer;
-Begin
-    Form1.Label1.Caption := '';
-    For I := Low(ResWayCoords) To High(ResWayCoords) Do
-        Form1.Label1.Caption := Form1.Label1.Caption + IntToStr(ResWayCoords[I][0]) + ' : ' + IntToStr(ResWayCoords[I][1]) + #13#10;
 End;
 
 Function TryReadNum(Var TestFile: TextFile; Var ReadStatus: Boolean; MAX_NUM: Integer): Integer;

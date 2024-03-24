@@ -86,6 +86,9 @@ Type
         Procedure OpenFromFileClick(Sender: TObject);
         Procedure SaveInFileClick(Sender: TObject);
         Procedure FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
+        Procedure CloseButtonClick(Sender: TObject);
+        Procedure InstractionClick(Sender: TObject);
+        Procedure AboutEditorClick(Sender: TObject);
     Private
         Procedure WMGetMinMaxInfo(Var Msg: TWMGetMinMaxInfo);
     Public
@@ -114,6 +117,17 @@ Uses
     FrontendUnit,
     BackendUnit,
     ResMatrixUnit;
+
+Procedure TMainForm.AboutEditorClick(Sender: TObject);
+Begin
+    CreateModalForm('О разработчике', 'Выполнил студент группы 351005 Бетеня Константин.', Screen.Width * 22 Div 100,
+        Screen.Height * 8 Div 100);
+End;
+
+Procedure TMainForm.CloseButtonClick(Sender: TObject);
+Begin
+    MainForm.Close;
+End;
 
 Procedure TMainForm.FormCloseQuery(Sender: TObject; Var CanClose: Boolean);
 Var
@@ -186,6 +200,22 @@ Begin
     ClearElAndPoints();
     ChangeHint(MRowsLEdit.Text, NColsLEdit.Text);
     ChangeVisible(True);
+End;
+
+Procedure TMainForm.InstractionClick(Sender: TObject);
+Var
+    OutputStr: String;
+Begin
+    OutputStr := 'Комбинаторика.' + #13#10 + ' Пользователь вводит матрицу arr(m,n).' + #13#10 +
+        ' Программа записывает в нее путь от элемента arr[i1,j1] к элементу'#13#10 + 'arr[i2,j2] ' + 'с максимальным количеством.'#13#10 +
+        ' Алгоритм перемещается по горизонтали и вертикали.'#13#10 + ' Каждый элемент матрицы входит в путь не более одного раза.'#13#10 +
+        ' При отображении результата путь в матрице подсвечивается!' + #13#10 + #13#10'Ограничения:'#13#10 +
+        '1. Размеры матрицы находятся в пределах [' + IntToStr(MIN_SIZE) + '; ' + IntToStr(MAX_SIZE) + '];'#13#10 +
+        '2. Элементы матрицы находятся в пределах [{' + IntToStr(MIN_INT) + '}; {' + IntToStr(MAX_INT) + '}];'#13#10 +
+        '3. При вводе/выводе через файл только расширение может быть used.txt!'#13#10 + '   3.1 Сначала в файле есть 2 числа M и N:'#13#10 +
+        '       • M - количество строк;'#13#10 + '       • N - количество столбцов;'#13#10 +
+        '   3.2 Затем есть число, номер которого MxN;'#13#10 + '   3.3 Тогда должны быть координаты 2 точек: i1, j1, i2, j2;';
+    CreateModalForm('Инструкция', OutputStr, Screen.Width * 30 Div 100, Screen.Height * 37 Div 100);
 End;
 
 Procedure TMainForm.IStartPointLEditChange(Sender: TObject);
@@ -364,27 +394,19 @@ End;
 
 Procedure TMainForm.ResultSpButtonClick(Sender: TObject);
 Var
-    Matrix: TMatrix;
-    ResWayCoords: TResCoords;
     I, J, I1, J1, I2, J2: Integer;
 Begin
-    SetLength(Matrix, StrToInt(MRowsLEdit.Text));
+    SetLength(Matrix, StrToInt(NColsLEdit.Text), StrToInt(MRowsLEdit.Text));
     For I := 0 To StrToInt(MRowsLEdit.Text) - 1 Do
-    Begin
-        SetLength(Matrix[I], StrToInt(NColsLEdit.Text));
         For J := 0 To StrToInt(NColsLEdit.Text) - 1 Do
-            Matrix[I][J] := StrToInt(MassiveStGrid.Cells[I, J]);
-    End;
+            Matrix[J][I] := StrToInt(MassiveStGrid.Cells[J, I]);
 
-    I1 := StrToInt(IStartPointLEdit.Text) - 1;
-    J1 := StrToInt(JStartPointLEdit.Text) - 1;
-    I2 := StrToInt(IEndPointLEdit.Text) - 1;
-    J2 := StrToInt(JEndPointLEdit.Text) - 1;
+    J1 := StrToInt(IStartPointLEdit.Text) - 1;
+    I1 := StrToInt(JStartPointLEdit.Text) - 1;
+    J2 := StrToInt(IEndPointLEdit.Text) - 1;
+    I2 := StrToInt(JEndPointLEdit.Text) - 1;
 
     SearchLongestWay(Matrix, I1, J1, I2, J2, ResWayCoords);
-
-    CreateResultWindow(ResWayCoords);
-
     ViewWayButton.Visible := True;
 End;
 
@@ -407,6 +429,7 @@ End;
 
 Procedure TMainForm.ViewWayButtonClick(Sender: TObject);
 Begin
+    Application.CreateForm(TForm1, Form1);
     Form1.ShowModal;
 End;
 

@@ -4,8 +4,8 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = #1041#1077#1090#1077#1085#1103' '#1050'. '#1057'. 351005 '#1083#1072#1073'. 6.2'
-  ClientHeight = 443
-  ClientWidth = 549
+  ClientHeight = 445
+  ClientWidth = 536
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -244,6 +244,7 @@ object MainForm: TMainForm
       end
       object SaveInFile: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+        Enabled = False
         OnClick = SaveInFileClick
       end
       object Line: TMenuItem
@@ -251,20 +252,26 @@ object MainForm: TMainForm
       end
       object CloseButton: TMenuItem
         Caption = #1042#1099#1081#1090#1080
+        OnClick = CloseButtonClick
       end
     end
     object Instraction: TMenuItem
       Caption = #1048#1085#1089#1090#1088#1091#1082#1094#1080#1103
+      OnClick = InstractionClick
     end
     object AboutEditor: TMenuItem
       Caption = #1054' '#1088#1072#1079#1088#1072#1073#1086#1090#1095#1080#1082#1077
+      OnClick = AboutEditorClick
     end
   end
   object OpenDialog: TOpenDialog
+    Filter = '*.txt|*.txt'
+    Options = [ofHideReadOnly, ofPathMustExist, ofFileMustExist, ofEnableSizing]
     Left = 104
     Top = 24
   end
   object SaveDialog: TSaveDialog
+    Filter = '*.txt|*.txt'
     Left = 184
     Top = 24
   end

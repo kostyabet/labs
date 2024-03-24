@@ -4,10 +4,23 @@ Interface
 
 Uses
     Winapi.Windows,
+    Winapi.Messages,
     System.SysUtils,
+    System.Variants,
+    System.Classes,
+    Vcl.Graphics,
+    Vcl.Controls,
+    Vcl.Forms,
+    Vcl.Dialogs,
+    Vcl.Menus,
+    Vcl.StdCtrls,
+    Vcl.Mask,
+    Vcl.ExtCtrls,
+    Vcl.Buttons,
     Vcl.Grids,
-    Vcl.ExtCtrls;
+    Clipbrd;
 
+Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
 Function ChangeMNControl(M, N: String): Boolean;
 Function CheckKey(Key: Char; LEditText: String; Const MIN, MAX: Integer): Char;
 Procedure ChangeVisible(InputElements: Boolean);
@@ -24,6 +37,35 @@ Implementation
 
 Uses
     MainUnit;
+
+Procedure CreateModalForm(CaptionText, LabelText: String; ModalWidth, ModalHeight: Integer);
+Const
+    LEFT_MARGIN: Integer = 10;
+    TOP_MARGIN: Integer = 5;
+Var
+    ModalForm: TForm;
+    ModalLabel: TLAbel;
+Begin
+    ModalForm := TForm.Create(Nil);
+    Try
+        ModalForm.Caption := CaptionText;
+        ModalForm.Width := ModalWidth;
+        ModalForm.Height := ModalHeight;
+        ModalForm.Position := PoScreenCenter;
+        ModalForm.BorderStyle := BsSingle;
+        ModalForm.BorderIcons := [BiSystemMenu];
+        ModalForm.FormStyle := FsStayOnTop;
+        ModalForm.Icon := MainForm.Icon;
+        ModalLabel := TLabel.Create(ModalForm);
+        ModalLabel.Parent := ModalForm;
+        ModalLabel.Caption := LabelText;
+        ModalLabel.Left := LEFT_MARGIN;
+        ModalLabel.Top := TOP_MARGIN;
+        ModalForm.ShowModal;
+    Finally
+        ModalForm.Free;
+    End;
+End;
 
 Function ChangeMNControl(M, N: String): Boolean;
 Begin

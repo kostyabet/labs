@@ -1,6 +1,4 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace Proj6_2 {
+﻿namespace Proj6_2 {
     internal enum IOChoose {
         FILE = 1,
         CONSOLE
@@ -36,7 +34,7 @@ namespace Proj6_2 {
 
                 """);
         }
-        static int InputNumberFromConsole(int MAX, int MIN) {
+        static int inputNumberFromConsole(int MAX, int MIN) {
             int val = 0;
             bool isCorrect;
             do {
@@ -73,41 +71,41 @@ namespace Proj6_2 {
             if (isCorrectInput) num = minCount * num;
             return num;
         }
-        static void InputMatrixSize(out int m, out int n) {
+        static void inputMatrixSize(out int m, out int n) {
             Console.WriteLine("Input your matrix size (m x n)");
             Console.Write("M: ");
-            m = InputNumberFromConsole(MAX_SIZE, MIN_SIZE);
+            m = inputNumberFromConsole(MAX_SIZE, MIN_SIZE);
             Console.Write("N: ");
-            n = InputNumberFromConsole(MAX_SIZE, MIN_SIZE);
+            n = inputNumberFromConsole(MAX_SIZE, MIN_SIZE);
         }
-        static void ChangeMatrixSize(out int[][] matrix, int m, int n) {
+        static void changeMatrixSize(out int[][] matrix, int m, int n) {
             matrix = new int[m][];
             for (int i = 0; i < matrix.Length; i++)
                 matrix[i] = new int[n];
         }
-        static void InputMatrixElements(ref int[][] matrix) {
+        static void inputMatrixElements(ref int[][] matrix) {
             Console.WriteLine("Input matrix elements.");
             for (int i = 0; i < matrix.Length; i++)
                 for (int j = 0; j < matrix[i].Length; j++) {
                     Console.Write($"Write arr[{i};{j}]: ");
-                    matrix[i][j] = InputNumberFromConsole(MAX_INT, MIN_INT);
+                    matrix[i][j] = inputNumberFromConsole(MAX_INT, MIN_INT);
                 }
         }
-        static void InputPoint(int maxm, int maxn, out int i, out int j, char pointer) {
+        static void inputPoint(int maxm, int maxn, out int i, out int j, char pointer) {
             int min = 0;
             Console.WriteLine($"Input i{pointer}, j{pointer}.");
             Console.Write($"Input i{pointer}: ");
-            i = InputNumberFromConsole(maxm, min);
+            i = inputNumberFromConsole(maxm, min);
             Console.Write($"Input j{pointer}: ");
-            j = InputNumberFromConsole(maxn, min);
+            j = inputNumberFromConsole(maxn, min);
         }
-        static void InputFromConsole(out int[][] matrix, out int i1, out int j1, out int i2, out int j2) {
+        static void inputFromConsole(out int[][] matrix, out int i1, out int j1, out int i2, out int j2) {
             Console.Clear();
-            InputMatrixSize(out int m, out int n);
-            ChangeMatrixSize(out matrix, m, n);
-            InputMatrixElements(ref matrix);
-            InputPoint(m - 1, n - 1, out i1, out j1, '1');
-            InputPoint(m - 1, n - 1, out i2, out j2, '2');
+            inputMatrixSize(out int m, out int n);
+            changeMatrixSize(out matrix, m, n);
+            inputMatrixElements(ref matrix);
+            inputPoint(m - 1, n - 1, out i1, out j1, '1');
+            inputPoint(m - 1, n - 1, out i2, out j2, '2');
         }
         static void outputTextAboutIoSelection(string ioTextInfo) {
             string outputString = $"""
@@ -215,7 +213,7 @@ namespace Proj6_2 {
             using StreamReader inputReader = new StreamReader(filePath);
             int m = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_SIZE, MAX_SIZE);
             int n = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_SIZE, MAX_SIZE);
-            ChangeMatrixSize(out matrix, m, n);
+            changeMatrixSize(out matrix, m, n);
             for (int i = 0; i < matrix.Length && isCorrectInput; ++i)
                 for (int j = 0; j < matrix[i].Length && isCorrectInput; ++j)
                     matrix[i][j] = inputNumberFromFile(inputReader, ref isCorrectInput, MIN_SIZE, MAX_SIZE);
@@ -228,7 +226,7 @@ namespace Proj6_2 {
             inputReader.Close();
             return isCorrectInput;
         }
-        static void InputFormFile(out int[][] matrix, out int i1, out int j1, out int i2, out int j2) {
+        static void inputFormFile(out int[][] matrix, out int i1, out int j1, out int i2, out int j2) {
             Console.Clear();
             string filePath;
             do {
@@ -236,14 +234,14 @@ namespace Proj6_2 {
                 filePath = inputPathToTheFile("input");
             } while (!isProcessOfFileInputCorrect(filePath, out matrix, out i1, out j1, out i2, out j2));
         }
-        static void InputProcess(out int[][] matrix, out int i1, out int j1, out int i2, out int j2) {
+        static void inputProcess(out int[][] matrix, out int i1, out int j1, out int i2, out int j2) {
             IOChoose path = chooseIoWay("input");
             switch (path) {
-                case IOChoose.FILE: InputFormFile(out matrix, out i1, out j1, out i2, out j2); break;
-                default: InputFromConsole(out matrix, out i1, out j1, out i2, out j2); break;
+                case IOChoose.FILE: inputFormFile(out matrix, out i1, out j1, out i2, out j2); break;
+                default: inputFromConsole(out matrix, out i1, out j1, out i2, out j2); break;
             }
         }
-        static void SearchLongestWay(int[][] matrix, int i1, int j1, int i2, int j2, List<int[]> resWayCoords) {
+        static void searchLongestWay(int[][] matrix, int i1, int j1, int i2, int j2, List<int[]> resWayCoords) {
             int[,] st = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};  
             int ans = -int.MaxValue;
             bool[,] used = new bool[matrix.Length, matrix[0].Length];
@@ -305,10 +303,10 @@ namespace Proj6_2 {
                 resultStr += "\n";
             }
         }
-        static void InputLongestWayInRes(ref int[][] matrix, ref List<int[]> resWayCoords, ref string resultStr) {
+        static void inputLongestWayInRes(ref int[][] matrix, ref List<int[]> resWayCoords, ref string resultStr) {
             for (int i = 0; i < matrix.Length; i++) {
                 for (int j = 0; j < matrix[i].Length; j++) {
-                    string outputVal = ".";
+                    string outputVal = ".".PadLeft(6);
                     for (int k = 0; k < resWayCoords.Count; k++)
                         if (resWayCoords[k][0] == i && resWayCoords[k][1] == j) 
                             outputVal = k.ToString().PadLeft(6);
@@ -321,9 +319,9 @@ namespace Proj6_2 {
             resultStr += "Input Matrix: \n";
             InputMatrixInRes(ref matrix, ref resWayCoords, ref resultStr);
             resultStr += "Longest Way: \n";
-            InputLongestWayInRes(ref matrix, ref resWayCoords, ref resultStr);
+            inputLongestWayInRes(ref matrix, ref resWayCoords, ref resultStr);
         }
-        static void OutputResult(ref int[][] matrix, ref List<int[]> resWayCoords) {
+        static void outputResult(ref int[][] matrix, ref List<int[]> resWayCoords) {
             Console.Clear();
             string resultStr = "Result longest way: \n";
             outputMatrix(ref matrix, ref resWayCoords, ref resultStr);
@@ -336,9 +334,9 @@ namespace Proj6_2 {
         public static void Main(string[] args) {
             List<int[]> resWayCoords = [];
             conditionOutput();
-            InputProcess(out int[][] matrix, out int i1, out int j1, out int i2, out int j2);
-            SearchLongestWay(matrix, i1, j1, i2, j2, resWayCoords);
-            OutputResult(ref matrix, ref resWayCoords);
+            inputProcess(out int[][] matrix, out int i1, out int j1, out int i2, out int j2);
+            searchLongestWay(matrix, i1, j1, i2, j2, resWayCoords);
+            outputResult(ref matrix, ref resWayCoords);
         }
     }
 }
